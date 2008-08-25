@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin
+	id="com.blocks.BDocuments"
+	label="Documents"
+	version="1.0.0"
+	info="Blocks Documents">
+
+	<requirement bundle="com.blocks.Blocks" version="1.0.0" />
+	<requirement bundle="com.blocks.BLifecycle" version="1.0.0" />
+
+	<extension-point id="documentControllerDelegate" label="Document Controller Delegate" />
+	<extension-point id="documentDefaultWindowControllersFactory" label="Document Default Window Controlers Factory" />
+
+	<extension point="com.blocks.BLifecycle.lifecycle">
+		<applicationLaunching class="BDocumentController sharedInstance" />
+		<applicationMayTerminateNotification class="BDocumentController sharedInstance" />
+		<applicationCancledTerminateNotification class="BDocumentController sharedInstance" />
+		<applicationWillTerminate class="BDocumentController sharedInstance" />
+	</extension>
+</plugin>
