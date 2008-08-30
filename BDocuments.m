@@ -111,7 +111,13 @@ static NSWindowController *currentDocumentWindowController = nil;
 	free(lhsBuf);
 	free(rhsBuf);
 	
-	return (CFComparisonResult) compareResult;
+	if (compareResult == 0) {
+		return NSOrderedSame;
+	} else if (compareResult < 0) {
+		return NSOrderedAscending;
+	} else {
+		return NSOrderedDescending;
+	}
 }
 
 @end
