@@ -286,6 +286,15 @@
 				}
 			}
 		}
+		
+		if ([[self documents] count] == 0) {
+			NSURL *lastDocumentURL = [[self recentDocumentURLs] lastObject];
+			if ([fileManager fileExistsAtPath:[lastDocumentURL path]]) {
+				if (![self openDocumentWithContentsOfURL:lastDocumentURL display:YES error:&error]) {
+					[self presentError:error];
+				}
+			}
+		}
 	}
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:BDocumentsLastDocumentWorkspaceKey];
