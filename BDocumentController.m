@@ -7,6 +7,7 @@
 //
 
 #import "BDocumentController.h"
+#import "BDocumentCloud.h"
 #import <objc/runtime.h>
 
 
@@ -224,6 +225,12 @@
 #pragma mark Lifecycle Callback
 
 - (void)applicationLaunching {
+	BDocumentCloud *cloud = [[BDocumentCloud alloc] init];
+	cloud.serviceRootURLString = @"http://localhost:8093/documents";
+	NSString *key = [cloud POSTDocument:[NSDictionary dictionaryWithObjectsAndKeys:@"my document name", @"name", @"my document content", @"content", nil]];
+	[cloud PUTDocument:[NSDictionary dictionaryWithObjectsAndKeys:@"my document content with some edits", @"content", nil] forKey:key];
+	[cloud GETDocuments];
+	
 	// do nothing, creating instance is all that's needed.
 }
 
@@ -327,26 +334,6 @@
 }
 
 @end
-
-/*@implementation NSError (BDocumentControllerMethodReplacements)
-
-+ (void)load {
-    if (self == [NSError class]) {
-		
-		
-		[self replaceMethod:@selector(initWithDomain:code:userInfo:) withMethod:@selector(BDocumentController_initWithDomain:code:userInfo:)];
-    }
-}
-
-
-
-- (id)BDocumentController_initWithDomain:(NSString *)domain code:(NSInteger)code userInfo:(NSDictionary *)dict {
-	NSParameterAssert(_cmd == @selector(initWithDomain:code:userInfo:));
-	[self BDocumentController_initWithDomain:domain code:code userInfo:dict];
-//	[self BDocumentController_initW];
-}
-
-@end*/
 
 @implementation NSApplication (BDocumentControllerMethodReplacements)
 

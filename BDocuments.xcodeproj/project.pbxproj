@@ -21,6 +21,16 @@
 		889A4F280D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 889A4F270D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown */; };
 		889A4F2B0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 889A4F2A0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown */; };
 		889A4F2D0D5A5A8300D1E8E9 /* com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 889A4F2C0D5A5A8300D1E8E9 /* com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown */; };
+		88A46F490E914E4200E29F5B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88A46F480E914E4200E29F5B /* SystemConfiguration.framework */; };
+		88A46F5A0E9159FD00E29F5B /* BDocumentCloud.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A46F580E9159FD00E29F5B /* BDocumentCloud.h */; };
+		88A46F5B0E9159FD00E29F5B /* BDocumentCloud.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A46F590E9159FD00E29F5B /* BDocumentCloud.m */; };
+		88A470CE0E918EE200E29F5B /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A470C70E918EE200E29F5B /* SBJSON.m */; };
+		88A470CF0E918EE200E29F5B /* SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470C80E918EE200E29F5B /* SBJSON.h */; };
+		88A470D00E918EE200E29F5B /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A470C90E918EE200E29F5B /* NSString+SBJSON.m */; };
+		88A470D10E918EE200E29F5B /* NSString+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470CA0E918EE200E29F5B /* NSString+SBJSON.h */; };
+		88A470D20E918EE200E29F5B /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */; };
+		88A470D30E918EE200E29F5B /* NSObject+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470CC0E918EE200E29F5B /* NSObject+SBJSON.h */; };
+		88A470D40E918EE200E29F5B /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470CD0E918EE200E29F5B /* JSON.h */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -62,6 +72,16 @@
 		889A4F270D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = com.blocks.BDocuments.markdown; sourceTree = "<group>"; wrapsLines = 1; };
 		889A4F2A0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = com.blocks.BDocuments.documentControllerDelegate.markdown; sourceTree = "<group>"; wrapsLines = 1; };
 		889A4F2C0D5A5A8300D1E8E9 /* com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown; sourceTree = "<group>"; wrapsLines = 1; };
+		88A46F480E914E4200E29F5B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
+		88A46F580E9159FD00E29F5B /* BDocumentCloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BDocumentCloud.h; sourceTree = "<group>"; };
+		88A46F590E9159FD00E29F5B /* BDocumentCloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDocumentCloud.m; sourceTree = "<group>"; };
+		88A470C70E918EE200E29F5B /* SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJSON.m; sourceTree = "<group>"; };
+		88A470C80E918EE200E29F5B /* SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJSON.h; sourceTree = "<group>"; };
+		88A470C90E918EE200E29F5B /* NSString+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SBJSON.m"; sourceTree = "<group>"; };
+		88A470CA0E918EE200E29F5B /* NSString+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SBJSON.h"; sourceTree = "<group>"; };
+		88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
+		88A470CC0E918EE200E29F5B /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
+		88A470CD0E918EE200E29F5B /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* BDocuments.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BDocuments.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D2F7E65807B2D6F200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
@@ -74,6 +94,7 @@
 			files = (
 				437D71590C9178DE0051C06D /* Blocks.framework in Frameworks */,
 				8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */,
+				88A46F490E914E4200E29F5B /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,6 +148,9 @@
 				431A0C3D0CC5149E00DE7BAE /* BDocument.m */,
 				431A0C420CC514B900DE7BAE /* BDocumentWindowController.h */,
 				431A0C430CC514B900DE7BAE /* BDocumentWindowController.m */,
+				88A46F580E9159FD00E29F5B /* BDocumentCloud.h */,
+				88A46F590E9159FD00E29F5B /* BDocumentCloud.m */,
+				88A470D60E918EE600E29F5B /* JSON */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -135,6 +159,7 @@
 			isa = PBXGroup;
 			children = (
 				1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */,
+				88A46F480E914E4200E29F5B /* SystemConfiguration.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -173,6 +198,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		88A470D60E918EE600E29F5B /* JSON */ = {
+			isa = PBXGroup;
+			children = (
+				88A470CD0E918EE200E29F5B /* JSON.h */,
+				88A470C80E918EE200E29F5B /* SBJSON.h */,
+				88A470C70E918EE200E29F5B /* SBJSON.m */,
+				88A470CA0E918EE200E29F5B /* NSString+SBJSON.h */,
+				88A470C90E918EE200E29F5B /* NSString+SBJSON.m */,
+				88A470CC0E918EE200E29F5B /* NSObject+SBJSON.h */,
+				88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */,
+			);
+			name = JSON;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -184,6 +223,11 @@
 				43EF1E480CA2F14600138C91 /* BDocuments.h in Headers */,
 				431A0C3E0CC5149E00DE7BAE /* BDocument.h in Headers */,
 				431A0C440CC514B900DE7BAE /* BDocumentWindowController.h in Headers */,
+				88A46F5A0E9159FD00E29F5B /* BDocumentCloud.h in Headers */,
+				88A470CF0E918EE200E29F5B /* SBJSON.h in Headers */,
+				88A470D10E918EE200E29F5B /* NSString+SBJSON.h in Headers */,
+				88A470D30E918EE200E29F5B /* NSObject+SBJSON.h in Headers */,
+				88A470D40E918EE200E29F5B /* JSON.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,6 +330,10 @@
 				437D72510C9198C90051C06D /* BDocuments.m in Sources */,
 				431A0C3F0CC5149E00DE7BAE /* BDocument.m in Sources */,
 				431A0C450CC514B900DE7BAE /* BDocumentWindowController.m in Sources */,
+				88A46F5B0E9159FD00E29F5B /* BDocumentCloud.m in Sources */,
+				88A470CE0E918EE200E29F5B /* SBJSON.m in Sources */,
+				88A470D00E918EE200E29F5B /* NSString+SBJSON.m in Sources */,
+				88A470D20E918EE200E29F5B /* NSObject+SBJSON.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,6 +371,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -339,6 +388,7 @@
 		1DEB913C08733D840010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
