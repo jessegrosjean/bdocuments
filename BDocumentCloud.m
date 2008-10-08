@@ -63,20 +63,27 @@
 
 - (NSArray *)GETDocuments {
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:serviceRootURLString]];
+	NSHTTPURLResponse *response;
 	NSData *responseData;
 	NSError *error = nil;
 	
-	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:NULL error:&error]) {
+	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error]) {
 		NSString *responseBody = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 		NSArray *documents = [[[SBJSON alloc] init] objectWithString:responseBody error:&error];
 		
 		if (documents) {
 			return documents;
 		} else {
-			BLogError([error description]);
+			if (error)
+				BLogError([error description]);
+			else
+				BLogError([NSString stringWithFormat:@"failed with error code %i", [response statusCode]]);
 		}
 	} else {
-		BLogError([error description]);
+		if (error)
+			BLogError([error description]);
+		else
+			BLogError([NSString stringWithFormat:@"failed with error code %i", [response statusCode]]);
 	}
 	
 	return nil;
@@ -95,7 +102,10 @@
 	if (!error && [response statusCode] == 201) { // created
 		return [[[response allHeaderFields] objectForKey:@"Location"] lastPathComponent];
 	} else {
-		BLogError([error description]);
+		if (error)
+			BLogError([error description]);
+		else
+			BLogError([NSString stringWithFormat:@"failed with error code %i", [response statusCode]]);
 	}
 	
 	return nil;
@@ -116,7 +126,10 @@
 		NSArray *patchesReport = [[[SBJSON alloc] init] objectWithString:responseBody error:&error];
 		return patchesReport;
 	} else {
-		BLogError([error description]);
+		if (error)
+			BLogError([error description]);
+		else
+			BLogError([NSString stringWithFormat:@"failed with error code %i", [response statusCode]]);
 	}
 	
 	return nil;
@@ -124,15 +137,19 @@
 
 - (NSDictionary *)GETDocumentForKey:(NSString *)key {
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", serviceRootURLString, key]]];
+	NSHTTPURLResponse *response;
 	NSData *responseData;
 	NSError *error = nil;
 	
-	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:NULL error:&error]) {
+	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error]) {
 		NSString *responseBody = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 		NSDictionary *document = [[[SBJSON alloc] init] objectWithString:responseBody error:&error];
 		return document;
 	} else {
-		BLogError([error description]);
+		if (error)
+			BLogError([error description]);
+		else
+			BLogError([NSString stringWithFormat:@"failed with error code %i", [response statusCode]]);
 	}
 	
 	return nil;

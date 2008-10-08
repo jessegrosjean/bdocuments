@@ -225,12 +225,12 @@
 #pragma mark Lifecycle Callback
 
 - (void)applicationLaunching {
-	BDocumentCloud *cloud = [[BDocumentCloud alloc] init];
+/*	BDocumentCloud *cloud = [[BDocumentCloud alloc] init];
 	cloud.serviceRootURLString = @"http://localhost:8093/documents";
 	NSString *key = [cloud POSTDocument:[NSDictionary dictionaryWithObjectsAndKeys:@"my document name", @"name", @"my document content", @"content", nil]];
 	[cloud PUTDocument:[NSDictionary dictionaryWithObjectsAndKeys:@"my document content with some edits", @"content", nil] forKey:key];
 	[cloud GETDocuments];
-	
+*/	
 	// do nothing, creating instance is all that's needed.
 }
 

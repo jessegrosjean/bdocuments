@@ -26,6 +26,7 @@
 @property(readonly) NSString *processesCachesFolder;
 @property(readonly) NSString *processesApplicationSupportFolder;
 - (NSString *)findSystemFolderType:(NSInteger)folderType forDomain:(NSInteger)domain;
+- (BOOL)createDirectoriesForPath:(NSString *)path;
 
 @end
 

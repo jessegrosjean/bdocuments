@@ -39,38 +39,22 @@ static NSWindowController *currentDocumentWindowController = nil;
 	NSString *process = [[NSProcessInfo processInfo] processName];
 	NSString *cacheFolder = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches"];
 	NSString *processesCacheFolder = [cacheFolder stringByAppendingPathComponent:process];
-	BOOL isDirectory;
-	
-	if (![self fileExistsAtPath:processesCacheFolder isDirectory:&isDirectory]) {
-		if (![self createDirectoryAtPath:processesCacheFolder attributes:nil]) {
-			BLogError(([NSString stringWithFormat:@"failed to create directory %@", processesCacheFolder]));
-			return nil;
-		}
-	} else if (!isDirectory) {
-		BLogError(([NSString stringWithFormat:@"non directory file already exists at %@", processesCacheFolder]));
+	if ([self createDirectoriesForPath:processesCacheFolder]) {
+		return processesCacheFolder;
+	} else {
 		return nil;
 	}
-	
-	return processesCacheFolder;
 }
 
 - (NSString *)processesApplicationSupportFolder {
 	NSString *process = [[NSProcessInfo processInfo] processName];
 	NSString *applicationSupportFolder = [[NSFileManager defaultManager] findSystemFolderType:kApplicationSupportFolderType forDomain:kUserDomain];
 	NSString *processesApplicationSupportFolder = [applicationSupportFolder stringByAppendingPathComponent:process];
-	BOOL isDirectory;
-	
-	if (![self fileExistsAtPath:processesApplicationSupportFolder isDirectory:&isDirectory]) {
-		if (![self createDirectoryAtPath:processesApplicationSupportFolder attributes:nil]) {
-			BLogError(([NSString stringWithFormat:@"failed to create directory %@", processesApplicationSupportFolder]));
-			return nil;
-		}
-	} else if (!isDirectory) {
-		BLogError(([NSString stringWithFormat:@"non directory file already exists at %@", processesApplicationSupportFolder]));
+	if ([self createDirectoriesForPath:processesApplicationSupportFolder]) {
+		return processesApplicationSupportFolder;
+	} else {
 		return nil;
 	}
-	
-	return processesApplicationSupportFolder;
 }
 
 - (NSString *)findSystemFolderType:(NSInteger)folderType forDomain:(NSInteger)domain { 
@@ -88,6 +72,33 @@ static NSWindowController *currentDocumentWindowController = nil;
 	}
 	
 	return result; 
+}
+
+- (BOOL)createDirectoriesForPath:(NSString *)path {
+	NSMutableArray *pathComponents = [NSMutableArray array];
+	
+	while (![path isEqual:@"/"]) {
+		[pathComponents addObject:[path lastPathComponent]];
+		path = [path stringByDeletingLastPathComponent];
+	}
+	
+	BOOL isDirectory;
+	
+	for (NSString *eachPathComponent in [pathComponents reverseObjectEnumerator]) {
+		path = [path stringByAppendingPathComponent:eachPathComponent];
+		
+		if (![self fileExistsAtPath:path isDirectory:&isDirectory]) {
+			if (![self createDirectoryAtPath:path attributes:nil]) {
+				BLogError(([NSString stringWithFormat:@"failed to create directory %@", path]));
+				return NO;
+			}
+		} else if (!isDirectory) {
+			BLogError(([NSString stringWithFormat:@"non directory file already exists at %@", path]));
+			return NO;
+		}
+	}
+	
+	return YES;
 }
 
 @end
