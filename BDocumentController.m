@@ -340,6 +340,7 @@
 + (void)load {
     if (self == [NSApplication class]) {
 		[self replaceMethod:@selector(_handleAEOpen:) withMethod:@selector(BDocumentController_handleAEOpen:)];
+		[self replaceMethod:@selector(_handleAEQuitWithActivating:documentSaving:) withMethod:@selector(BDocumentController_handleAEQuitWithActivating:documentSaving:)];
     }
 }
 
@@ -354,6 +355,14 @@
 	if ([[[NSDocumentController sharedDocumentController] documents] count] == 0 && [[currentEvent paramDescriptorForKeyword:keyAEPropData] typeCodeValue] == keyAELaunchedAsLogInItem) {
 		[[NSDocumentController sharedDocumentController] openLastDocumentWorkspace];
 	}
+}
+
+- (short)BDocumentController_handleAEQuitWithActivating:(BOOL)fp8 documentSaving:(unsigned int)fp12 {
+	// Hack, goal is to call applicationMayTerminateNotification when application starts to quit. Normally this can be done by overriding
+	// [App terminate:], but that doesn't seem to get called when app is quit via applescript, so in that case we need to use this method.
+	NSParameterAssert(_cmd == @selector(_handleAEQuitWithActivating:documentSaving:));
+	[[BDocumentController sharedInstance] applicationMayTerminateNotification];
+	return [self BDocumentController_handleAEQuitWithActivating:fp8 documentSaving:fp12];
 }
 
 @end
