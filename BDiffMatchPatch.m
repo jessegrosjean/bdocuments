@@ -139,10 +139,7 @@
     diffs = [self diffMapText1:text1 text2:text2];
 	
     if (!diffs) {
-		diffs = [NSMutableArray arrayWithObjects:
-				 [BDiff delete:text1],
-				 [BDiff insert:text2],
-				 nil];
+		diffs = [NSMutableArray arrayWithObjects:[BDiff delete:text1], [BDiff insert:text2], nil];
     }
 	
     return diffs;
@@ -204,7 +201,7 @@
 			if (x == [text1 length] && y == [text2 length]) {
 				return [self diffPath1:vMap1 text1:text1 text2:text2];
 			} else if (done) {
-				vMap2 = [vMap2 JsubList:0 : [[footsteps objectForKey:footstep] integerValue] + 1];
+				vMap2 = [vMap2 JsubList:0 :[[footsteps objectForKey:footstep] integerValue] + 1];
 				NSMutableArray *a = [self diffPath1:vMap1 text1:[text1 Jsubstring:0 :x] text2:[text2 Jsubstring:0 :y]];
 				[a addObjectsFromArray:[self diffPath2:vMap2 text1:[text1 Jsubstring:x] text2:[text2 Jsubstring:y]]];
 				return a;
@@ -221,7 +218,7 @@
 				}
 				y = x - k;
 				footstep = [self diffFootprintX:[text1 length] - x y:[text2 length] - y];
-				if (front && ([footsteps objectForKey:footstep] != NULL)) {
+				if (!front && ([footsteps objectForKey:footstep] != NULL)) {
 					done = YES;
 				}
 				if (front) {
@@ -231,7 +228,7 @@
 					x++;
 					y++;
 					footstep = [self diffFootprintX:[text1 length] - x y:[text2 length] - y];
-					if (front && ([footsteps objectForKey:footstep] != NULL)) {
+					if (!front && ([footsteps objectForKey:footstep] != NULL)) {
 						done = YES;
 					}
 					if (front) {
@@ -263,7 +260,7 @@
 			if ([[vMap objectAtIndex:d] containsObject:[self diffFootprintX:x - 1 y:y]]) {
 				x--;
 				if (lastOp == BDiffDelete) {
-					[[path objectAtIndex:0] setText:[NSString stringWithFormat:@"%C%@", [text1 characterAtIndex:x], [[path objectAtIndex:0] text]]];
+					[[[path objectAtIndex:0] text] insertString:[text1 substringWithRange:NSMakeRange(x, 1)] atIndex:0];
 				} else {
 					[path insertObject:[BDiff delete:[text1 Jsubstring:x :x + 1]] atIndex:0];
 				}
@@ -272,7 +269,7 @@
 			} else if ([[vMap objectAtIndex:d] containsObject:[self diffFootprintX:x y:y - 1]]) {
 				y--;
 				if (lastOp == BDiffInsert) {
-					[[path objectAtIndex:0] setText:[NSString stringWithFormat:@"%C%@", [text2 characterAtIndex:y], [[path objectAtIndex:0] text]]];
+					[[[path objectAtIndex:0] text] insertString:[text2 substringWithRange:NSMakeRange(y, 1)] atIndex:0];
 				} else {
 					[path insertObject:[BDiff insert:[text2 Jsubstring:y :y + 1]] atIndex:0];
 				}
@@ -282,7 +279,7 @@
 				x--;
 				y--;
 				if (lastOp == BDiffEqual) {
-					[[path objectAtIndex:0] setText:[NSString stringWithFormat:@"%C%@", [text1 characterAtIndex:x], [[path objectAtIndex:0] text]]];
+					[[[path objectAtIndex:0] text] insertString:[text1 substringWithRange:NSMakeRange(x, 1)] atIndex:0];
 				} else {
 					[path insertObject:[BDiff equal:[text1 Jsubstring:x :x + 1]] atIndex:0];
 				}
@@ -303,7 +300,7 @@
 			if ([[vMap objectAtIndex:d] containsObject:[self diffFootprintX:x - 1 y:y]]) {
 				x--;
 				if (lastOp == BDiffDelete) {
-					[[path lastObject] setText:[NSString stringWithFormat:@"%@%C", [[path lastObject] text], [text1 characterAtIndex:[text1 length] - x - 1]]];
+					[[[path lastObject] text] appendString:[text1 substringWithRange:NSMakeRange([text1 length] - x - 1, 1)]];
 				} else {
 					[path addObject:[BDiff delete:[text1 Jsubstring:[text1 length] - x - 1 :[text1 length] - x]]];
 				}
@@ -312,7 +309,7 @@
 			} else if ([[vMap objectAtIndex:d] containsObject:[self diffFootprintX:x y:y - 1]]) {
 				y--;
 				if (lastOp == BDiffInsert) {
-					[[path lastObject] setText:[NSString stringWithFormat:@"%@%C", [[path lastObject] text], [text2 characterAtIndex:[text2 length] - y - 1]]];
+					[[[path lastObject] text] appendString:[text2 substringWithRange:NSMakeRange([text2 length] - y - 1, 1)]];
 				} else {
 					[path addObject:[BDiff insert:[text2 Jsubstring:[text2 length] - y - 1  :[text2 length] - y]]];
 				}
@@ -322,7 +319,7 @@
 				x--;
 				y--;
 				if (lastOp == BDiffEqual) {
-					[[path lastObject] setText:[NSString stringWithFormat:@"%@%C", [[path lastObject] text], [text1 characterAtIndex:[text1 length] - x - 1]]];
+					[[[path lastObject] text] appendString:[text1 substringWithRange:NSMakeRange([text1 length] - x - 1, 1)]];
 				} else {
 					[path addObject:[BDiff equal:[text1 Jsubstring:[text1 length] - x - 1 :[text1 length] - x]]];
 				}
@@ -428,7 +425,7 @@
 	BOOL changes = NO;
 	NSMutableArray *equalities = [NSMutableArray array];
 	NSString *lastEquality = nil;
-	BArrayIterator *pointer = [[BArrayIterator alloc] initWithArray:diffs];
+	BArrayIterator *pointer = [[[BArrayIterator alloc] initWithArray:diffs] autorelease];
 	NSInteger lengthChanges1 = 0;
 	NSInteger lengthChanges2 = 0;
 	BDiff *thisDiff = [pointer next];
@@ -437,7 +434,7 @@
 			[equalities addObject:thisDiff];
 			lengthChanges1 = lengthChanges2;
 			lengthChanges2 = 0;
-			lastEquality = [thisDiff.text copy];
+			lastEquality = [[thisDiff.text copy] autorelease];
 		} else {
 			lengthChanges2 += [thisDiff.text length];
 			if (lastEquality != nil && ([lastEquality length] <= lengthChanges1) && ([lastEquality length] <= lengthChanges2)) {
@@ -489,16 +486,16 @@
 	NSString *bestEquality1 = nil;
 	NSString *bestEdit = nil;
 	NSString *bestEquality2 = nil;
-	BArrayIterator *pointer = [[BArrayIterator alloc] initWithArray:diffs];
+	BArrayIterator *pointer = [[[BArrayIterator alloc] initWithArray:diffs] autorelease];
 	BDiff *prevDiff = [pointer hasNext] ? [pointer next] : nil;
 	BDiff *thisDiff = [pointer hasNext] ? [pointer next] : nil;
 	BDiff *nextDiff = [pointer hasNext] ? [pointer next] : nil;
 	
 	while (nextDiff) {
 		if (prevDiff.operation == BDiffEqual && nextDiff.operation == BDiffEqual) {
-			equality1 = [prevDiff.text copy];
-			edit = [thisDiff.text copy];
-			equality2 = [nextDiff.text copy];
+			equality1 = [[prevDiff.text copy] autorelease];
+			edit = [[thisDiff.text copy] autorelease];
+			equality2 = [[nextDiff.text copy] autorelease];
 			
 			commonOffset = [self diffCommonSuffixText1:equality1 text2:edit];
 			if (commonOffset != 0) {
@@ -582,7 +579,7 @@
 	BOOL changes = NO;
 	NSMutableArray *equalities = [NSMutableArray array];
 	NSString *lastEquality = nil;
-	BArrayIterator *pointer = [[BArrayIterator alloc] initWithArray:diffs];
+	BArrayIterator *pointer = [[[BArrayIterator alloc] initWithArray:diffs] autorelease];
 	BOOL preIns = NO;
 	BOOL preDel = NO;
 	BOOL postIns = NO;
@@ -595,7 +592,7 @@
 				[equalities addObject:thisDiff];
 				preIns = postIns;
 				preDel = postDel;
-				lastEquality = [thisDiff.text copy];
+				lastEquality = [[thisDiff.text copy] autorelease];
 			} else {
 				[equalities removeAllObjects];
 				lastEquality = nil;
@@ -654,7 +651,7 @@
 
 - (void)diffCleanupMerge:(NSMutableArray *)diffs {
 	[diffs addObject:[BDiff equal:@""]];
-	BArrayIterator *pointer = [[BArrayIterator alloc] initWithArray:diffs];
+	BArrayIterator *pointer = [[[BArrayIterator alloc] initWithArray:diffs] autorelease];
 	NSInteger countDelete = 0;
 	NSInteger countInsert = 0;
 	NSMutableString *textDelete = [NSMutableString string];
@@ -697,15 +694,15 @@
 							} else {
 								[pointer add:[BDiff equal:[textInsert Jsubstring:0 :commonLength]]];
 							}
-							textInsert = [[textInsert Jsubstring:commonLength] mutableCopy];
-							textDelete = [[textDelete Jsubstring:commonLength] mutableCopy];
+							textInsert = [[[textInsert Jsubstring:commonLength] mutableCopy] autorelease];
+							textDelete = [[[textDelete Jsubstring:commonLength] mutableCopy] autorelease];
 						}
 						commonLength = [self diffCommonSuffixText1:textInsert text2:textDelete];
 						if (commonLength != 0) {
 							thisDiff = [pointer next];
 							[thisDiff.text insertString:[textInsert Jsubstring:[textInsert length] - commonLength] atIndex:0];
-							textInsert = [[textInsert Jsubstring:0 :[textInsert length] - commonLength] mutableCopy];
-							textDelete = [[textDelete Jsubstring:0 :[textDelete length] - commonLength] mutableCopy];
+							textInsert = [[[textInsert Jsubstring:0 :[textInsert length] - commonLength] mutableCopy] autorelease];
+							textDelete = [[[textDelete Jsubstring:0 :[textDelete length] - commonLength] mutableCopy] autorelease];
 							[pointer previous];
 						}
 					}
@@ -737,7 +734,7 @@
 	}
 	
 	BOOL changes = NO;
-	pointer = [[BArrayIterator alloc] initWithArray:diffs];
+	pointer = [[[BArrayIterator alloc] initWithArray:diffs] autorelease];
 	BDiff *prevDiff = [pointer hasNext] ? [pointer next] : nil;
 	thisDiff = [pointer hasNext] ? [pointer next] : nil;
 	BDiff *nextDiff = [pointer hasNext] ? [pointer next] : nil;
@@ -801,7 +798,7 @@
 	NSMutableString *html = [NSMutableString string];
 	NSInteger i = 0;
 	for (BDiff *aDiff in diffs) {
-		NSMutableString *text = [aDiff.text mutableCopy];
+		NSMutableString *text = [[aDiff.text mutableCopy] autorelease];
 		[text replaceOccurrencesOfString:@"&" withString:@"&amp;" options:0 range:NSMakeRange(0, [text length])];
 		[text replaceOccurrencesOfString:@"<" withString:@"&lt;" options:0 range:NSMakeRange(0, [text length])];
 		[text replaceOccurrencesOfString:@">" withString:@"&gt;" options:0 range:NSMakeRange(0, [text length])];
@@ -871,7 +868,7 @@
 }
 
 - (NSMutableArray *)diffFromDeltaText1:(NSString *)text1 delta:(NSString *)delta {
-	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	NSNumberFormatter *numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
 	NSMutableArray *diffs = [NSMutableArray array];
 	int pointer = 0;
 	for (NSString *token in [delta componentsSeparatedByString:@"\t"]) {
@@ -899,7 +896,7 @@
 				break;
 			}
 			default:
-			[NSException raise:@"BAD!" format:@""];
+				[NSException raise:@"BAD!" format:@""];
 		}
 	}
 	return diffs;
@@ -1062,7 +1059,7 @@
 	if ([diffs count] == 0) {
 		return patches;
 	}
-	BPatch *patch = [[BPatch alloc] init];
+	BPatch *patch = [[[BPatch alloc] init] autorelease];
 	NSInteger charCount1 = 0;
 	NSInteger charCount2 = 0;
 	NSString *prepatchText = text1;
@@ -1093,7 +1090,7 @@
 					if ([patch.diffs count] != 0) {
 						[self patchAddContext:patch text:prepatchText];
 						[patches addObject:patch];
-						patch = [[BPatch alloc] init];
+						patch = [[[BPatch alloc] init] autorelease];
 						prepatchText = postPatchText;
 					}
 				}
@@ -1117,7 +1114,7 @@
 }
 
 - (NSArray *)patchApply:(NSMutableArray *)patches text:(NSString *)text {
-	NSMutableString *textResult = [text mutableCopy];
+	NSMutableString *textResult = [[text mutableCopy] autorelease];
 	if ([patches count] == 0) {
 		return [NSArray array];
 	}
@@ -1285,7 +1282,7 @@
 					if ([diffText isEqualToString:[[bigpatch.diffs objectAtIndex:0] text]]) {
 						[bigpatch.diffs removeObjectAtIndex:0];
 					} else {
-						[[bigpatch.diffs objectAtIndex:0] setText:[[[bigpatch.diffs objectAtIndex:0] text] Jsubstring:[diffText length]]];
+						[[[bigpatch.diffs objectAtIndex:0] text] replaceCharactersInRange:NSMakeRange(0, [diffText length]) withString:@""];
 					}
 				}
 			}
@@ -1324,7 +1321,7 @@
 }
 
 - (NSArray *)patchFromText:(NSString *)textline {
-	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	NSNumberFormatter *numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
 	NSMutableArray *patches = [NSMutableArray array];
 	if ([textline length] == 0) {
 		return patches;
@@ -1412,7 +1409,7 @@
 }
 
 + (id)diffWithOperationType:(BDiffOperation)operation text:(NSString *)text {
-	return [[BDiff alloc] initWithText:text operation:operation];
+	return [[[BDiff alloc] initWithText:text operation:operation] autorelease];
 }
 
 - (id)initWithText:(NSString *)aText operation:(BDiffOperation)anOperation {
@@ -1421,6 +1418,11 @@
 		operation = anOperation;
 	}
 	return self;
+}
+
+- (void)dealloc {
+	[text release];
+	[super dealloc];
 }
 
 - (BOOL)isEqual:(id)anObject {
@@ -1439,6 +1441,7 @@
 @synthesize text;
 
 - (void)setText:(id)aString {
+	[text autorelease];
 	text = [aString mutableCopy];
 }
 
@@ -1463,6 +1466,11 @@
 		diffs = [[NSMutableArray array] retain];
 	}
 	return self;
+}
+
+- (void)dealloc {
+	[diffs release];
+	[super dealloc];
 }
 
 @synthesize diffs;
@@ -1583,7 +1591,6 @@
 	return [[self stringByReplacingOccurrencesOfString:@"+" withString:@" "] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
 
-
 @end
 
 @implementation NSMutableString (BDocumentsPrivate)
@@ -1612,7 +1619,7 @@
 @implementation NSMutableArray (BDocumentsPrivate)
 
 - (NSMutableArray *)JsubList:(NSInteger)fromIndex :(NSInteger)toIndex {
-	return [[self subarrayWithRange:NSMakeRange(fromIndex, toIndex - fromIndex)] mutableCopy];
+	return [[[self subarrayWithRange:NSMakeRange(fromIndex, toIndex - fromIndex)] mutableCopy] autorelease];
 }
 
 @end
@@ -1621,9 +1628,14 @@
 
 - (id)initWithArray:(NSMutableArray *)anArray {
 	if (self = [super init]) {
-		array = anArray;
+		array = [anArray retain];
 	}
 	return self;
+}
+
+- (void)dealloc {
+	[array release];
+	[super dealloc];
 }
 
 - (BOOL)hasNext {

@@ -7,17 +7,19 @@
 //
 
 @class BDiffMatchPatch;
+
 #import <SenTestingKit/SenTestingKit.h>
 
 @interface BDiffMatchPatchTest : SenTestCase {
-/*
- #define STAssertEquals(...)
+
+	/*
+#define STAssertEquals(...)
 #define STAssertNil(...)
 #define STAssertTrue(...)
 #define STAssertFalse(...)
 #define STAssertEqualObjects(...)
 @interface BDiffMatchPatchTest : NSObject {
- */
+	 */
 	BDiffMatchPatch *dmp;
 }
 	

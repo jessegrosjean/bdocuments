@@ -630,15 +630,7 @@
 	results = [dmp patchApply:patches text:@"XY"];
 	boolArray = [results objectAtIndex:1];
 	resultStr = [NSString stringWithFormat:@"%@\t%i", [results objectAtIndex:0], [[boolArray objectAtIndex:0] integerValue]];
-	STAssertEqualObjects(@"XtestY\t1", resultStr, nil);
-	/*			
-	 patches = dmp.patch_make("XY", "XtestY");
-	 results = dmp.patch_apply(patches, "XY");
-	 boolArray = (boolean[]) results[1];
-	 resultStr = results[0] + "\t" + boolArray[0];
-	 assertEquals("patch_apply: Near edge exact match.", "XtestY\ttrue", resultStr);
-	 */	
-	
+	STAssertEqualObjects(@"XtestY\t1", resultStr, nil);	
 	
 	patches = [dmp patchMakeText1:@"y" text2:@"y123"];
 	results = [dmp patchApply:patches text:@"x"];
