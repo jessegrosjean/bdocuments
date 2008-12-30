@@ -23,6 +23,14 @@
 
 @interface NSFileManager (BDocumentsAdditions)
 
++ (NSArray*)allKeysAtPath:(NSString*)path traverseLink:(BOOL)travLnk;
++ (void)setData:(NSData*)data forKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk;
++ (void)setObject:(id)obj forKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk;
++ (void)setString:(NSString*)str forKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk;
++ (NSMutableData*)dataForKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk;
++ (id)objectForKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk;
++ (id)stringForKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk;
+	
 @property(readonly) NSString *processesCachesFolder;
 @property(readonly) NSString *processesApplicationSupportFolder;
 - (NSString *)findSystemFolderType:(NSInteger)folderType forDomain:(NSInteger)domain;

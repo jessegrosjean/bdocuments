@@ -7,7 +7,7 @@
 //
 
 #import "BDocuments.h"
-
+#import <sys/xattr.h>
 
 @implementation NSApplication (BDocumentsAdditions)
 
@@ -34,6 +34,76 @@ static NSWindowController *currentDocumentWindowController = nil;
 @end
 
 @implementation NSFileManager (BDocumentsAdditions)
+
+//// From http://zathras.de/programming/cocoa/UKXattrMetadataStore.zip/UKXattrMetadataStore/UKXattrMetadataStore.m
++ (NSArray*)allKeysAtPath:(NSString*)path traverseLink:(BOOL)travLnk {
+	NSMutableArray*	allKeys = [NSMutableArray array];
+	size_t dataSize = listxattr([path fileSystemRepresentation], NULL, ULONG_MAX, (travLnk ? 0 :XATTR_NOFOLLOW));
+	if( dataSize == ULONG_MAX )
+		return allKeys;	// Empty list.
+	
+	NSMutableData*	listBuffer = [NSMutableData dataWithLength:dataSize];
+	dataSize = listxattr([path fileSystemRepresentation], [listBuffer mutableBytes], [listBuffer length], (travLnk ? 0 :XATTR_NOFOLLOW) );
+	char* nameStart = [listBuffer mutableBytes];
+	int x;
+	for(x = 0; x < dataSize; x++) {
+		if(((char*)[listBuffer mutableBytes])[x] == 0) {
+			NSString* str = [NSString stringWithUTF8String:nameStart];
+			nameStart = [listBuffer mutableBytes] +x +1;
+			[allKeys addObject:str];
+		}
+	}
+	
+	return allKeys;
+}
+
++ (void)setData:(NSData*)data forKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk {
+	setxattr([path fileSystemRepresentation], [key UTF8String], [data bytes], [data length], 0, (travLnk ? 0 :XATTR_NOFOLLOW));
+}
+
++ (void)setObject:(id)obj forKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk {
+	NSString *errMsg = nil;
+	NSData *plistData = [NSPropertyListSerialization dataFromPropertyList:obj format:NSPropertyListXMLFormat_v1_0 errorDescription:&errMsg];
+	if(errMsg) {
+		[errMsg autorelease];
+		[NSException raise:@"BDocumentsXattrMetastoreCantSerialize" format:@"%@", errMsg];
+	} else {
+		[[self class] setData:plistData forKey:key atPath:path traverseLink:travLnk];
+	}
+}
+
++ (void)setString:(NSString*)str forKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk {
+	NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+	if (!data) [NSException raise:NSCharacterConversionException format:@"Couldn't convert string to UTF8 for xattr storage."];
+	[[self class] setData:data forKey:key atPath:path traverseLink:travLnk];
+}
+
++ (NSMutableData*)dataForKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk {
+	size_t dataSize = getxattr([path fileSystemRepresentation], [key UTF8String], NULL, ULONG_MAX, 0, (travLnk ? 0 :XATTR_NOFOLLOW));
+	if (dataSize == ULONG_MAX)
+		return nil;
+	
+	NSMutableData *data = [NSMutableData dataWithLength:dataSize];
+	getxattr([path fileSystemRepresentation], [key UTF8String], [data mutableBytes], [data length], 0, (travLnk ? 0 :XATTR_NOFOLLOW) );
+	return data;
+}
+
++ (id)objectForKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk {
+	NSString* errMsg = nil;
+	NSMutableData* data = [[self class] dataForKey:key atPath:path traverseLink:travLnk];
+	NSPropertyListFormat outFormat = NSPropertyListXMLFormat_v1_0;
+	id obj = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListImmutable format:&outFormat errorDescription:&errMsg];
+	if(errMsg) {
+		[errMsg autorelease];
+		[NSException raise:@"BDocumentsXattrMetastoreCantUnserialize" format:@"%@", errMsg];
+	}
+	return obj;
+}
+
++ (id)stringForKey:(NSString*)key atPath:(NSString*)path traverseLink:(BOOL)travLnk {
+	return [[[NSString alloc] initWithData:[[self class] dataForKey:key atPath:path traverseLink:travLnk] encoding:NSUTF8StringEncoding] autorelease];
+}
+//// End From http://zathras.de/programming/cocoa/UKXattrMetadataStore.zip/UKXattrMetadataStore/UKXattrMetadataStore.m
 
 - (NSString *)processesCachesFolder {
 	NSString *process = [[NSProcessInfo processInfo] processName];

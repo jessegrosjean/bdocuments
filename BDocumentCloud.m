@@ -7,6 +7,7 @@
 //
 
 #import "BDocumentCloud.h"
+#import "BDiffMatchPatch.h"
 #import "SBJSON.h"
 
 
@@ -58,98 +59,84 @@
 	return URLencodedPOSTBody;
 }
 
+- (id)init {
+	if (self = [super init]) {
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+		NSString *cloud = [fileManager.processesApplicationSupportFolder stringByAppendingPathComponent:@"Cloud"];
+		localDocumentsPath = [cloud stringByAppendingPathComponent:@"Documents"];
+		localDocumentShadowsPath = [cloud stringByAppendingPathComponent:@"Shadows"];
+		if (![fileManager createDirectoriesForPath:localDocumentsPath]) {
+			return nil;
+		}
+		if (![fileManager createDirectoriesForPath:localDocumentShadowsPath]) {
+			return nil;
+		}
+	}
+	return self;
+}
+
 @synthesize serviceRootURLString;
 @synthesize localRootURLString;
+@synthesize localDocumentsPath;
+@synthesize localDocumentShadowsPath;
 
-- (NSArray *)GETDocuments {
+- (NSArray *)GETDocuments:(NSError **)error {
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:serviceRootURLString]];
 	NSHTTPURLResponse *response;
 	NSData *responseData;
-	NSError *error = nil;
 	
-	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error]) {
+	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error]) {
 		NSString *responseBody = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-		NSArray *documents = [[[SBJSON alloc] init] objectWithString:responseBody error:&error];
-		
-		if (documents) {
-			return documents;
-		} else {
-			if (error)
-				BLogError([error description]);
-			else
-				BLogError([NSString stringWithFormat:@"failed with error code %i", [response statusCode]]);
-		}
-	} else {
-		if (error)
-			BLogError([error description]);
-		else
-			BLogError([NSString stringWithFormat:@"failed with error code %i", [response statusCode]]);
+		NSArray *documents = [[[SBJSON alloc] init] objectWithString:responseBody error:error];
+		return documents;
 	}
 	
 	return nil;
 }
 
-- (NSString *)POSTDocument:(NSDictionary *)document {
+- (NSDictionary *)POSTDocument:(NSDictionary *)document error:(NSError **)error {
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:serviceRootURLString]];	
 	NSHTTPURLResponse *response;
-	NSError *error = nil;
 
 	[request setHTTPMethod:@"POST"];
 	[request setHTTPBody:[[BDocumentCloud URLencodedPOSTBody:document] dataUsingEncoding:NSUTF8StringEncoding]];
 
-	[NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-
-	if (!error && [response statusCode] == 201) { // created
-		return [[[response allHeaderFields] objectForKey:@"Location"] lastPathComponent];
-	} else {
-		if (error)
-			BLogError([error description]);
-		else
-			BLogError([NSString stringWithFormat:@"failed with error code %i", [response statusCode]]);
+	if (NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error]) {
+		return [[[[SBJSON alloc] init] objectWithString:[[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] autorelease] error:error] autorelease];
 	}
+	
+//	if (*error != nil && [response statusCode] == 201) { // created
+//		return [[[response allHeaderFields] objectForKey:@"Location"] lastPathComponent];
+//	}
 	
 	return nil;
 }
 
-- (NSArray *)PUTDocument:(NSDictionary *)document forKey:(NSString *)key {
+- (NSDictionary *)PUTDocument:(NSDictionary *)document forKey:(NSString *)key error:(NSError **)error {
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", serviceRootURLString, key]]];
 	NSHTTPURLResponse *response;
 	NSData *responseData;
-	NSError *error = nil;
 	
 	[request setHTTPMethod:@"PUT"];
 	[request setHTTPBody:[[BDocumentCloud URLencodedPOSTBody:document] dataUsingEncoding:NSUTF8StringEncoding]];
 	[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
 
-	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error]) {
-		NSString *responseBody = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-		NSArray *patchesReport = [[[SBJSON alloc] init] objectWithString:responseBody error:&error];
-		return patchesReport;
-	} else {
-		if (error)
-			BLogError([error description]);
-		else
-			BLogError([NSString stringWithFormat:@"failed with error code %i", [response statusCode]]);
+	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error]) {
+		return [[[[SBJSON alloc] init] objectWithString:[[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] autorelease] error:error] autorelease];
 	}
 	
 	return nil;
 }
 
-- (NSDictionary *)GETDocumentForKey:(NSString *)key {
+- (NSDictionary *)GETDocumentForKey:(NSString *)key error:(NSError **)error {
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", serviceRootURLString, key]]];
 	NSHTTPURLResponse *response;
 	NSData *responseData;
-	NSError *error = nil;
 	
-	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error]) {
+	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error]) {
 		NSString *responseBody = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-		NSDictionary *document = [[[SBJSON alloc] init] objectWithString:responseBody error:&error];
+		NSDictionary *document = [[[SBJSON alloc] init] objectWithString:responseBody error:error];
 		return document;
-	} else {
-		if (error)
-			BLogError([error description]);
-		else
-			BLogError([NSString stringWithFormat:@"failed with error code %i", [response statusCode]]);
 	}
 	
 	return nil;
@@ -157,27 +144,134 @@
 
 #pragma mark Sync
 
-- (void)sync {
-	/*	NSFileManager *fileManager = [NSFileManager defaultManager];
-	 NSString *applicationSupport = fileManager.processesApplicationSupportFolder;
-	 NSString *cloud = [applicationSupport stringByAppendingPathComponent:@"Cloud"];
-	 NSString *localMetaDataPath = [cloud stringByAppendingPathComponent:@"metadata.plist"];
-	 NSString *loaclDocumentsPath = [cloud stringByAppendingPathComponent:@"Documents"];
-	 NSString *localShadowsPath = [cloud stringByAppendingPathComponent:@"Shadows"];
-	 
-	 NSArray *localMetadata = [NSDictionary dictionaryWithContentsOfFile:localMetaDataPath];*/
-	/*
-	 NSError *error = nil;
-	 NSData *responseData;
-	 NSString *responseBody;
-	 
-	 NSMutableURLRequest *documentsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://localhost:8093/documents"]];
-	 
-	 if (responseData = [NSURLConnection sendSynchronousRequest:documentsRequest returningResponse:NULL error:&error]) {
-	 responseBody = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-	 }
-	 
-	 NSArray *cloudMetaData = nil; // fetch from server.
+- (BOOL)replaceLocalDocument:(NSString *)oldDocumentPath withDocument:(NSDictionary *)document error:(NSError **)error {
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	
+	NSString *documentID = [[document objectForKey:@"id"] description];
+	NSString *name = [document objectForKey:@"name"];
+	NSString *content = [document objectForKey:@"content"];
+	NSNumber *version = [document objectForKey:@"version"];
+	//		NSDate *created = [document objectForKey:@"created"];
+	//		NSDate *modified = [document objectForKey:@"modified"];
+	
+	if (!name) {
+		name = [oldDocumentPath lastPathComponent];
+	}
+
+	if (!content) {
+		content = [NSString stringWithContentsOfFile:oldDocumentPath encoding:NSUTF8StringEncoding error:error];
+	}
+	
+	if (oldDocumentPath) {
+		if (![fileManager removeFileAtPath:oldDocumentPath handler:nil]) {
+			BLogError(@"error");
+		}
+	}
+	
+	NSString *documentPath = [localDocumentsPath stringByAppendingPathComponent:name];
+	
+	if ([content writeToFile:documentPath atomically:YES encoding:NSUTF8StringEncoding error:error]) {
+		[NSFileManager setString:documentID forKey:@"BDocumentID" atPath:documentPath traverseLink:YES];
+		[NSFileManager setString:[version description] forKey:@"BDocumentVersion" atPath:documentPath traverseLink:YES];
+		
+		NSString *documentShadowPath = [localDocumentShadowsPath stringByAppendingPathComponent:documentID];
+		[fileManager removeFileAtPath:documentShadowPath handler:nil];
+		if (![fileManager copyPath:documentPath toPath:documentShadowPath handler:nil]) {
+			return NO;
+		}
+	} else {
+		return NO;
+	}
+	
+	return YES;
+}
+
+- (void)sync:(NSError **)bigError {
+	NSError *error = nil;
+	BDiffMatchPatch *dmp = [[[BDiffMatchPatch alloc] init] autorelease];
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+
+	NSMutableDictionary *serverDocumentsByID = [NSMutableDictionary dictionary];
+	NSArray *serverDocumentsListing = [self GETDocuments:&error];
+
+	if (!serverDocumentsListing) {
+		if (error) {
+			BLogError([error description]);
+		} else {
+			BLogError(@"Failed GETDocuments:");
+		}
+		return;
+	}
+	
+	for (NSDictionary *eachDocuent in serverDocumentsListing) {
+		[serverDocumentsByID setObject:eachDocuent forKey:[[eachDocuent objectForKey:@"location"] lastPathComponent]];
+	}
+	
+	NSArray *localDocuments = [fileManager contentsOfDirectoryAtPath:localDocumentsPath error:&error];
+	if (!localDocuments) {
+		if (error) {
+			BLogError([error description]);
+		} else {
+			BLogError(@"Failed contentsOfDirectoryAtPath:");
+		}
+		return;
+	}
+
+	for (NSString *each in localDocuments) {
+		if ([each characterAtIndex:0] != '.') {
+			NSString *eachLocalPath = [localDocumentsPath stringByAppendingPathComponent:each];
+			NSString *eachLocalContent = [NSString stringWithContentsOfFile:eachLocalPath encoding:NSUTF8StringEncoding error:&error];
+			NSString *eachID = [NSFileManager stringForKey:@"BDocumentID" atPath:eachLocalPath traverseLink:YES];
+			NSString *eachVersion = [NSFileManager stringForKey:@"BDocumentVersion" atPath:eachLocalPath traverseLink:YES];
+			
+			if (eachID != nil && [eachID length] > 0) {
+				// Document has been synced before, so compare against shadow
+				NSString *eachLocalShadowPath = [localDocumentShadowsPath stringByAppendingPathComponent:eachID];
+				NSString *eachLocalShadowContent = [NSString stringWithContentsOfFile:eachLocalShadowPath encoding:NSUTF8StringEncoding error:&error];
+				
+				if (![eachLocalContent isEqualToString:eachLocalShadowContent]) {
+					// Push local changes.
+					NSMutableArray *patches = [dmp patchMakeText1:eachLocalShadowContent text2:eachLocalContent];
+					NSString *patch = [dmp patchToText:patches];
+					NSDictionary *putResults = [self PUTDocument:[NSDictionary dictionaryWithObjectsAndKeys:patch, @"patch", eachVersion, @"version", nil] forKey:eachID error:&error];
+					NSArray *results = [putResults objectForKey:@"results"];
+					for (NSNumber *each in results) {
+						if (![each boolValue]) {
+							BLogError(@"failed to apply all patches");
+						}
+					}
+					
+					if (![self replaceLocalDocument:eachLocalPath withDocument:putResults error:&error]) {
+						BLogError(@"error");
+					}
+				} else {
+					// Pull server changes if needed.
+					NSString *serverVersion = [[[serverDocumentsByID objectForKey:eachID] objectForKey:@"version"] description];
+					if (![eachVersion isEqualToString:serverVersion]) {
+						NSDictionary *eachServerDocument = [self GETDocumentForKey:eachID error:&error];
+						if (![self replaceLocalDocument:eachLocalPath withDocument:eachServerDocument error:&error]) {
+							BLogError(@"error");
+						}
+					}
+				}
+				[serverDocumentsByID removeObjectForKey:eachID];
+			} else {
+				// New document, post to server, create shadow.
+				NSDictionary *document = [self POSTDocument:[NSMutableDictionary dictionaryWithObjectsAndKeys:each, @"name", eachLocalContent, @"content", nil] error:&error];
+				if (![self replaceLocalDocument:eachLocalPath withDocument:document error:&error]) {
+					BLogError(@"error");
+				}
+			}
+		}
+	}
+	
+	for (NSString *eachKey in [serverDocumentsByID keyEnumerator]) {
+		NSDictionary *eachServerDocument = [self GETDocumentForKey:eachKey error:&error];
+		if (![self replaceLocalDocument:nil withDocument:eachServerDocument error:&error]) {
+			BLogError(@"error");
+		}
+	}
+	
 	 
 	 // for local document
 	 // if shadow exists
@@ -205,9 +299,6 @@
 	 // download cloud document.
 	 // replace local and shodow
 	 // update localmetadata
-	 
-	 //[fileManager directoryContentsAtPath:cloudDocuments]
-	 */
 }
 
 @end
