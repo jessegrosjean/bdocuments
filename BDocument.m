@@ -9,6 +9,7 @@
 #import "BDocument.h"
 #import "BDocuments.h"
 #import "BDocumentWindowController.h"
+#import "BDocumentDifferencesWindowController.h"
 
 
 @implementation BDocument
@@ -191,7 +192,46 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	return [super displayName];
 }
 
-#pragma mark External File Changed Notification
+#pragma mark Reading and Writing
+
+- (IBAction)showUnsavedChanges:(id)sender {
+	NSWindowController *windowController = [[self windowControllers] lastObject];
+	NSWindow *window = [windowController window];
+	NSURL *fileURL = [self fileURL];
+	NSString *messageText = nil;
+	NSString *informativeTextText = @"";
+	
+	if (fileURL) {
+		NSString *unsavedText = [self documentDataAsText];
+		NSString *savedText = [NSString stringWithContentsOfFile:[fileURL path] encoding:NSUTF8StringEncoding error:nil];
+		
+		if ([savedText isEqualToString:unsavedText]) {
+			messageText = BLocalizedString(@"There are no differences between your document and the version saved on disk", nil);
+		} else {
+			BDocumentDifferencesWindowController *differencesWindowController = [[BDocumentDifferencesWindowController alloc] initWithText1:savedText text2:unsavedText];
+			[NSApp beginSheet:[differencesWindowController window] modalForWindow:window modalDelegate:self didEndSelector:@selector(showUnsavedChangesSheetDidEnd:returnCode:contextInfo:) contextInfo:nil];
+			return;
+		}
+	} else {
+		messageText = BLocalizedString(@"Your document has not been saved yet", nil);
+	}
+	
+	NSAlert *alert = [NSAlert alertWithMessageText:messageText defaultButton:BLocalizedString(@"OK", nil) alternateButton:nil otherButton:nil informativeTextWithFormat:informativeTextText];
+	[alert beginSheetModalForWindow:window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+}
+
+- (void)showUnsavedChangesSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo {
+	[sheet orderOut:self];
+}
+
+- (NSString *)documentDataAsText {
+	return nil;
+}
+
+- (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError {
+	[BDocument storeDocumentUserDefaults:[self documentUserDefaults] forDocumentURL:[self fileURL]];
+	return [[self documentDataAsText] writeToURL:absoluteURL atomically:YES encoding:NSUTF8StringEncoding error:outError];
+}
 
 - (void)readChangedFileFromDisk:(NSDate *)newModificationDate {
 	NSError *error = nil;

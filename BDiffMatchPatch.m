@@ -806,13 +806,13 @@
 		
 		switch (aDiff.operation) {
 			case BDiffInsert:
-				[html appendFormat:@"<INS STYLE=\"background:#E6FFE6;\" TITLE=\"i=%i\">%@</INS>", i, text];
+				[html appendFormat:@"<ins STYLE=\"background:#E6FFE6;\" TITLE=\"i=%i\">%@</ins>", i, text];
 				break;
 			case BDiffDelete:
-				[html appendFormat:@"<DEL STYLE=\"background:#FFE6E6;\" TITLE=\"i=%i\">%@</DEL>", i, text];
+				[html appendFormat:@"<del STYLE=\"background:#FFE6E6;\" TITLE=\"i=%i\">%@</del>", i, text];
 				break;
 			case BDiffEqual:
-				[html appendFormat:@"<SPAN TITLE=\"i=%i\">%@</SPAN>", i, text];
+				[html appendFormat:@"<span TITLE=\"i=%i\">%@</span>", i, text];
 				break;
 		}
 		if (aDiff.operation != BDiffDelete) {
@@ -820,6 +820,35 @@
 		}
 	}
 	return html;
+}
+
+- (NSAttributedString *)diffPrettyAttributedString:(NSArray *)diffs {
+	NSColor *insertBackgroundColor = [NSColor colorWithDeviceRed:0.8 green:1.0 blue:0.8 alpha:1.0];
+	NSColor *deleteBackgroundColor = [NSColor colorWithDeviceRed:1.0 green:0.8 blue:0.8 alpha:1.0];	
+	NSMutableAttributedString *attributedString = [[[NSMutableAttributedString alloc] init] autorelease];
+	NSInteger i = 0;
+	for (BDiff *aDiff in diffs) {
+		NSDictionary *attributes = nil;
+		switch (aDiff.operation) {
+			case BDiffInsert:
+				attributes = [NSDictionary dictionaryWithObjectsAndKeys:insertBackgroundColor, NSBackgroundColorAttributeName, [NSNumber numberWithInteger:NSUnderlineStyleSingle], NSUnderlineStyleAttributeName, nil];
+				break;
+			case BDiffDelete:
+				attributes = [NSDictionary dictionaryWithObjectsAndKeys:deleteBackgroundColor, NSBackgroundColorAttributeName, [NSNumber numberWithInteger:NSUnderlineStyleSingle], NSStrikethroughStyleAttributeName, nil];
+				break;
+			case BDiffEqual:
+//				attributes = [NSDictionary dictionaryWithObjectsAndKeys:[NSColor grayColor], NSForegroundColorAttributeName, nil];
+				break;
+		}
+		if (aDiff.operation != BDiffDelete) {
+			i += [aDiff.text length];
+		}		
+		[attributedString appendAttributedString:[[[NSAttributedString alloc] initWithString:aDiff.text attributes:attributes] autorelease]];
+	}
+	
+	[attributedString addAttribute:NSFontAttributeName value:[NSFont userFixedPitchFontOfSize:10] range:NSMakeRange(0, [attributedString length])];
+	
+	return attributedString;
 }
 
 - (NSString *)diffText1:(NSArray *)diffs {

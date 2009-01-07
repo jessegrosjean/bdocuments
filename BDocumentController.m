@@ -232,8 +232,8 @@
 //	[cloud GETDocuments];
 	
 	// do nothing, creating instance is all that's needed.
-	NSError *error;
-	[cloud sync:&error];
+//	NSError *error;
+//	[cloud sync:&error];
 }
 
 - (void)applicationMayTerminateNotification {

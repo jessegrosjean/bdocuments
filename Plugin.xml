@@ -8,6 +8,7 @@
 
 	<requirement bundle="com.blocks.Blocks" version="1.0.0" />
 	<requirement bundle="com.blocks.BLifecycle" version="1.0.0" />
+	<requirement bundle="com.blocks.BUserInterface" version="1.0.0" />
 
 	<extension-point id="documentControllerDelegate" label="Document Controller Delegate" />
 	<extension-point id="documentDefaultWindowControllersFactory" label="Document Default Window Controlers Factory" />
@@ -18,4 +19,10 @@
 		<applicationCancledTerminateNotification class="BDocumentController sharedInstance" />
 		<applicationWillTerminate class="BDocumentController sharedInstance" />
 	</extension>
+	
+	<extension point="com.blocks.BUserInterface.menus" processOrder="2">
+		<menu id="com.blocks.BUserInterface.menus.main.file">
+			<menuitem title="%Show Unsaved Changes..." id="showUnsavedChanges" location="group:closeGroup" action="showUnsavedChanges:" />
+		</menu>
+	</extension>	
 </plugin>

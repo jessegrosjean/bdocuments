@@ -37,8 +37,10 @@
 @property(readonly) NSAppleEventDescriptor *externalSender;
 @property(readonly) NSAppleEventDescriptor *externalToken;
 
-#pragma mark External File Modificed Notification
+#pragma mark Reading and Writing
 
+- (IBAction)showUnsavedChanges:(id)sender;
+@property(readonly) NSString *documentDataAsText;
 - (void)fileWasChangedExternallyByAnotherApplication:(NSDate *)newModificationDate;
 
 @end
