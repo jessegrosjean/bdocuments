@@ -24,7 +24,7 @@
 @property(readonly) NSString *localDocumentsPath;
 @property(readonly) NSString *localDocumentShadowsPath;
 
-- (NSArray *)GETDocuments:(NSError **)error;
+- (NSDictionary *)GETDocuments:(NSError **)error;
 - (NSDictionary *)POSTDocument:(NSDictionary *)document error:(NSError **)error;
 - (NSDictionary *)PUTDocument:(NSDictionary *)document forKey:(NSString *)key error:(NSError **)error;
 - (NSDictionary *)GETDocumentForKey:(NSString *)key error:(NSError **)error;

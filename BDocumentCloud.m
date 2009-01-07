@@ -80,15 +80,19 @@
 @synthesize localDocumentsPath;
 @synthesize localDocumentShadowsPath;
 
-- (NSArray *)GETDocuments:(NSError **)error {
+- (NSDictionary  *)GETDocuments:(NSError **)error {
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:serviceRootURLString]];
 	NSHTTPURLResponse *response;
 	NSData *responseData;
 	
 	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error]) {
-		NSString *responseBody = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-		NSArray *documents = [[[SBJSON alloc] init] objectWithString:responseBody error:error];
-		return documents;
+		NSString *responseBody = [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] autorelease];
+		NSArray *documents = [[[[SBJSON alloc] init] objectWithString:responseBody error:error] autorelease];
+		NSMutableDictionary *documentsByID = [NSMutableDictionary dictionary];
+		for (NSDictionary *each in documents) {
+			[documentsByID setObject:each forKey:[[each objectForKey:@"location"] lastPathComponent]];
+		}
+		return documentsByID;
 	}
 	
 	return nil;
@@ -97,11 +101,12 @@
 - (NSDictionary *)POSTDocument:(NSDictionary *)document error:(NSError **)error {
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:serviceRootURLString]];	
 	NSHTTPURLResponse *response;
+	NSData *responseData;
 
 	[request setHTTPMethod:@"POST"];
 	[request setHTTPBody:[[BDocumentCloud URLencodedPOSTBody:document] dataUsingEncoding:NSUTF8StringEncoding]];
 
-	if (NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error]) {
+	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error]) {
 		return [[[[SBJSON alloc] init] objectWithString:[[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] autorelease] error:error] autorelease];
 	}
 	
@@ -142,163 +147,145 @@
 	return nil;
 }
 
+- (BOOL)DELETEDocumentForKey:(NSString *)key error:(NSError **)error {
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", serviceRootURLString, key]]];
+	NSHTTPURLResponse *response;
+	NSData *responseData;
+
+	[request setHTTPMethod:@"DELETE"];
+
+	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error]) {
+		return YES;
+	}
+	
+	return NO;
+}
+
 #pragma mark Sync
 
-- (BOOL)replaceLocalDocument:(NSString *)oldDocumentPath withDocument:(NSDictionary *)document error:(NSError **)error {
+- (BOOL)updateLocalWithServerState:(NSDictionary *)document error:(NSError **)error {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	
 	NSString *documentID = [[document objectForKey:@"id"] description];
 	NSString *name = [document objectForKey:@"name"];
 	NSString *content = [document objectForKey:@"content"];
 	NSNumber *version = [document objectForKey:@"version"];
-	//		NSDate *created = [document objectForKey:@"created"];
-	//		NSDate *modified = [document objectForKey:@"modified"];
-	
-	if (!name) {
-		name = [oldDocumentPath lastPathComponent];
+		
+	if (!documentID) {
+		documentID = [[document objectForKey:@"location"] lastPathComponent];
 	}
-
-	if (!content) {
-		content = [NSString stringWithContentsOfFile:oldDocumentPath encoding:NSUTF8StringEncoding error:error];
-	}
-	
-	if (oldDocumentPath) {
-		if (![fileManager removeFileAtPath:oldDocumentPath handler:nil]) {
-			BLogError(@"error");
-		}
-	}
-	
-	NSString *documentPath = [localDocumentsPath stringByAppendingPathComponent:name];
+		
+	NSString *documentPath = [localDocumentsPath stringByAppendingPathComponent:documentID];
+	NSString *documentShadowPath = [localDocumentShadowsPath stringByAppendingPathComponent:documentID];
 	
 	if ([content writeToFile:documentPath atomically:YES encoding:NSUTF8StringEncoding error:error]) {
 		[NSFileManager setString:documentID forKey:@"BDocumentID" atPath:documentPath traverseLink:YES];
+		[NSFileManager setString:name forKey:@"BDocumentName" atPath:documentPath traverseLink:YES];
 		[NSFileManager setString:[version description] forKey:@"BDocumentVersion" atPath:documentPath traverseLink:YES];
 		
-		NSString *documentShadowPath = [localDocumentShadowsPath stringByAppendingPathComponent:documentID];
 		[fileManager removeFileAtPath:documentShadowPath handler:nil];
+		
 		if (![fileManager copyPath:documentPath toPath:documentShadowPath handler:nil]) {
+			BLogError(@"Failed to update local shadow document at path %@", documentShadowPath);
 			return NO;
 		}
 	} else {
+		BLogError(@"Failed to update local document at path %@", documentPath);
 		return NO;
 	}
 	
 	return YES;
 }
 
-- (void)sync:(NSError **)bigError {
-	NSError *error = nil;
-	BDiffMatchPatch *dmp = [[[BDiffMatchPatch alloc] init] autorelease];
+- (void)sync:(NSError **)error {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
+	BDiffMatchPatch *diffMatchPatch = [[[BDiffMatchPatch alloc] init] autorelease];
 
-	NSMutableDictionary *serverDocumentsByID = [NSMutableDictionary dictionary];
-	NSArray *serverDocumentsListing = [self GETDocuments:&error];
-
-	if (!serverDocumentsListing) {
-		if (error) {
-			BLogError([error description]);
-		} else {
-			BLogError(@"Failed GETDocuments:");
-		}
-		return;
-	}
-	
-	for (NSDictionary *eachDocuent in serverDocumentsListing) {
-		[serverDocumentsByID setObject:eachDocuent forKey:[[eachDocuent objectForKey:@"location"] lastPathComponent]];
-	}
-	
-	NSArray *localDocuments = [fileManager contentsOfDirectoryAtPath:localDocumentsPath error:&error];
+	NSArray *localDocuments = [fileManager contentsOfDirectoryAtPath:localDocumentsPath error:error];
 	if (!localDocuments) {
-		if (error) {
-			BLogError([error description]);
-		} else {
-			BLogError(@"Failed contentsOfDirectoryAtPath:");
-		}
 		return;
 	}
-
+	
+	NSMutableDictionary *serverDocumentsByID = [[[self GETDocuments:error] mutableCopy] autorelease];
+	if (!serverDocumentsByID) {
+		return;
+	}
+	
 	for (NSString *each in localDocuments) {
 		if ([each characterAtIndex:0] != '.') {
 			NSString *eachLocalPath = [localDocumentsPath stringByAppendingPathComponent:each];
-			NSString *eachLocalContent = [NSString stringWithContentsOfFile:eachLocalPath encoding:NSUTF8StringEncoding error:&error];
-			NSString *eachID = [NSFileManager stringForKey:@"BDocumentID" atPath:eachLocalPath traverseLink:YES];
-			NSString *eachVersion = [NSFileManager stringForKey:@"BDocumentVersion" atPath:eachLocalPath traverseLink:YES];
+			NSString *eachLocalContent = [NSString stringWithContentsOfFile:eachLocalPath encoding:NSUTF8StringEncoding error:error];
+			NSString *eachLocalID = [NSFileManager stringForKey:@"BDocumentID" atPath:eachLocalPath traverseLink:YES];
+			NSString *eachLocalVersion = [NSFileManager stringForKey:@"BDocumentVersion" atPath:eachLocalPath traverseLink:YES];
+//			NSString *eachLocalName = [NSFileManager stringForKey:@"BDocumentName" atPath:eachLocalPath traverseLink:YES];
+			NSString *eachLocalShadowPath = [localDocumentShadowsPath stringByAppendingPathComponent:eachLocalID];
+			NSString *eachLocalShadowContent = [NSString stringWithContentsOfFile:eachLocalShadowPath encoding:NSUTF8StringEncoding error:error];
 			
-			if (eachID != nil && [eachID length] > 0) {
-				// Document has been synced before, so compare against shadow
-				NSString *eachLocalShadowPath = [localDocumentShadowsPath stringByAppendingPathComponent:eachID];
-				NSString *eachLocalShadowContent = [NSString stringWithContentsOfFile:eachLocalShadowPath encoding:NSUTF8StringEncoding error:&error];
-				
-				if (![eachLocalContent isEqualToString:eachLocalShadowContent]) {
-					// Push local changes.
-					NSMutableArray *patches = [dmp patchMakeText1:eachLocalShadowContent text2:eachLocalContent];
-					NSString *patch = [dmp patchToText:patches];
-					NSDictionary *putResults = [self PUTDocument:[NSDictionary dictionaryWithObjectsAndKeys:patch, @"patch", eachVersion, @"version", nil] forKey:eachID error:&error];
-					NSArray *results = [putResults objectForKey:@"results"];
-					for (NSNumber *each in results) {
-						if (![each boolValue]) {
-							BLogError(@"failed to apply all patches");
-						}
+			if ([eachLocalID length] > 0) {
+				NSString *serverVersion = [[[serverDocumentsByID objectForKey:eachLocalID] objectForKey:@"version"] description];
+				if (!serverVersion) {
+					if (![eachLocalContent isEqualToString:eachLocalShadowContent]) {
+						BLogError(@"Local changes to document are being lost because document was deleted from server %@", eachLocalID);
 					}
-					
-					if (![self replaceLocalDocument:eachLocalPath withDocument:putResults error:&error]) {
-						BLogError(@"error");
+					if (![fileManager removeItemAtPath:eachLocalPath error:error]) {
+						BLogError(@"Failed to remove local document deleted from server %@", eachLocalPath);
+					}
+					if (![fileManager removeItemAtPath:eachLocalShadowPath error:error]) {
+						BLogError(@"Failed to remove local shadow document deleted from server %@", eachLocalShadowPath);							
 					}
 				} else {
-					// Pull server changes if needed.
-					NSString *serverVersion = [[[serverDocumentsByID objectForKey:eachID] objectForKey:@"version"] description];
-					if (![eachVersion isEqualToString:serverVersion]) {
-						NSDictionary *eachServerDocument = [self GETDocumentForKey:eachID error:&error];
-						if (![self replaceLocalDocument:eachLocalPath withDocument:eachServerDocument error:&error]) {
-							BLogError(@"error");
+					if (![eachLocalContent isEqualToString:eachLocalShadowContent]) {
+						NSString *patch = [diffMatchPatch patchToText:[diffMatchPatch patchMakeText1:eachLocalShadowContent text2:eachLocalContent]];
+						NSMutableDictionary *patchResultsDocument = [[[self PUTDocument:[NSDictionary dictionaryWithObjectsAndKeys:patch, @"patch", eachLocalVersion, @"version", nil] forKey:eachLocalID error:error] mutableCopy] autorelease];
+						if (patchResultsDocument) {
+							NSArray *results = [patchResultsDocument objectForKey:@"results"];
+							for (NSNumber *each in results) {
+								if (![each boolValue]) {
+									BLogError(@"Failed to fully apply patches to document %@", eachLocalID); // Create backup and allow user to manually resolve conflict.
+								}
+							}
+							
+							[patchResultsDocument setObject:eachLocalID forKey:@"id"];
+							if (![patchResultsDocument objectForKey:@"content"]) {
+								[patchResultsDocument setObject:eachLocalContent forKey:@"content"];
+							}
+							
+							if (![self updateLocalWithServerState:patchResultsDocument error:error]) {
+								BLogError(@"Failed to update local copy of document from server %@", eachLocalID); // Bad case... server is now good, but not client.
+							}
+						} else {
+							BLogError(@"Failed to apply patch to document %@", eachLocalID);
+						}
+					} else {
+						if (![eachLocalVersion isEqualToString:serverVersion]) {
+							NSDictionary *eachServerDocument = [self GETDocumentForKey:eachLocalID error:error];
+							if (!eachServerDocument) {
+								BLogError(@"Failed to pull update for document %@", eachLocalID);
+							} else if (![self updateLocalWithServerState:eachServerDocument error:error]) {
+								BLogError(@"Failed to update local copy of document from server %@", eachLocalID);
+							}
 						}
 					}
+					[serverDocumentsByID removeObjectForKey:eachLocalID];
 				}
-				[serverDocumentsByID removeObjectForKey:eachID];
 			} else {
-				// New document, post to server, create shadow.
-				NSDictionary *document = [self POSTDocument:[NSMutableDictionary dictionaryWithObjectsAndKeys:each, @"name", eachLocalContent, @"content", nil] error:&error];
-				if (![self replaceLocalDocument:eachLocalPath withDocument:document error:&error]) {
-					BLogError(@"error");
+				NSDictionary *document = [self POSTDocument:[NSMutableDictionary dictionaryWithObjectsAndKeys:each, @"name", eachLocalContent, @"content", nil] error:error];
+				if (!document) {
+					BLogError(@"Failed to post local document to server %@", eachLocalPath);
+				} else if (![self updateLocalWithServerState:document error:error]) {
+					BLogError(@"Failed to update local copy of document from server %@", eachLocalPath);
 				}
 			}
 		}
 	}
 	
-	for (NSString *eachKey in [serverDocumentsByID keyEnumerator]) {
-		NSDictionary *eachServerDocument = [self GETDocumentForKey:eachKey error:&error];
-		if (![self replaceLocalDocument:nil withDocument:eachServerDocument error:&error]) {
-			BLogError(@"error");
+	for (NSString *eachServerID in [serverDocumentsByID keyEnumerator]) {
+		NSDictionary *eachServerDocument = [self GETDocumentForKey:eachServerID error:error];
+		if (!eachServerDocument) {
+			BLogError(@"Failed to get server document %@", eachServerID);
+		} else if (![self updateLocalWithServerState:eachServerDocument error:error]) {
+			BLogError(@"Failed to update local copy of document from server %@", eachServerID);
 		}
 	}
-	
-	 
-	 // for local document
-	 // if shadow exists
-	 // compute diff against shadow
-	 // if different
-	 // put diff to server.
-	 // look at results, and save patches that didn't patch.
-	 // else
-	 // post to sever
-	 // get key from post response
-	 // create shadow
-	 // update local metadata
-	 
-	 // for local metadata document
-	 // if it doesn't exist
-	 
-	 
-	 // for cloud metadata document
-	 // if local version exists:
-	 // if version number doesn't match cloud version number
-	 // download cloud version
-	 // replace local and shodow
-	 // update localmetadata
-	 // else
-	 // download cloud document.
-	 // replace local and shodow
-	 // update localmetadata
 }
 
 @end
