@@ -109,3 +109,5 @@ typedef NSUInteger BDiffOperation;
 @property(assign) NSInteger length2;
 
 @end
+
+APPKIT_EXTERN NSString *BDocumentDiffTypeAttributeName;

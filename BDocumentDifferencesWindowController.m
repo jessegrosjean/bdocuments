@@ -33,6 +33,71 @@
 	[[textView textStorage] replaceCharactersInRange:NSMakeRange(0, 0) withAttributedString:prettyAttributedString];
 }
 
+- (IBAction)nextChange:(id)sender {
+	NSTextStorage *textStorage = [textView textStorage];
+	NSRange selectedRange = [textView selectedRange];
+	NSRange limitRange = NSMakeRange(NSMaxRange(selectedRange), [textStorage length] - NSMaxRange(selectedRange));
+	NSRange effectiveRange;
+	NSNumber *changetype;
+	BOOL firstPass = NO;
+	
+	while (limitRange.length > 0) {
+		changetype = [textStorage attribute:BDocumentDiffTypeAttributeName atIndex:limitRange.location longestEffectiveRange:&effectiveRange inRange:limitRange];
+		if (firstPass) {
+			firstPass = NO;
+		} else if ([changetype integerValue] != BDiffEqual) {
+			[textView scrollRangeToVisible:effectiveRange];
+			[textView setSelectedRange:effectiveRange];
+			[textView showFindIndicatorForRange:effectiveRange];
+			break;
+		}
+		limitRange = NSMakeRange(NSMaxRange(effectiveRange), NSMaxRange(limitRange) - NSMaxRange(effectiveRange));
+		if (limitRange.length == 0) {
+			limitRange = NSMakeRange(0, [textStorage length]);
+		}
+	}
+}
+
+- (void)processChanges:(BOOL)acceptingChanges {
+	NSTextStorage *textStorage = [textView textStorage];
+	NSRange selectedRange = [textView selectedRange];
+	NSRange limitRange = NSMakeRange(NSMaxRange(selectedRange), [textStorage length] - NSMaxRange(selectedRange));
+	NSRange effectiveRange;
+	NSNumber *changetype;
+	
+	while (limitRange.length > 0) {
+		changetype = [textStorage attribute:BDocumentDiffTypeAttributeName atIndex:limitRange.location longestEffectiveRange:&effectiveRange inRange:limitRange];
+		if ([changetype integerValue] == BDiffDelete) {
+			if (acceptingChanges) {
+				[textStorage replaceCharactersInRange:effectiveRange withString:@""];
+			} else {
+				[textStorage removeAttribute:BDocumentDiffTypeAttributeName range:effectiveRange];
+				[textStorage removeAttribute:NSBackgroundColorAttributeName range:effectiveRange];
+			}
+		} else if ([changetype integerValue] == BDiffInsert) {
+			if (acceptingChanges) {
+				[textStorage removeAttribute:BDocumentDiffTypeAttributeName range:effectiveRange];
+				[textStorage removeAttribute:NSBackgroundColorAttributeName range:effectiveRange];
+			} else {
+				[textStorage replaceCharactersInRange:effectiveRange withString:@""];
+			}
+		}
+		limitRange = NSMakeRange(NSMaxRange(effectiveRange), NSMaxRange(limitRange) - NSMaxRange(effectiveRange));
+	}	
+}
+
+- (IBAction)previousChange:(id)sender {
+	
+}
+
+- (IBAction)acceptChange:(id)sender {
+	
+}
+
+- (IBAction)rejectChange:(id)sender {
+	
+}
+
 - (IBAction)close:(id)sender {
 	[NSApp endSheet:[self window]];
 }

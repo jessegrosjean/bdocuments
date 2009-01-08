@@ -17,6 +17,10 @@
 
 - (id)initWithText1:(NSString *)text1 text2:(NSString *)text2;
 
+- (IBAction)nextChange:(id)sender;
+- (IBAction)previousChange:(id)sender;
+- (IBAction)acceptChange:(id)sender;
+- (IBAction)rejectChange:(id)sender;
 - (IBAction)close:(id)sender;
 
 @end
