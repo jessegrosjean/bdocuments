@@ -188,6 +188,11 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 - (NSString *)displayName {
 	if (fromExternal && externalDisplayName != nil) {
 		return externalDisplayName;
+	} else {
+		NSString *displayName = [NSFileManager stringForKey:@"BDocumentName" atPath:[[self fileURL] path] traverseLink:YES];
+		if ([displayName length] > 0) {
+			return [NSString stringWithFormat:BLocalizedString(@"Shared Document: %@", nil), displayName];
+		}
 	}
 	return [super displayName];
 }

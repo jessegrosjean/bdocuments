@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "BDocuments.h"
+#import "BUserInterface.h"
 
 
 @protocol BDocumentControllerDelegate <NSObject>
@@ -23,6 +24,10 @@
 #pragma mark Class Methods
 
 + (id)sharedInstance;
+
+#pragma mark Sync
+
+- (IBAction)sync:(id)sender;
 
 #pragma mark Loading Document Workspace
 

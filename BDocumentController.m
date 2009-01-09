@@ -225,15 +225,6 @@
 #pragma mark Lifecycle Callback
 
 - (void)applicationLaunching {
-	BDocumentCloud *cloud = [[BDocumentCloud alloc] init];
-	cloud.serviceRootURLString = @"http://localhost:8093/v1/documents";
-//	NSString *key = [cloud POSTDocument:[NSDictionary dictionaryWithObjectsAndKeys:@"my document name", @"name", @"my document content", @"content", nil]];
-//	[cloud PUTDocument:[NSDictionary dictionaryWithObjectsAndKeys:@"my document content with some edits", @"content", nil] forKey:key];
-//	[cloud GETDocuments];
-	
-	// do nothing, creating instance is all that's needed.
-//	NSError *error;
-//	[cloud sync:&error];
 }
 
 - (void)applicationMayTerminateNotification {
@@ -264,6 +255,12 @@
 
 - (void)applicationWillTerminate {
 	[BDocument synchronizeDocumentUserDefaultsRepository];
+}
+
+#pragma mark Sync
+
+- (IBAction)sync:(id)sender {
+	[[BDocumentCloud sharedInstance] sync:sender];
 }
 
 #pragma mark Loading Document Workspace

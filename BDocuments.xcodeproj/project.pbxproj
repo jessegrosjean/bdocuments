@@ -418,6 +418,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BDocuments_Prefix.pch;
+				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/BUserInterface.plugin/Contents/Headers";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				PRODUCT_NAME = BDocuments;
@@ -433,6 +434,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BDocuments_Prefix.pch;
+				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/BUserInterface.plugin/Contents/Headers";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				PRODUCT_NAME = BDocuments;

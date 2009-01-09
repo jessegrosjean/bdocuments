@@ -19,8 +19,16 @@
 		<applicationCancledTerminateNotification class="BDocumentController sharedInstance" />
 		<applicationWillTerminate class="BDocumentController sharedInstance" />
 	</extension>
+
+	<extension point="com.blocks.BLifecycle.lifecycle">
+		<applicationDidFinishLaunching class="BDocumentCloud sharedInstance" />
+	</extension>
 	
 	<extension point="com.blocks.BUserInterface.menus" processOrder="2">
+		<menu id="com.blocks.BUserInterface.menus.main">
+			<menuitem title="%Share" id="share" submenu="com.blocks.BDocuments.menus.main.share" location="before:help" />
+		</menu>
+		
 		<menu id="com.blocks.BUserInterface.menus.main.file">
 			<menuitem title="%Show Unsaved Changes..." id="showUnsavedChanges" location="group:closeGroup" action="showUnsavedChanges:" />
 		</menu>

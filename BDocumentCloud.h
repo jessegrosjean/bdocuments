@@ -15,9 +15,15 @@
 	NSString *localRootURLString;
 	NSString *localDocumentsPath;
 	NSString *localDocumentShadowsPath;
+	NSString *localDocumentsConflictsPath;
 }
 
+#pragma mark Class Methods
+
++ (id)sharedInstance;
 + (NSString *)stringByURLEncodingStringParameter:(NSString *)str;
+
+#pragma mark Sync
 
 @property(retain) NSString *serviceRootURLString;
 @property(retain) NSString *localRootURLString;
