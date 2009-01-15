@@ -9,6 +9,12 @@
 #import <Cocoa/Cocoa.h>
 
 
+@interface NSDocument (BDocumentAdditions)
+
+- (void)checkForModificationOfFileOnDisk;
+
+@end
+
 @interface BDocument : NSDocument {
 	NSMutableDictionary *documentUserDefaults;
 	BOOL fromExternal;
@@ -41,7 +47,7 @@
 
 - (IBAction)showUnsavedChanges:(id)sender;
 @property(readonly) NSString *documentDataAsText;
-- (void)fileWasChangedExternallyByAnotherApplication:(NSDate *)newModificationDate;
+- (void)checkForModificationOfFileOnDisk;
 
 @end
 

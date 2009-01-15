@@ -1142,16 +1142,12 @@
 	return patches;
 }
 
-- (NSArray *)patchApply:(NSMutableArray *)patches text:(NSString *)text {
-	NSMutableString *textResult = [[text mutableCopy] autorelease];
-	if ([patches count] == 0) {
-		return [NSArray array];
-	}
-	NSMutableArray *patchesCopy = [NSMutableArray array];
+- (NSMutableArray *)patchDeepCopy:(NSMutableArray *)patches {
+	NSMutableArray *patchesCopy = [NSMutableArray arrayWithCapacity:[patches count]];
 	for (BPatch *aPatch in patches) {
 		BPatch *patchCopy = [[[BPatch alloc] init] autorelease];
 		for (BDiff *aDiff in aPatch.diffs) {
-			BDiff *diffCopy = [BDiff diffWithOperationType:aDiff.operation text:[[aDiff.text mutableCopy] autorelease]];
+			BDiff *diffCopy = [BDiff diffWithOperationType:aDiff.operation text:aDiff.text];
 			[patchCopy.diffs addObject:diffCopy];
 		}
 		patchCopy.start1 = aPatch.start1;
@@ -1160,7 +1156,17 @@
 		patchCopy.length2 = aPatch.length2;
 		[patchesCopy addObject:patchCopy];
 	}
-	patches = patchesCopy;
+	return patchesCopy;
+}
+
+- (NSArray *)patchApply:(NSMutableArray *)patches text:(NSString *)text {
+	if ([patches count] == 0) {
+		return [NSArray arrayWithObjects:text, [NSNumber numberWithBool:NO], nil];
+	}
+	
+	patches = [self patchDeepCopy:patches];
+
+	NSMutableString *textResult = [[text mutableCopy] autorelease];
 	NSString *nullPadding = [self patchAddPadding:patches];
 	[textResult insertString:nullPadding atIndex:0];
 	[textResult appendString:nullPadding];

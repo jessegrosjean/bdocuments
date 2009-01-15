@@ -71,7 +71,8 @@
 
 - (id)init {
 	if (self = [super init]) {
-		serviceRootURLString = @"http://localhost:8093/v1/documents";
+		//serviceRootURLString = @"http://localhost:8093/v1/documents";
+		serviceRootURLString = @"http://writeroom-com.appspot.com/v1/documents";
 
 		NSFileManager *fileManager = [NSFileManager defaultManager];
 		NSString *cloud = [fileManager.processesApplicationSupportFolder stringByAppendingPathComponent:@"Cloud"];
@@ -150,6 +151,22 @@
 	return nil;
 }
 
+- (NSDictionary *)POSTDocumentEdit:(NSDictionary *)edit forKey:(NSString *)key error:(NSError **)error {
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/edits", serviceRootURLString, key]]];
+	NSHTTPURLResponse *response;
+	NSData *responseData;
+	
+	[request setHTTPMethod:@"POST"];
+	[request setHTTPBody:[[BDocumentCloud URLencodedPOSTBody:edit] dataUsingEncoding:NSUTF8StringEncoding]];
+	[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+	
+	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error]) {
+		return [[[[SBJSON alloc] init] objectWithString:[[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] autorelease] error:error] autorelease];
+	}
+	
+	return nil;
+}
+
 - (NSDictionary *)GETDocumentForKey:(NSString *)key error:(NSError **)error {
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", serviceRootURLString, key]]];
 	NSHTTPURLResponse *response;
@@ -194,7 +211,7 @@
 	NSString *documentPath = [localDocumentsPath stringByAppendingPathComponent:documentID];
 	NSString *documentShadowPath = [localDocumentShadowsPath stringByAppendingPathComponent:documentID];
 	
-	if ([content writeToFile:documentPath atomically:YES encoding:NSUTF8StringEncoding error:error]) {
+	if ([content writeToFile:documentPath atomically:NO encoding:NSUTF8StringEncoding error:error]) {
 		[NSFileManager setString:documentID forKey:@"BDocumentID" atPath:documentPath traverseLink:YES];
 		if (name) [NSFileManager setString:name forKey:@"BDocumentName" atPath:documentPath traverseLink:YES];
 		[NSFileManager setString:[version description] forKey:@"BDocumentVersion" atPath:documentPath traverseLink:YES];
@@ -204,23 +221,18 @@
 		if (![fileManager copyPath:documentPath toPath:documentShadowPath handler:nil]) {
 			BLogError(@"Failed to update local shadow document at path %@", documentShadowPath);
 			return NO;
+		} else {
+			if (name) [NSFileManager setString:name forKey:@"BDocumentName" atPath:documentShadowPath traverseLink:YES];
 		}
 	} else {
 		BLogError(@"Failed to update local document at path %@", documentPath);
 		return NO;
 	}
 	
+	[[[NSDocumentController sharedDocumentController] documentForURL:[NSURL fileURLWithPath:documentPath]] checkForModificationOfFileOnDisk];
+	
 	return YES;
 }
-
-/*
-NSDictionary *document = [self POSTDocument:[NSMutableDictionary dictionaryWithObjectsAndKeys:each, @"name", eachLocalContent, @"content", nil] error:error];
-if (!document) {
-	BLogError(@"Failed to post local document to server %@", eachLocalPath);
-} else if (![self updateLocalWithServerState:document error:error]) {
-	BLogError(@"Failed to update local copy of document from server %@", eachLocalPath);
-}
-*/
 
 - (void)sync:(NSError **)error {
 	[self performSelector:@selector(sync2:) withObject:nil afterDelay:0];
@@ -232,11 +244,13 @@ if (!document) {
 
 	NSArray *localDocuments = [fileManager contentsOfDirectoryAtPath:localDocumentsPath error:error];
 	if (!localDocuments) {
+		BLogError(@"Failed to get local document list, aborting sync");
 		return;
 	}
 	
 	NSMutableDictionary *serverDocumentsByID = [[[self GETDocuments:error] mutableCopy] autorelease];
 	if (!serverDocumentsByID) {
+		BLogError(@"Failed to get document list from server, aborting sync");
 		return;
 	}
 	
@@ -247,9 +261,10 @@ if (!document) {
 		if ([eachLocalID length] > 0) {
 			NSString *eachLocalContent = [NSString stringWithContentsOfFile:eachLocalPath encoding:NSUTF8StringEncoding error:error];
 			NSString *eachLocalVersion = [NSFileManager stringForKey:@"BDocumentVersion" atPath:eachLocalPath traverseLink:YES];
-			// NSString *eachLocalName = [NSFileManager stringForKey:@"BDocumentName" atPath:eachLocalPath traverseLink:YES];
+			//NSString *eachLocalName = [NSFileManager stringForKey:@"BDocumentName" atPath:eachLocalPath traverseLink:YES];
 			NSString *eachLocalShadowPath = [localDocumentShadowsPath stringByAppendingPathComponent:eachLocalID];
 			NSString *eachLocalShadowContent = [NSString stringWithContentsOfFile:eachLocalShadowPath encoding:NSUTF8StringEncoding error:error];
+			//NSString *eachLocalShadowName = [NSFileManager stringForKey:@"BDocumentName" atPath:eachLocalShadowPath traverseLink:YES];
 			NSString *serverVersion = [[[serverDocumentsByID objectForKey:eachLocalID] objectForKey:@"version"] description];
 			
 			if (!serverVersion) {
@@ -268,8 +283,10 @@ if (!document) {
 				}
 			} else {
 				if (![eachLocalContent isEqualToString:eachLocalShadowContent]) {
-					NSString *patch = [diffMatchPatch patchToText:[diffMatchPatch patchMakeText1:eachLocalShadowContent text2:eachLocalContent]];
-					NSMutableDictionary *patchResultsDocument = [[[self PUTDocument:[NSDictionary dictionaryWithObjectsAndKeys:patch, @"patch", eachLocalVersion, @"version", nil] forKey:eachLocalID error:error] mutableCopy] autorelease];
+					NSMutableArray *diffs = [diffMatchPatch patchMakeText1:eachLocalShadowContent text2:eachLocalContent];
+					NSString *patch = [diffMatchPatch patchToText:diffs];
+					NSMutableDictionary *patchResultsDocument = [[[self POSTDocumentEdit:[NSDictionary dictionaryWithObjectsAndKeys:patch, @"patch", eachLocalVersion, @"version", nil] forKey:eachLocalID error:error] mutableCopy] autorelease];
+
 					if (patchResultsDocument) {
 						NSArray *results = [patchResultsDocument objectForKey:@"results"];
 						for (NSNumber *each in results) {

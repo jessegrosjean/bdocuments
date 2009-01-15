@@ -619,7 +619,12 @@
 	NSString *patchStr = [dmp patchToText:patches];
 	[dmp patchApply:patches text:@""];
 	STAssertEqualObjects(patchStr, [dmp patchToText:patches], nil);
-	
+
+	patches = [dmp patchMakeText1:@"The quick brown fox jumps over the lazy dog." text2:@"Woof"];
+	NSString *patchStr = [dmp patchToText:patches];
+	[dmp patchApply:patches text:@"The quick brown fox jumps over the lazy dog."];
+	STAssertEqualObjects(patchStr, [dmp patchToText:patches], nil);
+		
 	patches = [dmp patchMakeText1:@"" text2:@"test"];
 	results = [dmp patchApply:patches text:@""];
 	boolArray = [results objectAtIndex:1];

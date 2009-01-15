@@ -191,7 +191,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	} else {
 		NSString *displayName = [NSFileManager stringForKey:@"BDocumentName" atPath:[[self fileURL] path] traverseLink:YES];
 		if ([displayName length] > 0) {
-			return [NSString stringWithFormat:BLocalizedString(@"Shared Document: %@", nil), displayName];
+			return [NSString stringWithFormat:BLocalizedString(@"Shared: %@", nil), displayName];
 		}
 	}
 	return [super displayName];
@@ -264,11 +264,37 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	}
 }
 
+- (void)checkForModificationOfFileOnDisk {
+	NSDate *knownFileModificationDate = [self fileModificationDate];
+	if (knownFileModificationDate) {
+		NSDate *actualFileModificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[[self fileURL] path] traverseLink:YES] fileModificationDate];
+		if ([knownFileModificationDate isLessThan:actualFileModificationDate]) {
+			[self performSelector:@selector(fileWasChangedExternallyByAnotherApplication:) withObject:actualFileModificationDate];
+		}
+	}
+}
+
 - (void)fileWasChangedExternallyAlertDidEnd:(NSAlert *)alert returnCode:(int)returnCode contextInfo:(void *)contextInfo {
 	if (returnCode == NSAlertDefaultReturn) { // keep current version
 		[self setFileModificationDate:contextInfo];
 	} else { // revert
 		[self readChangedFileFromDisk:contextInfo];
+	}
+}
+
+@end
+
+@implementation NSDocument (BDocumentAdditions)
+
+- (void)checkForModificationOfFileOnDisk {
+	if ([self respondsToSelector:@selector(fileWasChangedExternallyByAnotherApplication:)]) {
+		NSDate *knownFileModificationDate = [self fileModificationDate];
+		if (knownFileModificationDate) {
+			NSDate *actualFileModificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[[self fileURL] path] traverseLink:YES] fileModificationDate];
+			if ([knownFileModificationDate isLessThan:actualFileModificationDate]) {
+				[self performSelector:@selector(fileWasChangedExternallyByAnotherApplication:) withObject:actualFileModificationDate];
+			}
+		}
 	}
 }
 

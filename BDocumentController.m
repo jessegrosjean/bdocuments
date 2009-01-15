@@ -11,10 +11,6 @@
 #import <objc/runtime.h>
 
 
-@interface NSDocument (BDocumentControllerAdditions)
-- (void)checkForModificationOfFileOnDisk;
-@end
-
 @implementation BDocumentController
 
 #pragma mark Class Methods
@@ -314,22 +310,6 @@
 	}
 	
 	return NO;
-}
-
-@end
-
-@implementation NSDocument (BDocumentControllerAdditions)
-
-- (void)checkForModificationOfFileOnDisk {
-	if ([self respondsToSelector:@selector(fileWasChangedExternallyByAnotherApplication:)]) {
-		NSDate *knownFileModificationDate = [self fileModificationDate];
-		if (knownFileModificationDate) {
-			NSDate *actualFileModificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[[self fileURL] path] traverseLink:YES] fileModificationDate];
-			if ([knownFileModificationDate isLessThan:actualFileModificationDate]) {
-				[self performSelector:@selector(fileWasChangedExternallyByAnotherApplication:) withObject:actualFileModificationDate];
-			}
-		}
-	}
 }
 
 @end
