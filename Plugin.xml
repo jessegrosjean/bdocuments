@@ -26,7 +26,7 @@
 	
 	<extension point="com.blocks.BUserInterface.menus" processOrder="2">
 		<menu id="com.blocks.BUserInterface.menus.main">
-			<menuitem title="%Share" id="share" submenu="com.blocks.BDocuments.menus.main.share" location="before:help" />
+			<menuitem title="%Sync" id="share" submenu="com.blocks.BDocuments.menus.main.share" location="before:help" />
 		</menu>
 		
 		<menu id="com.blocks.BUserInterface.menus.main.file">

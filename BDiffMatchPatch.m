@@ -1355,7 +1355,7 @@
 	return text;
 }
 
-- (NSArray *)patchFromText:(NSString *)textline {
+- (NSMutableArray *)patchFromText:(NSString *)textline {
 	NSNumberFormatter *numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
 	NSMutableArray *patches = [NSMutableArray array];
 	if ([textline length] == 0) {

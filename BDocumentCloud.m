@@ -108,7 +108,7 @@
 		NSArray *documents = [[[[SBJSON alloc] init] objectWithString:responseBody error:error] autorelease];
 		NSMutableDictionary *documentsByID = [NSMutableDictionary dictionary];
 		for (NSDictionary *each in documents) {
-			[documentsByID setObject:each forKey:[[each objectForKey:@"location"] lastPathComponent]];
+			[documentsByID setObject:each forKey:[each objectForKey:@"id"]];
 		}
 		return documentsByID;
 	}
@@ -181,6 +181,20 @@
 	return nil;
 }
 
+- (NSDictionary *)GETDocumentEditsForKey:(NSString *)key fromVersion:(NSString *)fromVersion toVersion:(NSString *)toVersion error:(NSError **)error {
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/edits/?start=%@&end=%@", serviceRootURLString, key, fromVersion, toVersion]]];
+	NSHTTPURLResponse *response;
+	NSData *responseData;
+	
+	if (responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:error]) {
+		NSString *responseBody = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+		NSDictionary *document = [[[SBJSON alloc] init] objectWithString:responseBody error:error];
+		return document;
+	}
+	
+	return nil;
+}
+
 - (BOOL)DELETEDocumentForKey:(NSString *)key error:(NSError **)error {
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", serviceRootURLString, key]]];
 	NSHTTPURLResponse *response;
@@ -203,11 +217,6 @@
 	NSString *name = [document objectForKey:@"name"];
 	NSString *content = [document objectForKey:@"content"];
 	NSNumber *version = [document objectForKey:@"version"];
-		
-	if (!documentID) {
-		documentID = [[document objectForKey:@"location"] lastPathComponent];
-	}
-		
 	NSString *documentPath = [localDocumentsPath stringByAppendingPathComponent:documentID];
 	NSString *documentShadowPath = [localDocumentShadowsPath stringByAppendingPathComponent:documentID];
 	
@@ -234,6 +243,31 @@
 	return YES;
 }
 
+- (void)applyEdits:(NSDictionary *)edits toDocument:(NSMutableDictionary *)document diffMatchPatch:(BDiffMatchPatch *)diffMatchPatch {
+	NSString *newName = [edits objectForKey:@"name"];
+	if (newName) {
+		[document setObject:newName forKey:@"name"];
+	}
+
+	if ([edits objectForKey:@"patches"] != nil && [[edits objectForKey:@"patches"] length] > 0) {
+		NSMutableArray *patches = [diffMatchPatch patchFromText:[edits objectForKey:@"patches"]];
+		NSString *newContent = [[diffMatchPatch patchApply:patches text:[document objectForKey:@"content"]] objectAtIndex:0];
+		[document setObject:newContent forKey:@"content"];
+	}
+	
+	if ([edits objectForKey:@"name"]) {
+		[document setObject:[edits objectForKey:@"name"] forKey:@"name"];
+	}
+	
+	if ([edits objectForKey:@"version"]) {
+		[document setObject:[edits objectForKey:@"version"] forKey:@"version"];
+	}
+}
+
+- (void)openWebsite:(id)sender {
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://writeroom-com.appspot.com/documents"]];
+}
+
 - (void)sync:(NSError **)error {
 	[self performSelector:@selector(sync2:) withObject:nil afterDelay:0];
 }
@@ -241,6 +275,7 @@
 - (void)sync2:(NSError **)error {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	BDiffMatchPatch *diffMatchPatch = [[[BDiffMatchPatch alloc] init] autorelease];
+	NSNumberFormatter *numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
 
 	NSArray *localDocuments = [fileManager contentsOfDirectoryAtPath:localDocumentsPath error:error];
 	if (!localDocuments) {
@@ -284,35 +319,40 @@
 			} else {
 				if (![eachLocalContent isEqualToString:eachLocalShadowContent]) {
 					NSMutableArray *diffs = [diffMatchPatch patchMakeText1:eachLocalShadowContent text2:eachLocalContent];
-					NSString *patch = [diffMatchPatch patchToText:diffs];
-					NSMutableDictionary *patchResultsDocument = [[[self POSTDocumentEdit:[NSDictionary dictionaryWithObjectsAndKeys:patch, @"patch", eachLocalVersion, @"version", nil] forKey:eachLocalID error:error] mutableCopy] autorelease];
+					NSString *patches = [diffMatchPatch patchToText:diffs];
+					NSDictionary *edits = [[[self POSTDocumentEdit:[NSDictionary dictionaryWithObjectsAndKeys:patches, @"patches", eachLocalVersion, @"version", nil] forKey:eachLocalID error:error] mutableCopy] autorelease];
 
-					if (patchResultsDocument) {
-						NSArray *results = [patchResultsDocument objectForKey:@"results"];
-						for (NSNumber *each in results) {
-							if (![each boolValue]) {
-								BLogError(@"Failed to fully apply patches to document %@", eachLocalID); // Create backup and allow user to manually resolve conflict.
-							}
+					if (edits) {
+						NSArray *failedPatches = [edits objectForKey:@"failed_patches"];
+						for (NSString *each in failedPatches) {
+							BLogError(@"Failed to fully apply edits %@ to document %@", each, eachLocalID); // Create backup and allow user to manually resolve conflict.
 						}
 						
-						[patchResultsDocument setObject:eachLocalID forKey:@"id"];
-						if (![patchResultsDocument objectForKey:@"content"]) {
-							[patchResultsDocument setObject:eachLocalContent forKey:@"content"];
-						}
+						NSMutableDictionary *newDocument = [NSMutableDictionary dictionaryWithObjectsAndKeys:eachLocalShadowContent, @"content", eachLocalVersion, @"version", eachLocalID, @"id", nil];
 						
-						if (![self updateLocalWithServerState:patchResultsDocument error:error]) {
+						[self applyEdits:edits toDocument:newDocument diffMatchPatch:diffMatchPatch];
+												
+						if (![self updateLocalWithServerState:newDocument error:error]) {
 							BLogError(@"Failed to update local copy of document from server %@", eachLocalID); // Bad case... server is now good, but not client.
 						}
 					} else {
 						BLogError(@"Failed to apply local patch to server document %@", eachLocalID);
 					}
 				} else {
-					if (![eachLocalVersion isEqualToString:serverVersion]) {
-						NSDictionary *eachServerDocument = [self GETDocumentForKey:eachLocalID error:error];
-						if (!eachServerDocument) {
+					if (![eachLocalVersion isEqualToString:serverVersion]) {						
+						NSDictionary *edits = [[[self GETDocumentEditsForKey:eachLocalID fromVersion:[NSString stringWithFormat:@"%i", [[numberFormatter numberFromString:eachLocalVersion] intValue] + 1] toVersion:serverVersion error:error] mutableCopy] autorelease];
+
+						if (!edits) {
 							BLogError(@"Failed to pull update for document %@", eachLocalID);
-						} else if (![self updateLocalWithServerState:eachServerDocument error:error]) {
-							BLogError(@"Failed to update local copy of document from server %@", eachLocalID);
+						} else {
+							
+							NSMutableDictionary *newDocument = [NSMutableDictionary dictionaryWithObjectsAndKeys:eachLocalShadowContent, @"content", eachLocalVersion, @"version", eachLocalID, @"id", nil];
+							
+							[self applyEdits:edits toDocument:newDocument diffMatchPatch:diffMatchPatch];
+														
+							if (![self updateLocalWithServerState:newDocument error:error]) {
+								BLogError(@"Failed to update local copy of document from server %@", eachLocalID);
+							}
 						}
 					}
 				}
@@ -343,6 +383,14 @@
 		[menu removeItem:each];
 	}
 	
+	[menu addItemWithTitle:BLocalizedString(@"Open Website", nil) action:@selector(openWebsite:) keyEquivalent:@""];
+	[[[menu itemArray] lastObject] setTarget:self];
+	//[menu addItemWithTitle:BLocalizedString(@"Save to Website", nil) action:@selector(sync:) keyEquivalent:@""];
+
+	[menu addItem:[NSMenuItem separatorItem]];
+
+	[menu addItemWithTitle:BLocalizedString(@"Synced Documents", nil) action:NULL keyEquivalent:@""];
+
 	NSArray *localDocuments = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:localDocumentsPath error:nil];
 	
 	for (NSString *each in localDocuments) {
@@ -350,6 +398,7 @@
 		NSString *eachName = [NSFileManager stringForKey:@"BDocumentName" atPath:eachLocalPath traverseLink:YES];
 		if ([eachName length] > 0) {
 			NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:eachName action:@selector(openCloudDocument:) keyEquivalent:@""];
+			[eachMenuItem setIndentationLevel:1];
 			[eachMenuItem setRepresentedObject:eachLocalPath];
 			[eachMenuItem setTarget:self];
 			[menu addItem:eachMenuItem];
@@ -358,7 +407,7 @@
 	
 	[menu addItem:[NSMenuItem separatorItem]];
 	
-	[menu addItemWithTitle:BLocalizedString(@"Sync...", nil) action:@selector(sync:) keyEquivalent:@""];
+	[menu addItemWithTitle:BLocalizedString(@"Sync to Website...", nil) action:@selector(sync:) keyEquivalent:@""];
 }
 
 - (IBAction)openCloudDocument:(NSMenuItem *)sender {

@@ -75,7 +75,7 @@ typedef NSUInteger BDiffOperation;
 - (NSString *)patchAddPadding:(NSArray *)patches;
 - (void)patchSplitMax:(NSMutableArray *)patches;
 - (NSString *)patchToText:(NSArray *)patches;
-- (NSArray *)patchFromText:(NSString *)textline;
+- (NSMutableArray *)patchFromText:(NSString *)textline;
 @end
 
 @interface BDiff : NSObject {
