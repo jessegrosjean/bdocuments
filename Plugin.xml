@@ -21,7 +21,7 @@
 	</extension>
 
 	<extension point="com.blocks.BLifecycle.lifecycle">
-		<applicationDidFinishLaunching class="BDocumentCloud sharedInstance" />
+		<applicationDidFinishLaunching class="BDocumentsService sharedInstance" />
 	</extension>
 	
 	<extension point="com.blocks.BUserInterface.menus" processOrder="2">

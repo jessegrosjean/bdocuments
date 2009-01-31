@@ -41,5 +41,6 @@
 @interface NSString (BDocumentsAdditions)
 
 - (NSComparisonResult)naturalCompare:(NSString *)aString;
+- (NSString *)stringByURLEncodingStringParameter;
 
 @end

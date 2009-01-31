@@ -7,7 +7,7 @@
 //
 
 #import "BDocumentController.h"
-#import "BDocumentCloud.h"
+#import "BDocumentsService.h"
 #import <objc/runtime.h>
 
 
@@ -256,7 +256,7 @@
 #pragma mark Sync
 
 - (IBAction)sync:(id)sender {
-	[[BDocumentCloud sharedInstance] sync:sender];
+	[[BDocumentsService sharedInstance] beginSync:sender];
 }
 
 #pragma mark Loading Document Workspace
