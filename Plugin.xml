@@ -25,15 +25,23 @@
 	</extension>
 	
 	<extension point="com.blocks.BUserInterface.menus" processOrder="2">
+		<menu id="com.blocks.BUserInterface.menus.main">
+			<menuitem title="%Sync" id="documentsService" submenu="com.blocks.BDocuments.menus.main.file.documentsService" location="after:window" />
+		</menu>
+		
 		<menu id="com.blocks.BUserInterface.menus.main.file">
 			<menuitem title="%Show Unsaved Changes..." id="showUnsavedChanges" location="group:closeGroup" action="showUnsavedChanges:" />
-			<separator group="documentsServiceGroup" location="group:closeGroup" />
-			<menuitem title="%Documents Service" id="documentsService" location="group:documentsServiceGroup" submenu="com.blocks.BDocuments.menus.main.file.documentsService" />
 		</menu>
 		
 		<menu id="com.blocks.BDocuments.menus.main.file.documentsService">
-			<menuitem title="%Sync..." id="sync" action="beginSync:" target="BDocumentsService sharedInstance" keyEquivalent="s" keyEquivalentModifierMask="NSControlKeyMask" />
-			<menuitem title="%Open Website..." id="openWebsite" target="BDocumentsService sharedInstance" action="openWebsite:" />
+			<menuitem title="%Open DocumentsService..." id="openDocumentsService" action="openDocumentsService:" target="BDocumentsService sharedInstance" />
+			<menuitem title="%Sign In..." id="toggleDocumentsServiceAuthentication" indentationLevel="1" action="toggleDocumentsServiceAuthentication:" target="BDocumentsService sharedInstance" />
+			<menuitem title="%Syncronize..." id="sync" indentationLevel="1" action="beginSync:" target="BDocumentsService sharedInstance" keyEquivalent="s" keyEquivalentModifierMask="NSControlKeyMask|NSCommandKeyMask" />
+			<menuitem title="%New Document..." id="newDocumentsServiceDocument" indentationLevel="1" action="newDocumentsServiceDocument:" target="BDocumentsService sharedInstance" />
+			<separator indentationLevel="1" group="documents" />
+		</menu>
+		
+		<menu id="com.blocks.BDocuments.menus.main.file.documentsService.sharedDocuments">
 		</menu>
 	</extension>	
 </plugin>

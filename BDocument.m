@@ -191,8 +191,9 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 		return externalDisplayName;
 	} else {
 		NSString *displayName = [NSFileManager stringForKey:@"BDocumentName" atPath:[[self fileURL] path] traverseLink:YES];
-		if ([displayName length] > 0) {
-			return [NSString stringWithFormat:BLocalizedString(@"%@: %@", nil), [[BDocumentsService sharedInstance] serviceLabel], displayName];
+		NSString *version = [NSFileManager stringForKey:@"BDocumentVersion" atPath:[[self fileURL] path] traverseLink:YES];
+		if ([displayName length] > 0 && [version length] > 0) {
+			return [NSString stringWithFormat:BLocalizedString(@"%@ (%@)", nil), displayName, version];
 		}
 	}
 	return [super displayName];
@@ -262,6 +263,10 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 		[alert beginSheetModalForWindow:[[NSApp currentDocumentWindowController] window] modalDelegate:self didEndSelector:@selector(fileWasChangedExternallyAlertDidEnd:returnCode:contextInfo:) contextInfo:newModificationDate];
 	} else {
 		[self readChangedFileFromDisk:newModificationDate];
+	}
+	
+	for (NSWindowController *each in [self windowControllers]) {
+		[each synchronizeWindowTitleWithDocumentName];
 	}
 }
 

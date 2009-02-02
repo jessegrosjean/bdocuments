@@ -33,7 +33,9 @@
 
 - (IBAction)beginSync:(id)sender;
 - (IBAction)cancelSync:(id)sender;
-- (IBAction)openWebsite:(id)sender;
+- (IBAction)openDocumentsService:(id)sender;
+- (IBAction)newDocumentsServiceDocument:(id)sender;
+- (IBAction)toggleDocumentsServiceAuthentication:(id)sender;
 
 - (void)addActiveHandler:(BDocumentsServiceHandler *)aHandler;
 - (void)removeActiveHandler:(BDocumentsServiceHandler *)aHandler;

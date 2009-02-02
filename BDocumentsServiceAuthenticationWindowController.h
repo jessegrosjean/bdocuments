@@ -10,6 +10,7 @@
 
 
 @interface BDocumentsServiceAuthenticationWindowController : NSWindowController {
+	IBOutlet NSTextField *heading;
 	IBOutlet NSTextField *usernameTextField;
 	IBOutlet NSTextField *passwordTextField;
 }
@@ -19,6 +20,8 @@
 @property(retain) NSString *username;
 @property(retain) NSString *password;
 
+- (IBAction)createNewAccount:(id)sender;
+- (IBAction)foregotPassword:(id)sender;
 - (IBAction)ok:(id)sender;
 - (IBAction)cancel:(id)sender;
 	

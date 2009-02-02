@@ -7,6 +7,7 @@
 //
 
 #import "BDocumentsServiceAuthenticationWindowController.h"
+#import "BDocumentsService.h"
 
 
 @implementation BDocumentsServiceAuthenticationWindowController
@@ -23,6 +24,10 @@
 	return self;
 }
 
+- (void)awakeFromNib {
+	[heading setStringValue:[NSString stringWithFormat:[heading stringValue], [[BDocumentsService sharedInstance] serviceLabel]]];
+}
+
 - (NSString *)username {
 	return [usernameTextField stringValue];
 }
@@ -37,6 +42,16 @@
 
 - (void)setPassword:(NSString *)aPassword {
 	[passwordTextField setStringValue:aPassword];
+}
+
+- (IBAction)createNewAccount:(id)sender {
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://www.google.com/accounts/NewAccount"]];
+	[self cancel:sender];
+}
+
+- (IBAction)foregotPassword:(id)sender {
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://www.google.com/accounts/ForgotPasswd"]];
+	[self cancel:sender];
 }
 
 - (IBAction)ok:(id)sender {

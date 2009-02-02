@@ -26,15 +26,12 @@
 
 - (id)init {
 	if (self = [super init]) {
-		//serviceRootURLString = @"http://localhost:8093/v1/documents";
-		//serviceRootURLString = @"http://writeroom-com.appspot.com";
-		service = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsService"] retain];
-		serviceLabel = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsServiceLabel"] retain];
-		serviceRootURLString = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsServiceURL"] retain];
-		
 		NSFileManager *fileManager = [NSFileManager defaultManager];
 		NSString *cloud = [fileManager.processesApplicationSupportFolder stringByAppendingPathComponent:@"Cloud"];
 		
+		service = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsService"] retain];
+		serviceLabel = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsServiceLabel"] retain];
+		serviceRootURLString = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsServiceURL"] retain];
 		localDocumentsPath = [cloud stringByAppendingPathComponent:@"Documents"];
 		localDocumentShadowsPath = [cloud stringByAppendingPathComponent:@"Shadows"];
 		localDocumentsConflictsPath = [cloud stringByAppendingPathComponent:@"Conflicts"];
@@ -95,10 +92,36 @@
 	}
 }
 
-- (IBAction)openWebsite:(id)sender {
+- (IBAction)openDocumentsService:(id)sender {
 	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:serviceRootURLString]];
 }
 
+- (IBAction)toggleDocumentsServiceAuthentication:(id)sender {
+	NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+	NSArray *cookies = [cookieStorage cookiesForURL:[NSURL URLWithString:serviceRootURLString]];
+	if ([cookies count] > 0) {
+		for (NSHTTPCookie *each in cookies) {
+			[cookieStorage deleteCookie:each];
+		}
+	} else {
+		[self beginSync:sender];
+	}
+}
+
+- (IBAction)newDocumentsServiceDocument:(id)sender {
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[serviceRootURLString stringByAppendingString:@"/documents/new"]]];	
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
+	if ([menuItem action] == @selector(toggleDocumentsServiceAuthentication:)) {
+		if ([[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:[NSURL URLWithString:serviceRootURLString]] count] > 0) {
+			[menuItem setTitle:[NSString stringWithFormat:@"Sign Out (%@)", [[NSUserDefaults standardUserDefaults] stringForKey:@"BDocumentsServiceUsername"]]];
+		} else {
+			[menuItem setTitle:@"Sign In..."];
+		}
+	}
+	return YES;
+}
 
 - (void)updateLocal:(BDocumentsServiceDocument *)aDocument {
 	NSError *error = nil;
@@ -155,30 +178,49 @@
 } 
 
 - (void)menuNeedsUpdate:(NSMenu *)menu {
-	BOOL foundSeparator = NO;
+	BOOL remove = NO;
 	for (NSMenuItem *each in [menu itemArray]) {
-		if (foundSeparator || [each isSeparatorItem]) {
+		if (remove) {
 			[menu removeItem:each];
-			foundSeparator = YES;
+		} else if ([each isSeparatorItem]) {
+			remove = YES;
 		}
 	}
 	
+	/*
+	NSMenuItem *newDocumentMenuItem = [[NSMenuItem alloc] initWithTitle:BLocalizedString(@"New Document...", nil) action:@selector(newDocumentsServiceDocument:) keyEquivalent:@""];
+	[newDocumentMenuItem setTarget:self];
+	[menu addItem:newDocumentMenuItem];	
+
 	[menu addItem:[NSMenuItem separatorItem]];
+	*/
 	
-	[menu addItemWithTitle:BLocalizedString(@"Documents", nil) action:NULL keyEquivalent:@""];
-	
-	NSArray *localDocuments = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:localDocumentsPath error:nil];
-	
-	for (NSString *each in localDocuments) {
-		NSString *eachLocalPath = [localDocumentsPath stringByAppendingPathComponent:each];
-		NSString *eachName = [NSFileManager stringForKey:@"BDocumentName" atPath:eachLocalPath traverseLink:YES];
-		if ([eachName length] > 0) {
-			NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:eachName action:@selector(openDocumentsServiceDocument:) keyEquivalent:@""];
-			[eachMenuItem setIndentationLevel:1];
-			[eachMenuItem setRepresentedObject:eachLocalPath];
-			[eachMenuItem setTarget:self];
+	if ([[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:[NSURL URLWithString:serviceRootURLString]] count] > 0) {
+		NSArray *localDocuments = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:localDocumentsPath error:nil];
+		NSMutableArray *menuItems = [NSMutableArray array];
+		
+		for (NSString *each in localDocuments) {
+			NSString *eachLocalPath = [localDocumentsPath stringByAppendingPathComponent:each];
+			NSString *eachName = [NSFileManager stringForKey:@"BDocumentName" atPath:eachLocalPath traverseLink:YES];
+			NSString *eachVersion = [NSFileManager stringForKey:@"BDocumentVersion" atPath:eachLocalPath traverseLink:YES];
+			if ([eachName length] > 0 && [eachVersion length] > 0) {
+				NSString *title = [NSString stringWithFormat:@"%@ (%@)", eachName, eachVersion];
+				NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:title action:@selector(openDocumentsServiceDocument:) keyEquivalent:@""];
+				[eachMenuItem setRepresentedObject:eachLocalPath];
+				[eachMenuItem setTarget:self];
+				[eachMenuItem setIndentationLevel:1];
+				[menuItems addObject:eachMenuItem];
+			}
+		}
+		
+		[menuItems sortUsingDescriptors:[NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES] autorelease]]];
+		
+		for (NSMenuItem *eachMenuItem in menuItems) {
 			[menu addItem:eachMenuItem];
 		}
+	} else {
+		[menu addItemWithTitle:BLocalizedString(@"Sign In to View Documents", nil) action:nil keyEquivalent:@""];
+		[[[menu itemArray] lastObject] setIndentationLevel:1];
 	}
 }
 
