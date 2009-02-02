@@ -25,12 +25,15 @@
 	</extension>
 	
 	<extension point="com.blocks.BUserInterface.menus" processOrder="2">
-		<menu id="com.blocks.BUserInterface.menus.main">
-			<menuitem title="%Sync" id="share" submenu="com.blocks.BDocuments.menus.main.share" location="before:help" />
-		</menu>
-		
 		<menu id="com.blocks.BUserInterface.menus.main.file">
 			<menuitem title="%Show Unsaved Changes..." id="showUnsavedChanges" location="group:closeGroup" action="showUnsavedChanges:" />
+			<separator group="documentsServiceGroup" location="group:closeGroup" />
+			<menuitem title="%Documents Service" id="documentsService" location="group:documentsServiceGroup" submenu="com.blocks.BDocuments.menus.main.file.documentsService" />
+		</menu>
+		
+		<menu id="com.blocks.BDocuments.menus.main.file.documentsService">
+			<menuitem title="%Sync..." id="sync" action="beginSync:" target="BDocumentsService sharedInstance" keyEquivalent="s" keyEquivalentModifierMask="NSControlKeyMask" />
+			<menuitem title="%Open Website..." id="openWebsite" target="BDocumentsService sharedInstance" action="openWebsite:" />
 		</menu>
 	</extension>	
 </plugin>

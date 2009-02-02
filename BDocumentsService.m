@@ -28,8 +28,9 @@
 	if (self = [super init]) {
 		//serviceRootURLString = @"http://localhost:8093/v1/documents";
 		//serviceRootURLString = @"http://writeroom-com.appspot.com";
-		serviceRootURLString = @"http://restapitests.appspot.com";
-		service = @"restapitests";
+		service = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsService"] retain];
+		serviceLabel = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsServiceLabel"] retain];
+		serviceRootURLString = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsServiceURL"] retain];
 		
 		NSFileManager *fileManager = [NSFileManager defaultManager];
 		NSString *cloud = [fileManager.processesApplicationSupportFolder stringByAppendingPathComponent:@"Cloud"];
@@ -53,8 +54,9 @@
 	return self;
 }
 
-@synthesize serviceRootURLString;
 @synthesize service;
+@synthesize serviceLabel;
+@synthesize serviceRootURLString;
 
 - (NSArray *)localDocuments:(NSDictionary *)serverDocumentsByID error:(NSError **)error {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -149,20 +151,21 @@
 #pragma mark Lifecycle Callback
 
 - (void)applicationDidFinishLaunching {
-	[[NSMenu menuForMenuExtensionPoint:@"com.blocks.BDocuments.menus.main.share"] setDelegate:self];
-}
+	[[NSMenu menuForMenuExtensionPoint:@"com.blocks.BDocuments.menus.main.file.documentsService"] setDelegate:self];
+} 
 
 - (void)menuNeedsUpdate:(NSMenu *)menu {
+	BOOL foundSeparator = NO;
 	for (NSMenuItem *each in [menu itemArray]) {
-		[menu removeItem:each];
+		if (foundSeparator || [each isSeparatorItem]) {
+			[menu removeItem:each];
+			foundSeparator = YES;
+		}
 	}
-	
-	[menu addItemWithTitle:BLocalizedString(@"Open Website", nil) action:@selector(openWebsite:) keyEquivalent:@""];
-	[[[menu itemArray] lastObject] setTarget:self];
 	
 	[menu addItem:[NSMenuItem separatorItem]];
 	
-	[menu addItemWithTitle:BLocalizedString(@"Synced Documents", nil) action:NULL keyEquivalent:@""];
+	[menu addItemWithTitle:BLocalizedString(@"Documents", nil) action:NULL keyEquivalent:@""];
 	
 	NSArray *localDocuments = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:localDocumentsPath error:nil];
 	
@@ -177,10 +180,6 @@
 			[menu addItem:eachMenuItem];
 		}
 	}
-	
-	[menu addItem:[NSMenuItem separatorItem]];
-	
-	[menu addItemWithTitle:BLocalizedString(@"Sync to Website...", nil) action:@selector(sync:) keyEquivalent:@""];
 }
 
 - (IBAction)openDocumentsServiceDocument:(NSMenuItem *)sender {
@@ -261,7 +260,9 @@
 - (void)applyEdits:(NSDictionary *)edits {
 	if ([edits objectForKey:@"version"]) {
 		[localVersion autorelease];
-		localVersion = [[edits objectForKey:@"version"] retain];
+		localVersion = [[[edits objectForKey:@"version"] description] retain];
+		[serverVersion autorelease];
+		serverVersion = [[[edits objectForKey:@"version"] description] retain];
 	}
 	
 	if ([edits objectForKey:@"name"]) {

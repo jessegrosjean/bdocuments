@@ -10,6 +10,7 @@
 #import "BDocuments.h"
 #import "BDocumentWindowController.h"
 #import "BDocumentDifferencesWindowController.h"
+#import "BDocumentsService.h"
 
 
 @implementation BDocument
@@ -191,7 +192,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	} else {
 		NSString *displayName = [NSFileManager stringForKey:@"BDocumentName" atPath:[[self fileURL] path] traverseLink:YES];
 		if ([displayName length] > 0) {
-			return [NSString stringWithFormat:BLocalizedString(@"TaskPaper.com: %@", nil), displayName];
+			return [NSString stringWithFormat:BLocalizedString(@"%@: %@", nil), [[BDocumentsService sharedInstance] serviceLabel], displayName];
 		}
 	}
 	return [super displayName];

@@ -14,8 +14,9 @@
 
 @interface BDocumentsService : NSObject {
 	NSMutableArray *activeHandlers;
-	NSString *serviceRootURLString;
 	NSString *service;
+	NSString *serviceLabel;
+	NSString *serviceRootURLString;
 	NSString *localRootURLString;
 	NSString *localDocumentsPath;
 	NSString *localDocumentShadowsPath;
@@ -26,8 +27,9 @@
 
 + (id)sharedInstance;
 
-@property(readonly) NSString *serviceRootURLString;
 @property(readonly) NSString *service;
+@property(readonly) NSString *serviceLabel;
+@property(readonly) NSString *serviceRootURLString;
 
 - (IBAction)beginSync:(id)sender;
 - (IBAction)cancelSync:(id)sender;
