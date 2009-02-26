@@ -83,6 +83,11 @@
 }
 
 - (IBAction)beginSync:(id)sender {
+	for (BDocument *each in [[NSDocumentController sharedDocumentController] documents]) {
+		if (each.fromDocumentsService) {
+			[each saveDocument:nil];
+		}
+	}
 	[self addActiveHandler:[[[BDocumentsServiceGetDocumentsHandler alloc] init] autorelease]];
 }
 
@@ -102,6 +107,12 @@
 	if ([cookies count] > 0) {
 		for (NSHTTPCookie *each in cookies) {
 			[cookieStorage deleteCookie:each];
+		}
+		for (BDocument *each in [[NSDocumentController sharedDocumentController] documents]) {
+			if (each.fromDocumentsService) {
+				[each saveDocument:nil];
+				[each close];
+			}
 		}
 	} else {
 		[self beginSync:sender];

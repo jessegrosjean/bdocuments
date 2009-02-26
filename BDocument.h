@@ -18,6 +18,7 @@
 @interface BDocument : NSDocument {
 	NSMutableDictionary *documentUserDefaults;
 	BOOL fromExternal;
+	BOOL fromDocumentsService;
 	NSString *externalDisplayName;
 	NSAppleEventDescriptor *externalSender;
 	NSAppleEventDescriptor *externalToken;
@@ -40,6 +41,7 @@
 #pragma mark ODB Editor Suite support
 
 @property(readonly) BOOL fromExternal;
+@property(readonly) BOOL fromDocumentsService;
 @property(readonly) NSAppleEventDescriptor *externalSender;
 @property(readonly) NSAppleEventDescriptor *externalToken;
 

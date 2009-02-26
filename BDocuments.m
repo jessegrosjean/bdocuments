@@ -228,3 +228,6 @@ static NSWindowController *currentDocumentWindowController = nil;
 }
 
 @end
+
+NSString *BDocumentControllerDocumentAddedNotification = @"BDocumentControllerDocumentAddedNotification";
+NSString *BDocumentControllerDocumentRemovedNotification = @"BDocumentControllerDocumentRemovedNotification";

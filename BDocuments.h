@@ -44,3 +44,6 @@
 - (NSString *)stringByURLEncodingStringParameter;
 
 @end
+
+APPKIT_EXTERN NSString *BDocumentControllerDocumentAddedNotification;
+APPKIT_EXTERN NSString *BDocumentControllerDocumentRemovedNotification;

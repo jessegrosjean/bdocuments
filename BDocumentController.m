@@ -261,6 +261,11 @@
 
 #pragma mark Loading Document Workspace
 
+- (void)addDocument:(NSDocument *)document {
+	[super addDocument:document];
+	[[NSNotificationCenter defaultCenter] postNotificationName:BDocumentControllerDocumentAddedNotification object:self userInfo:[NSDictionary dictionaryWithObject:document forKey:@"document"]];
+}
+
 - (void)removeDocument:(NSDocument *)document {
 	if (applicationMayBeTerminating || [[self documents] count] == 1) {
 		NSString *path = [[document fileURL] path];
@@ -273,6 +278,7 @@
 		}
 	}
 	[super removeDocument:document];	
+	[[NSNotificationCenter defaultCenter] postNotificationName:BDocumentControllerDocumentRemovedNotification object:self userInfo:[NSDictionary dictionaryWithObject:document forKey:@"document"]];
 }
 
 - (void)openLastDocumentWorkspace {

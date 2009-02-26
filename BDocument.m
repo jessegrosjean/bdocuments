@@ -183,18 +183,17 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 #pragma mark ODB Editor Suite support
 
 @synthesize fromExternal;
+@synthesize fromDocumentsService;
 @synthesize externalSender;
 @synthesize externalToken;
 
 - (NSString *)displayName {
 	if (fromExternal && externalDisplayName != nil) {
 		return externalDisplayName;
-	} else {
+	} else if (fromDocumentsService) {
 		NSString *displayName = [NSFileManager stringForKey:@"BDocumentName" atPath:[[self fileURL] path] traverseLink:YES];
 		NSString *version = [NSFileManager stringForKey:@"BDocumentVersion" atPath:[[self fileURL] path] traverseLink:YES];
-		if ([displayName length] > 0 && [version length] > 0) {
-			return [NSString stringWithFormat:BLocalizedString(@"%@ (%@)", nil), displayName, version];
-		}
+		return [NSString stringWithFormat:BLocalizedString(@"%@ (%@)", nil), displayName, version];
 	}
 	return [super displayName];
 }
@@ -233,6 +232,13 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 
 - (NSString *)documentDataAsText {
 	return nil;
+}
+
+- (void)setFileURL:(NSURL *)absoluteURL {
+	[super setFileURL:absoluteURL];
+	NSString *displayName = [NSFileManager stringForKey:@"BDocumentName" atPath:[[self fileURL] path] traverseLink:YES];
+	NSString *version = [NSFileManager stringForKey:@"BDocumentVersion" atPath:[[self fileURL] path] traverseLink:YES];
+	fromDocumentsService = ([displayName length] > 0 && [version length] > 0);
 }
 
 - (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError {
