@@ -54,6 +54,10 @@
 	[self cancel:sender];
 }
 
+- (IBAction)learnMore:(id)sender {
+	[[BDocumentsService sharedInstance] openDocumentsServiceAboutPage:sender];
+}
+
 - (IBAction)ok:(id)sender {
 	[NSApp stopModalWithCode:NSOKButton];
 	[self close];

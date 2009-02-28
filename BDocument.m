@@ -191,9 +191,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	if (fromExternal && externalDisplayName != nil) {
 		return externalDisplayName;
 	} else if (fromDocumentsService) {
-		NSString *displayName = [NSFileManager stringForKey:@"BDocumentName" atPath:[[self fileURL] path] traverseLink:YES];
-		NSString *version = [NSFileManager stringForKey:@"BDocumentVersion" atPath:[[self fileURL] path] traverseLink:YES];
-		return [NSString stringWithFormat:BLocalizedString(@"%@ (%@)", nil), displayName, version];
+		return [BDocumentsService displayNameForDocumentsServiceDocument:[self fileURL]];
 	}
 	return [super displayName];
 }
@@ -236,9 +234,24 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 
 - (void)setFileURL:(NSURL *)absoluteURL {
 	[super setFileURL:absoluteURL];
-	NSString *displayName = [NSFileManager stringForKey:@"BDocumentName" atPath:[[self fileURL] path] traverseLink:YES];
-	NSString *version = [NSFileManager stringForKey:@"BDocumentVersion" atPath:[[self fileURL] path] traverseLink:YES];
-	fromDocumentsService = ([displayName length] > 0 && [version length] > 0);
+	fromDocumentsService = [BDocumentsService isDocumentURLManagedByDocumentsService:[self fileURL]];
+}
+
+- (NSInteger)fileHFSTypeCode {
+	[NSException raise:@"Subclass must overide" format:@""];
+	return 0;
+}
+
+- (NSInteger)fileHFSCreatorCode {
+	[NSException raise:@"Subclass must overide" format:@""];
+	return 0;
+}
+
+- (NSDictionary *)fileAttributesToWriteToFile:(NSString *)fullDocumentPath ofType:(NSString *)docType saveOperation:(NSSaveOperationType)saveOperationType {
+	NSMutableDictionary *attributes = [[super fileAttributesToWriteToFile:fullDocumentPath ofType:docType saveOperation:saveOperationType] mutableCopy];
+	[attributes setObject:[NSNumber numberWithUnsignedInteger:[self fileHFSTypeCode]] forKey:NSFileHFSTypeCode];
+	[attributes setObject:[NSNumber numberWithUnsignedInteger:[self fileHFSCreatorCode]] forKey:NSFileHFSCreatorCode];
+	return attributes;
 }
 
 - (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError {

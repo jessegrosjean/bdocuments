@@ -14,27 +14,29 @@
 
 @interface BDocumentsService : NSObject {
 	NSMutableArray *activeHandlers;
+	NSInteger totalActiveHandlers;
 	NSString *service;
 	NSString *serviceLabel;
 	NSString *serviceRootURLString;
 	NSString *localRootURLString;
 	NSString *localDocumentsPath;
+	NSString *localNewDocumentsPath;
 	NSString *localDocumentShadowsPath;
-	NSString *localDocumentsConflictsPath;
 }
 
-#pragma mark Class Methods
-
 + (id)sharedInstance;
++ (BOOL)isDocumentURLManagedByDocumentsService:(NSURL *)aURL;
++ (NSString *)displayNameForDocumentsServiceDocument:(NSURL *)aURL;
 
 @property(readonly) NSString *service;
 @property(readonly) NSString *serviceLabel;
 @property(readonly) NSString *serviceRootURLString;
+@property(retain) NSString *serviceUserName;
 
 - (IBAction)beginSync:(id)sender;
 - (IBAction)cancelSync:(id)sender;
 - (IBAction)openDocumentsService:(id)sender;
-- (IBAction)newDocumentsServiceDocument:(id)sender;
+- (IBAction)openDocumentsServiceAboutPage:(id)sender;
 - (IBAction)toggleDocumentsServiceAuthentication:(id)sender;
 
 - (void)addActiveHandler:(BDocumentsServiceHandler *)aHandler;
@@ -93,6 +95,13 @@
 	BDocumentsServiceDocument *localDocument;
 }
 - (id)initWithLocalDocument:(BDocumentsServiceDocument *)aLocalDocument;
+@end
+
+@interface BDocumentsServicePostNewDocumentHandler : BDocumentsServiceHandler {
+	NSString *newDocumentContent;
+	NSString *newDocumentPath;
+}
+- (id)initWithNewDocumentPath:(NSString *)aNewDocumentPath;
 @end
 
 @interface BDocumentsServiceGetServerEditsHandler : BDocumentsServiceHandler {

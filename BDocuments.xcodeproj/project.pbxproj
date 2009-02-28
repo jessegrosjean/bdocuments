@@ -43,6 +43,9 @@
 		88A470D20E918EE200E29F5B /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */; };
 		88A470D30E918EE200E29F5B /* NSObject+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470CC0E918EE200E29F5B /* NSObject+SBJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88A470D40E918EE200E29F5B /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470CD0E918EE200E29F5B /* JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		88E98B3E0F5841A200CAAA23 /* BDocumentsServiceSyncWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 88E98B3C0F5841A200CAAA23 /* BDocumentsServiceSyncWindowController.h */; };
+		88E98B3F0F5841A200CAAA23 /* BDocumentsServiceSyncWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E98B3D0F5841A200CAAA23 /* BDocumentsServiceSyncWindowController.m */; };
+		88E98B440F58425B00CAAA23 /* BDocumentsServiceSyncWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88E98B430F58425B00CAAA23 /* BDocumentsServiceSyncWindow.xib */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -108,6 +111,9 @@
 		88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
 		88A470CC0E918EE200E29F5B /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
 		88A470CD0E918EE200E29F5B /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
+		88E98B3C0F5841A200CAAA23 /* BDocumentsServiceSyncWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BDocumentsServiceSyncWindowController.h; sourceTree = "<group>"; };
+		88E98B3D0F5841A200CAAA23 /* BDocumentsServiceSyncWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDocumentsServiceSyncWindowController.m; sourceTree = "<group>"; };
+		88E98B410F58425700CAAA23 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BDocumentsServiceSyncWindow.xib; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* BDocuments.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BDocuments.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D2F7E65807B2D6F200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
@@ -161,6 +167,7 @@
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
 				437D71740C91792B0051C06D /* Localizable.strings */,
 				88A36CA30F14FC2C00EAA3FD /* BDocumentDifferencesWindow.xib */,
+				88E98B430F58425B00CAAA23 /* BDocumentsServiceSyncWindow.xib */,
 				883B65200F33A679005D5B3A /* BDocumentsServiceAuthenticationWindow.xib */,
 				437D716C0C9179050051C06D /* Plugin.xml */,
 				889A4F270D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown */,
@@ -235,6 +242,8 @@
 				883B60C90F324F86005D5B3A /* BDocumentsService.m */,
 				883B60B30F324DF6005D5B3A /* BDocumentsHTTPFetcher.h */,
 				883B60B40F324DF6005D5B3A /* BDocumentsHTTPFetcher.m */,
+				88E98B3C0F5841A200CAAA23 /* BDocumentsServiceSyncWindowController.h */,
+				88E98B3D0F5841A200CAAA23 /* BDocumentsServiceSyncWindowController.m */,
 				883B65270F33A76B005D5B3A /* BDocumentsServiceAuthenticationWindowController.h */,
 				883B65280F33A76B005D5B3A /* BDocumentsServiceAuthenticationWindowController.m */,
 				88A470D60E918EE600E29F5B /* JSON */,
@@ -289,6 +298,7 @@
 				883B60B50F324DF6005D5B3A /* BDocumentsHTTPFetcher.h in Headers */,
 				883B60CA0F324F86005D5B3A /* BDocumentsService.h in Headers */,
 				883B65290F33A76B005D5B3A /* BDocumentsServiceAuthenticationWindowController.h in Headers */,
+				88E98B3E0F5841A200CAAA23 /* BDocumentsServiceSyncWindowController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,6 +373,7 @@
 				88A3519C0E97A34E0019988C /* theme.plist in Resources */,
 				88A36CA40F14FC2C00EAA3FD /* BDocumentDifferencesWindow.xib in Resources */,
 				883B65210F33A679005D5B3A /* BDocumentsServiceAuthenticationWindow.xib in Resources */,
+				88E98B440F58425B00CAAA23 /* BDocumentsServiceSyncWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,6 +413,7 @@
 				883B60B60F324DF6005D5B3A /* BDocumentsHTTPFetcher.m in Sources */,
 				883B60CB0F324F86005D5B3A /* BDocumentsService.m in Sources */,
 				883B652A0F33A76B005D5B3A /* BDocumentsServiceAuthenticationWindowController.m in Sources */,
+				88E98B3F0F5841A200CAAA23 /* BDocumentsServiceSyncWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -446,6 +458,14 @@
 				88A36CA10F14FC2700EAA3FD /* English */,
 			);
 			name = BDocumentDifferencesWindow.xib;
+			sourceTree = "<group>";
+		};
+		88E98B430F58425B00CAAA23 /* BDocumentsServiceSyncWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				88E98B410F58425700CAAA23 /* English */,
+			);
+			name = BDocumentsServiceSyncWindow.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

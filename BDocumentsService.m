@@ -12,6 +12,7 @@
 #import "BDiffMatchPatch.h"
 #import "NSString+SBJSON.h"
 #import "BDocumentsServiceAuthenticationWindowController.h"
+#import "BDocumentsServiceSyncWindowController.h"
 
 
 @implementation BDocumentsService
@@ -24,25 +25,38 @@
     return sharedInstance;
 }
 
++ (BOOL)isDocumentURLManagedByDocumentsService:(NSURL *)aURL {
+	NSString *path = [aURL path];
+	NSString *name = [NSFileManager stringForKey:@"BDocumentName" atPath:path traverseLink:YES];
+	NSString *version = [NSFileManager stringForKey:@"BDocumentVersion" atPath:path traverseLink:YES];
+	return [version length] > 0 && [name length] > 0;
+}
+
++ (NSString *)displayNameForDocumentsServiceDocument:(NSURL *)aURL {
+	NSString *path = [aURL path];
+	NSString *name = [NSFileManager stringForKey:@"BDocumentName" atPath:path traverseLink:YES];
+	return name;
+}
+
 - (id)init {
 	if (self = [super init]) {
 		NSFileManager *fileManager = [NSFileManager defaultManager];
-		NSString *cloud = [fileManager.processesApplicationSupportFolder stringByAppendingPathComponent:@"Cloud"];
+		NSString *sync = [fileManager.processesApplicationSupportFolder stringByAppendingPathComponent:@"Sync"];
 		
 		service = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsService"] retain];
 		serviceLabel = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsServiceLabel"] retain];
 		serviceRootURLString = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BDocumentsServiceURL"] retain];
-		localDocumentsPath = [cloud stringByAppendingPathComponent:@"Documents"];
-		localDocumentShadowsPath = [cloud stringByAppendingPathComponent:@"Shadows"];
-		localDocumentsConflictsPath = [cloud stringByAppendingPathComponent:@"Conflicts"];
+		localDocumentsPath = [sync stringByAppendingPathComponent:@"Documents"];
+		localNewDocumentsPath = [sync stringByAppendingPathComponent:@"New"];
+		localDocumentShadowsPath = [sync stringByAppendingPathComponent:@"Shadows"];
 		
 		if (![fileManager createDirectoriesForPath:localDocumentsPath]) {
 			return nil;
 		}
-		if (![fileManager createDirectoriesForPath:localDocumentShadowsPath]) {
+		if (![fileManager createDirectoriesForPath:localNewDocumentsPath]) {
 			return nil;
 		}
-		if (![fileManager createDirectoriesForPath:localDocumentsConflictsPath]) {
+		if (![fileManager createDirectoriesForPath:localDocumentShadowsPath]) {
 			return nil;
 		}
 		
@@ -54,6 +68,90 @@
 @synthesize service;
 @synthesize serviceLabel;
 @synthesize serviceRootURLString;
+
+- (NSString *)serviceUserName {
+	return [[NSUserDefaults standardUserDefaults] stringForKey:@"BDocumentsServiceUsername"];
+}
+
+- (void)setServiceUserName:(NSString *)aUserName {
+	if (aUserName) {
+		[[NSUserDefaults standardUserDefaults] setObject:aUserName forKey:@"BDocumentsServiceUsername"];
+	} else {
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"BDocumentsServiceUsername"];
+	}
+}
+
+- (IBAction)beginSync:(id)sender {
+	totalActiveHandlers = 0;
+	
+	for (BDocument *each in [[NSDocumentController sharedDocumentController] documents]) {
+		if (each.fromDocumentsService) {
+			[each saveDocument:nil];
+		}
+	}
+	[self addActiveHandler:[[[BDocumentsServiceGetDocumentsHandler alloc] init] autorelease]];
+}
+
+- (IBAction)cancelSync:(id)sender {
+	for (BDocumentsServiceHandler *each in [[activeHandlers copy] autorelease]) {
+		[each cancel];
+	}
+}
+
+- (IBAction)openDocumentsService:(id)sender {
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[serviceRootURLString stringByAppendingPathComponent:@"documents"]]];
+}
+
+- (IBAction)openDocumentsServiceAboutPage:(id)sender {
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:serviceRootURLString]];	
+}
+
+- (IBAction)toggleDocumentsServiceAuthentication:(id)sender {
+	NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+	NSArray *cookies = [cookieStorage cookiesForURL:[NSURL URLWithString:serviceRootURLString]];
+	if ([cookies count] > 0) {
+		for (NSHTTPCookie *each in cookies) {
+			[cookieStorage deleteCookie:each];
+		}
+		for (BDocument *each in [[[NSDocumentController sharedDocumentController] documents] copy]) {
+			if (each.fromDocumentsService) {
+				[each saveDocument:nil];
+				[each close];
+			}
+		}
+		self.serviceUserName = nil;
+	} else {
+		[self beginSync:sender];
+	}
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
+	if ([menuItem action] == @selector(toggleDocumentsServiceAuthentication:)) {
+		if (self.serviceUserName != nil) {
+			[menuItem setTitle:[NSString stringWithFormat:@"Sign Out (%@)", self.serviceUserName]];
+		} else {
+			[menuItem setTitle:@"Sign In..."];
+		}
+	}
+	return YES;
+}
+
+
+- (NSArray *)newLocalDocuments:(NSError **)error {
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSArray *newLocalDocumentFileNames = [fileManager contentsOfDirectoryAtPath:localNewDocumentsPath error:error];
+	if (!newLocalDocumentFileNames) {
+		BLogError(@"Failed to get new local document list, aborting sync");
+	} else {
+		NSMutableArray *newLocalDocuments = [NSMutableArray array];
+		for (NSString *each in newLocalDocumentFileNames) {
+			NSString *eachNewLocalPath = [localNewDocumentsPath stringByAppendingPathComponent:each];
+			[newLocalDocuments addObject:eachNewLocalPath];
+		}
+		return newLocalDocuments;
+	}
+	return nil;
+}
 
 - (NSArray *)localDocuments:(NSDictionary *)serverDocumentsByID error:(NSError **)error {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -82,59 +180,24 @@
 	return nil;
 }
 
-- (IBAction)beginSync:(id)sender {
-	for (BDocument *each in [[NSDocumentController sharedDocumentController] documents]) {
-		if (each.fromDocumentsService) {
-			[each saveDocument:nil];
-		}
-	}
-	[self addActiveHandler:[[[BDocumentsServiceGetDocumentsHandler alloc] init] autorelease]];
-}
-
-- (IBAction)cancelSync:(id)sender {
-	for (BDocumentsServiceHandler *each in [[activeHandlers copy] autorelease]) {
-		[each cancel];
-	}
-}
-
-- (IBAction)openDocumentsService:(id)sender {
-	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:serviceRootURLString]];
-}
-
-- (IBAction)toggleDocumentsServiceAuthentication:(id)sender {
-	NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-	NSArray *cookies = [cookieStorage cookiesForURL:[NSURL URLWithString:serviceRootURLString]];
-	if ([cookies count] > 0) {
-		for (NSHTTPCookie *each in cookies) {
-			[cookieStorage deleteCookie:each];
-		}
-		for (BDocument *each in [[NSDocumentController sharedDocumentController] documents]) {
-			if (each.fromDocumentsService) {
-				[each saveDocument:nil];
-				[each close];
-			}
-		}
-	} else {
-		[self beginSync:sender];
-	}
-}
-
-- (IBAction)newDocumentsServiceDocument:(id)sender {
-	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[serviceRootURLString stringByAppendingString:@"/documents/new"]]];	
-}
-
-- (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
-	if ([menuItem action] == @selector(toggleDocumentsServiceAuthentication:)) {
-		if ([[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:[NSURL URLWithString:serviceRootURLString]] count] > 0) {
-			[menuItem setTitle:[NSString stringWithFormat:@"Sign Out (%@)", [[NSUserDefaults standardUserDefaults] stringForKey:@"BDocumentsServiceUsername"]]];
-		} else {
-			[menuItem setTitle:@"Sign In..."];
-		}
-	}
-	return YES;
-}
-
 - (void)updateLocal:(BDocumentsServiceDocument *)aDocument {
+	static NSMutableDictionary *localFileattributes = nil;
+	
+	if (!localFileattributes) {
+		NSDocumentController *documentController = [NSDocumentController sharedDocumentController];
+		
+		BDocument *document = [[documentController documents] lastObject];
+		if (!document) {
+			document = [[[documentController documentClassForType:[documentController defaultType]] alloc] init];
+		}
+		
+		if (document && [document isKindOfClass:[BDocument class]]) {
+			localFileattributes = [NSMutableDictionary dictionary];
+			[localFileattributes setObject:[NSNumber numberWithUnsignedInteger:[document fileHFSCreatorCode]] forKey:NSFileHFSCreatorCode];
+			[localFileattributes setObject:[NSNumber numberWithUnsignedInteger:[document fileHFSTypeCode]] forKey:NSFileHFSTypeCode];
+		}
+	}
+
 	NSError *error = nil;
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSString *documentPath = [localDocumentsPath stringByAppendingPathComponent:aDocument.documentID];
@@ -144,7 +207,13 @@
 		[NSFileManager setString:aDocument.documentID forKey:@"BDocumentID" atPath:documentPath traverseLink:YES];
 		if (aDocument.name) [NSFileManager setString:aDocument.name forKey:@"BDocumentName" atPath:documentPath traverseLink:YES];
 		[NSFileManager setString:[aDocument.serverVersion description] forKey:@"BDocumentVersion" atPath:documentPath traverseLink:YES];
-
+		
+		if (localFileattributes) {
+			if (![fileManager setAttributes:localFileattributes ofItemAtPath:documentPath error:&error]) {
+				NSLog(@"error");
+			}
+		}
+		
 		[fileManager removeFileAtPath:documentShadowPath handler:nil];
 		
 		if (![fileManager copyPath:documentPath toPath:documentShadowPath handler:nil]) {
@@ -175,11 +244,26 @@
 }
 
 - (void)addActiveHandler:(BDocumentsServiceHandler *)aHandler {
+	BDocumentsServiceSyncWindowController *syncWindowController = [BDocumentsServiceSyncWindowController sharedInstance];
 	[activeHandlers addObject:aHandler];
+	totalActiveHandlers++;
+	if (totalActiveHandlers == 1) {
+		[syncWindowController showWindow:nil];
+		syncWindowController.progress = 0.5;
+	}
 }
 
 - (void)removeActiveHandler:(BDocumentsServiceHandler *)aHandler {
+	BDocumentsServiceSyncWindowController *syncWindowController = [BDocumentsServiceSyncWindowController sharedInstance];
 	[activeHandlers removeObject:aHandler];
+	NSUInteger activeCount = [activeHandlers count];
+	
+	if (activeCount == 0) {
+		syncWindowController.progress = 1.0;
+		[syncWindowController close];
+	} else {
+		syncWindowController.progress = 0.5 + ((1.0 - ((float)activeCount / (float)totalActiveHandlers)) / 2.0);
+	}
 }
 
 #pragma mark Lifecycle Callback
@@ -197,29 +281,24 @@
 			remove = YES;
 		}
 	}
-	
-	/*
-	NSMenuItem *newDocumentMenuItem = [[NSMenuItem alloc] initWithTitle:BLocalizedString(@"New Document...", nil) action:@selector(newDocumentsServiceDocument:) keyEquivalent:@""];
-	[newDocumentMenuItem setTarget:self];
-	[menu addItem:newDocumentMenuItem];	
 
-	[menu addItem:[NSMenuItem separatorItem]];
-	*/
-	
-	if ([[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:[NSURL URLWithString:serviceRootURLString]] count] > 0) {
-		NSArray *localDocuments = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:localDocumentsPath error:nil];
+	NSArray *localDocuments = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:localDocumentsPath error:nil];
+
+	if (self.serviceUserName != nil) {
 		NSMutableArray *menuItems = [NSMutableArray array];
+		NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
 		
 		for (NSString *each in localDocuments) {
 			NSString *eachLocalPath = [localDocumentsPath stringByAppendingPathComponent:each];
-			NSString *eachName = [NSFileManager stringForKey:@"BDocumentName" atPath:eachLocalPath traverseLink:YES];
-			NSString *eachVersion = [NSFileManager stringForKey:@"BDocumentVersion" atPath:eachLocalPath traverseLink:YES];
-			if ([eachName length] > 0 && [eachVersion length] > 0) {
-				NSString *title = [NSString stringWithFormat:@"%@ (%@)", eachName, eachVersion];
+			NSURL *eachURL = [NSURL fileURLWithPath:eachLocalPath];
+			if ([BDocumentsService isDocumentURLManagedByDocumentsService:eachURL]) {
+				NSString *title = [BDocumentsService displayNameForDocumentsServiceDocument:eachURL];
 				NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:title action:@selector(openDocumentsServiceDocument:) keyEquivalent:@""];
 				[eachMenuItem setRepresentedObject:eachLocalPath];
+				NSImage *icon = [workspace iconForFile:eachLocalPath];
+				[icon setSize:NSMakeSize(16, 16)];
+				[eachMenuItem setImage:icon];
 				[eachMenuItem setTarget:self];
-				[eachMenuItem setIndentationLevel:1];
 				[menuItems addObject:eachMenuItem];
 			}
 		}
@@ -230,8 +309,7 @@
 			[menu addItem:eachMenuItem];
 		}
 	} else {
-		[menu addItemWithTitle:BLocalizedString(@"Sign In to View Documents", nil) action:nil keyEquivalent:@""];
-		[[[menu itemArray] lastObject] setIndentationLevel:1];
+		[menu addItemWithTitle:BLocalizedString(@"Sign In to List Synced Documents", nil) action:nil keyEquivalent:@""];
 	}
 }
 
@@ -257,6 +335,14 @@
 			 localShadowContent:nil]) {
 	}
 	return self;	
+}
+
+- (id)initWithData:(NSData *)data content:(NSString *)aString {
+	if (self = [self initWithData:data]) {
+		[content release];
+		content = [aString retain];
+	}
+	return self;
 }
 
 - (id)initWithDocumentID:(NSString *)aDocumentID localVersion:(NSString *)aLocalVersion serverVersion:(NSString *)aServerVersion name:(NSString *)aName content:(NSString *)aContent localShadowContent:(NSString *)aLocalShadowContent {
@@ -377,15 +463,22 @@
 		NSString *postString = [NSString stringWithFormat:@"Email=%@&Passwd=%@&source=%@&service=%@&accountType=%@", [authenticationWindowController.username stringByURLEncodingStringParameter], [authenticationWindowController.password stringByURLEncodingStringParameter], [documentsService.service stringByURLEncodingStringParameter], @"ah", @"GOOGLE"];
 		[authTokenFetcher setPostData:[postString dataUsingEncoding:NSUTF8StringEncoding]];
 		[authTokenFetcher beginFetchWithDelegate:self];
+	} else {
+		[[BDocumentsService sharedInstance] cancelSync:nil];
 	}
 }
 
 - (void)fetcher:(BDocumentsHTTPFetcher *)aFetcher networkFailed:(NSError *)error {
+	[[BDocumentsService sharedInstance] removeActiveHandler:self];
+	[[NSDocumentController sharedDocumentController] presentError:error];
 }
 
 - (void)fetcher:(BDocumentsHTTPFetcher *)aFetcher failedWithStatusCode:(NSInteger)statusCode data:(NSData *)data {
 	if (statusCode == 401 || statusCode == 403) {
 		[self clientLogin];
+	} else {
+		[[BDocumentsService sharedInstance] removeActiveHandler:self];
+		// should display error!
 	}
 }
 
@@ -407,10 +500,13 @@
 	} else {
 		[self handleResponse:data];
 	}
+	
+	[[BDocumentsService sharedInstance] removeActiveHandler:self];
 }
 
 - (void)cancel {
 	[fetcher stopFetching];
+	[[BDocumentsService sharedInstance] removeActiveHandler:self];
 }
 
 - (void)handleResponse:(NSData *)data {	
@@ -433,7 +529,7 @@
 	return self;
 }
 
-- (void)handleResponse:(NSData *)data {	
+- (void)handleResponse:(NSData *)data {
 	NSError *error = nil;
 	BDocumentsService *documentsService = [BDocumentsService sharedInstance];
 	NSArray *documents = [[[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease] JSONValue];
@@ -460,6 +556,10 @@
 	
 	for (NSString *eachServerID in [serverDocumentsByID keyEnumerator]) {
 		[documentsService addActiveHandler:[[[BDocumentsServiceGetDocumentHandler alloc] initWithDocumentID:eachServerID] autorelease]];
+	}
+	
+	for (NSString *eachNewDocumentPath in [documentsService newLocalDocuments:&error]) {
+		[documentsService addActiveHandler:[[[BDocumentsServicePostNewDocumentHandler alloc] initWithNewDocumentPath:eachNewDocumentPath] autorelease]];
 	}
 }
 
@@ -518,6 +618,38 @@
 	NSDictionary *serverEdits = [[[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease] JSONValue];
 	[localDocument applyEdits:serverEdits];
 	[localDocument updateLocal];
+}
+
+@end
+
+@implementation BDocumentsServicePostNewDocumentHandler : BDocumentsServiceHandler
+
+- (id)initWithNewDocumentPath:(NSString *)aNewDocumentPath {
+	BDocumentsService *documentsService = [BDocumentsService sharedInstance];
+	NSMutableURLRequest *postLocalEditsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/v1/documents", documentsService.serviceRootURLString]]];
+	BDocumentsHTTPFetcher *postLocalEditsFetcher = [BDocumentsHTTPFetcher fetcherWithRequest:postLocalEditsRequest];
+	
+	if (self = [super initWithFetcher:postLocalEditsFetcher]) {
+		newDocumentPath = aNewDocumentPath;
+		newDocumentContent = [NSString stringWithContentsOfFile:newDocumentPath];
+		[postLocalEditsFetcher setFormURLEncodedPostDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[newDocumentPath lastPathComponent], @"name", newDocumentContent, @"content", nil]];
+		[postLocalEditsFetcher beginFetchWithDelegate:self];
+	}
+	return self;
+}
+
+- (void)dealloc {
+	[newDocumentContent release];
+	[newDocumentPath release];
+	[super dealloc];
+}
+
+- (void)handleResponse:(NSData *)data {	
+	BDocumentsServiceDocument *localDocument = [[BDocumentsServiceDocument alloc] initWithData:data content:newDocumentContent];
+	[localDocument updateLocal];
+	if (![[NSFileManager defaultManager] removeFileAtPath:newDocumentPath handler:nil]) {
+		NSLog(@"failed to remove new document path");
+	}
 }
 
 @end

@@ -8,6 +8,7 @@
 
 #import "BDocumentController.h"
 #import "BDocumentsService.h"
+#import "BUserInterfaceController.h"
 #import <objc/runtime.h>
 
 
@@ -221,6 +222,52 @@
 #pragma mark Lifecycle Callback
 
 - (void)applicationLaunching {
+}
+
+- (void)applicationDidFinishLaunching {
+	[[NSMenu menuForMenuExtensionPoint:@"com.blocks.BUserInterface.menus.main.file.openRecent"] setDelegate:self];
+}
+
+- (void)menuNeedsUpdate:(NSMenu *)menu {
+	for (NSMenuItem *each in [menu itemArray]) {
+		[menu removeItem:each];
+	}
+
+	NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+	
+	for (NSURL *each in [self recentDocumentURLs]) {
+		NSString *path = [each path];
+		NSString *title = nil;
+		
+		if ([BDocumentsService isDocumentURLManagedByDocumentsService:each]) {
+			title = [[BDocumentsService displayNameForDocumentsServiceDocument:each] stringByAppendingFormat:@"—%@", BLocalizedString(@"TaskPaper.com", nil)];
+		} else {
+			title = [path lastPathComponent];
+		}
+		NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:title action:@selector(openRecentDocument:) keyEquivalent:@""];
+		[eachMenuItem setRepresentedObject:each];
+		NSImage *icon = [workspace iconForFile:path];
+		[icon setSize:NSMakeSize(16, 16)];
+		[eachMenuItem setImage:icon];
+		[menu addItem:eachMenuItem];
+	}
+	
+	if ([menu numberOfItems] > 0) {
+		[menu addItem:[NSMenuItem separatorItem]];
+	}
+	
+	[menu addItemWithTitle:BLocalizedString(@"Clear Menu", nil) action:@selector(clearRecentDocuments:) keyEquivalent:@""];	
+}
+
+- (void)openRecentDocument:(NSMenuItem *)aMenuItem {
+	NSError *error = nil;
+	if (![self openDocumentWithContentsOfURL:[aMenuItem representedObject] display:YES error:&error]) {
+		if (error) {
+			[self presentError:error];
+		} else {
+			NSBeep();
+		}
+	}
 }
 
 - (void)applicationMayTerminateNotification {

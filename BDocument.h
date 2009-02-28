@@ -47,6 +47,8 @@
 
 #pragma mark Reading and Writing
 
+- (NSInteger)fileHFSTypeCode;
+- (NSInteger)fileHFSCreatorCode;
 - (IBAction)showUnsavedChanges:(id)sender;
 @property(readonly) NSString *documentDataAsText;
 - (void)checkForModificationOfFileOnDisk;

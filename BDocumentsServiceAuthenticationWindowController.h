@@ -22,6 +22,7 @@
 
 - (IBAction)createNewAccount:(id)sender;
 - (IBAction)foregotPassword:(id)sender;
+- (IBAction)learnMore:(id)sender;
 - (IBAction)ok:(id)sender;
 - (IBAction)cancel:(id)sender;
 	

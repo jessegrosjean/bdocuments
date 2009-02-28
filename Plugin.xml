@@ -15,6 +15,7 @@
 
 	<extension point="com.blocks.BLifecycle.lifecycle">
 		<applicationLaunching class="BDocumentController sharedInstance" />
+		<applicationDidFinishLaunching class="BDocumentController sharedInstance" />
 		<applicationMayTerminateNotification class="BDocumentController sharedInstance" />
 		<applicationCancledTerminateNotification class="BDocumentController sharedInstance" />
 		<applicationWillTerminate class="BDocumentController sharedInstance" />
@@ -34,10 +35,9 @@
 		</menu>
 		
 		<menu id="com.blocks.BDocuments.menus.main.file.documentsService">
-			<menuitem title="%Open DocumentsService..." id="openDocumentsService" action="openDocumentsService:" target="BDocumentsService sharedInstance" />
-			<menuitem title="%Sign In..." id="toggleDocumentsServiceAuthentication" indentationLevel="1" action="toggleDocumentsServiceAuthentication:" target="BDocumentsService sharedInstance" />
-			<menuitem title="%Syncronize..." id="sync" indentationLevel="1" action="beginSync:" target="BDocumentsService sharedInstance" keyEquivalent="s" keyEquivalentModifierMask="NSControlKeyMask|NSCommandKeyMask" />
-			<menuitem title="%New Document..." id="newDocumentsServiceDocument" indentationLevel="1" action="newDocumentsServiceDocument:" target="BDocumentsService sharedInstance" />
+			<menuitem title="%Sync Changes" id="syncSharedDocuments" action="beginSync:" target="BDocumentsService sharedInstance" keyEquivalent="s" keyEquivalentModifierMask="NSControlKeyMask|NSCommandKeyMask" />
+			<menuitem title="%Mangage Synced Documents" id="showSharedDocuments" action="openDocumentsService:" target="BDocumentsService sharedInstance" />
+			<menuitem title="%Sign In..." id="toggleDocumentsServiceAuthentication" action="toggleDocumentsServiceAuthentication:" target="BDocumentsService sharedInstance" />
 			<separator indentationLevel="1" group="documents" />
 		</menu>
 		
