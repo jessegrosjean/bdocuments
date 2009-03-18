@@ -31,6 +31,7 @@
 
 #pragma mark Loading Document Workspace
 
+- (void)removeRecentDocumentURL:(NSURL *)removedURL;
 - (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender;
 
 @end

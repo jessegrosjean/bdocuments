@@ -2,10 +2,11 @@
 
 
 enum {
-	kBDocumentsHTTPFetcherErrorDownloadFailed = -1,
+	kBCloudHTTPFetcherErrorDownloadFailed = -1,
 };
 
-@interface BDocumentsHTTPFetcher : NSObject {
+@interface BCloudHTTPFetcher : NSObject {
+	NSURLRequest *initialRequest;
 	NSMutableURLRequest *request;
 	NSURLConnection *connection;
 	NSMutableData *downloadedData;
@@ -16,7 +17,7 @@ enum {
 	NSArray *runLoopModes;
 }
 
-+ (BDocumentsHTTPFetcher *)fetcherWithRequest:(NSURLRequest *)request;
++ (BCloudHTTPFetcher *)fetcherWithRequest:(NSURLRequest *)request;
 + (NSDictionary *)dictionaryWithResponseString:(NSString *)responseString;
 
 #pragma mark Init
@@ -25,6 +26,7 @@ enum {
 
 #pragma mark Attributes
 
+- (NSURLRequest *)initialRequest;
 - (NSMutableURLRequest *)request;
 - (void)setRequest:(NSURLRequest *)theRequest;
 - (NSData *)postData;
@@ -48,9 +50,9 @@ enum {
 
 @end
 
-@interface NSObject (BDocumentsHTTPFetcherDelegate)
-- (void)fetcher:(BDocumentsHTTPFetcher *)fetcher receivedData:(NSData *)dataReceivedSoFar;
-- (void)fetcher:(BDocumentsHTTPFetcher *)fetcher finishedWithData:(NSData *)data;
-- (void)fetcher:(BDocumentsHTTPFetcher *)fetcher networkFailed:(NSError *)error;
-- (void)fetcher:(BDocumentsHTTPFetcher *)fetcher failedWithStatusCode:(NSInteger)statusCode data:(NSData *)data;
+@interface NSObject (BCloudHTTPFetcherDelegate)
+- (void)fetcher:(BCloudHTTPFetcher *)fetcher receivedData:(NSData *)dataReceivedSoFar;
+- (void)fetcher:(BCloudHTTPFetcher *)fetcher finishedWithData:(NSData *)data;
+- (void)fetcher:(BCloudHTTPFetcher *)fetcher networkFailed:(NSError *)error;
+- (void)fetcher:(BCloudHTTPFetcher *)fetcher failedWithStatusCode:(NSInteger)statusCode data:(NSData *)data;
 @end

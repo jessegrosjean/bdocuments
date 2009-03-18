@@ -1,5 +1,5 @@
 //
-//  BDocumentsServiceAuthenticationWindowController.h
+//  BCloudAuthenticationWindowController.h
 //  BDocuments
 //
 //  Created by Jesse Grosjean on 1/30/09.
@@ -9,8 +9,9 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface BDocumentsServiceAuthenticationWindowController : NSWindowController {
+@interface BCloudAuthenticationWindowController : NSWindowController {
 	IBOutlet NSTextField *heading;
+	IBOutlet NSTextField *message;
 	IBOutlet NSTextField *usernameTextField;
 	IBOutlet NSTextField *passwordTextField;
 }

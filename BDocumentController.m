@@ -7,7 +7,7 @@
 //
 
 #import "BDocumentController.h"
-#import "BDocumentsService.h"
+#import "BCloudDocumentsService.h"
 #import "BUserInterfaceController.h"
 #import <objc/runtime.h>
 
@@ -239,8 +239,8 @@
 		NSString *path = [each path];
 		NSString *title = nil;
 		
-		if ([BDocumentsService isDocumentURLManagedByDocumentsService:each]) {
-			title = [[BDocumentsService displayNameForDocumentsServiceDocument:each] stringByAppendingFormat:@"—%@", BLocalizedString(@"TaskPaper.com", nil)];
+		if ([BCloudDocumentsService isDocumentURLManagedByDocumentsService:each]) {
+			title = [[BCloudDocumentsService displayNameForDocumentsServiceDocument:each] stringByAppendingFormat:@"—%@", [[BCloudDocumentsService sharedInstance] serviceLabel]];
 		} else {
 			title = [path lastPathComponent];
 		}
@@ -303,10 +303,20 @@
 #pragma mark Sync
 
 - (IBAction)sync:(id)sender {
-	[[BDocumentsService sharedInstance] beginSync:sender];
+	[[BCloudDocumentsService sharedInstance] beginSync:sender];
 }
 
 #pragma mark Loading Document Workspace
+
+- (void)removeRecentDocumentURL:(NSURL *)removedURL {
+	NSArray *recentDocumentURLs = [self recentDocumentURLs];
+	[self clearRecentDocuments:nil];
+	for (NSURL *each in recentDocumentURLs) {
+		if (![each isEqual:removedURL]) {
+			[self noteNewRecentDocumentURL:each];
+		}
+	}
+}
 
 - (void)addDocument:(NSDocument *)document {
 	[super addDocument:document];

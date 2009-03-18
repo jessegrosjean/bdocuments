@@ -1,20 +1,20 @@
 //
-//  BDocumentsHTTPFetcher.m
+//  BCloudHTTPFetcher.m
 //
 
-#import "BDocumentsHTTPFetcher.h"
+#import "BCloudHTTPFetcher.h"
 #import "BDocuments.h"
 
 
-@interface BDocumentsHTTPFetcher (BDocumentsHTTPFetcherPrivate)
+@interface BCloudHTTPFetcher (BCloudHTTPFetcherPrivate)
 - (void)setResponse:(NSURLResponse *)response;
 - (void)setDelegate:(id)theDelegate; 
 @end
 
-@implementation BDocumentsHTTPFetcher
+@implementation BCloudHTTPFetcher
 
-+ (BDocumentsHTTPFetcher *)fetcherWithRequest:(NSURLRequest *)request {
-	return [[[BDocumentsHTTPFetcher alloc] initWithRequest:request] autorelease];
++ (BCloudHTTPFetcher *)fetcherWithRequest:(NSURLRequest *)request {
+	return [[[BCloudHTTPFetcher alloc] initWithRequest:request] autorelease];
 }
 
 + (NSDictionary *)dictionaryWithResponseString:(NSString *)responseString {	
@@ -44,6 +44,7 @@
 
 - (id)initWithRequest:(NSURLRequest *)aRequest {
 	if ((self = [super init]) != nil) {
+		initialRequest = [aRequest copy];
 		request = [aRequest mutableCopy];
 	}
 	return self;
@@ -53,6 +54,7 @@
 
 - (void)dealloc {
 	[self stopFetching];
+	[initialRequest release];
 	[request release];
 	[downloadedData release];
 	[postData release];
@@ -63,6 +65,10 @@
 }
 
 #pragma mark Attributes
+
+- (NSURLRequest *)initialRequest {
+	return initialRequest;  
+}
 
 - (NSMutableURLRequest *)request {
 	return request;  
@@ -189,7 +195,7 @@
 	if (!connection) {
 		NSAssert(connection != nil, @"beginFetchWithDelegate could not create a connection");
 		if ([delegate respondsToSelector:@selector(fetcher:networkFailed:)]) {
-			NSError *error = [NSError errorWithDomain:@"com.bdocuments.BDocumentsHTTPFetcher" code:kBDocumentsHTTPFetcherErrorDownloadFailed userInfo:nil];
+			NSError *error = [NSError errorWithDomain:@"com.bdocuments.BCloudHTTPFetcher" code:kBCloudHTTPFetcherErrorDownloadFailed userInfo:nil];
 			[[self retain] autorelease]; // in case the callback releases us
 			[delegate performSelector:@selector(fetcher:networkFailed:) withObject:self withObject:error];
 		}

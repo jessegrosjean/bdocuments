@@ -41,7 +41,6 @@
 #pragma mark ODB Editor Suite support
 
 @property(readonly) BOOL fromExternal;
-@property(readonly) BOOL fromDocumentsService;
 @property(readonly) NSAppleEventDescriptor *externalSender;
 @property(readonly) NSAppleEventDescriptor *externalToken;
 
@@ -50,6 +49,8 @@
 - (NSInteger)fileHFSTypeCode;
 - (NSInteger)fileHFSCreatorCode;
 - (IBAction)showUnsavedChanges:(id)sender;
+@property(readonly) BOOL fromDocumentsService;
+@property(readonly) NSString *documentsServiceID;
 @property(readonly) NSString *documentDataAsText;
 - (void)checkForModificationOfFileOnDisk;
 

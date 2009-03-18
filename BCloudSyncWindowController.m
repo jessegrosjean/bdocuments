@@ -1,16 +1,16 @@
 //
-//  BDocumentsServiceSyncWindowController.m
+//  BCloudSyncWindowController.m
 //  BDocuments
 //
 //  Created by Jesse Grosjean on 2/27/09.
 //  Copyright 2009 Hog Bay Software. All rights reserved.
 //
 
-#import "BDocumentsServiceSyncWindowController.h"
-#import "BDocumentsService.h"
+#import "BCloudSyncWindowController.h"
+#import "BCloudDocumentsService.h"
 
 
-@implementation BDocumentsServiceSyncWindowController
+@implementation BCloudSyncWindowController
 
 + (id)sharedInstance {
     static id sharedInstance = nil;
@@ -21,7 +21,7 @@
 }
 
 - (id)init {
-	if (self = [super initWithWindowNibName:@"BDocumentsServiceSyncWindow"]) {
+	if (self = [super initWithWindowNibName:@"BCloudSyncWindow"]) {
 	}
 	return self;
 }
@@ -29,6 +29,7 @@
 - (void)awakeFromNib {
 	[progressIndicator setUsesThreadedAnimation:YES];
 	[progressIndicator setMaxValue:1.0];
+	[[self window] setTitle:[NSString stringWithFormat:BLocalizedString(@"%@ Sync...", nil), [[BCloudDocumentsService sharedInstance] serviceLabel]]];
 	[[self window] setLevel:NSFloatingWindowLevel];
 }
 
@@ -47,7 +48,7 @@
 }
 
 - (IBAction)cancel:(id)sender {
-	[[BDocumentsService sharedInstance] cancelSync:nil];
+	[[BCloudDocumentsService sharedInstance] cancelSync:nil];
 }
 
 - (void)close {

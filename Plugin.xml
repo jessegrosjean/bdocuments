@@ -22,23 +22,22 @@
 	</extension>
 
 	<extension point="com.blocks.BLifecycle.lifecycle">
-		<applicationDidFinishLaunching class="BDocumentsService sharedInstance" />
+		<applicationDidFinishLaunching class="BCloudDocumentsService sharedInstance" />
 	</extension>
 	
-	<extension point="com.blocks.BUserInterface.menus" processOrder="2">
-		<menu id="com.blocks.BUserInterface.menus.main">
-			<menuitem title="%Sync" id="documentsService" submenu="com.blocks.BDocuments.menus.main.file.documentsService" location="after:window" />
-		</menu>
-		
+	<extension point="com.blocks.BUserInterface.menus" processOrder="2">		
 		<menu id="com.blocks.BUserInterface.menus.main.file">
 			<menuitem title="%Show Unsaved Changes..." id="showUnsavedChanges" location="group:closeGroup" action="showUnsavedChanges:" />
+			<separator group="cloudStorageGroup" location="group:closeGroup" />
+			<menuitem title="%Online Documents Service" id="cloudDocumentsService" submenu="com.blocks.BUserInterface.menus.main.file.cloudDocumentsService" location="group:cloudStorageGroup" />
 		</menu>
 		
-		<menu id="com.blocks.BDocuments.menus.main.file.documentsService">
-			<menuitem title="%Sync Changes" id="syncSharedDocuments" action="beginSync:" target="BDocumentsService sharedInstance" keyEquivalent="s" keyEquivalentModifierMask="NSControlKeyMask|NSCommandKeyMask" />
-			<menuitem title="%Mangage Synced Documents" id="showSharedDocuments" action="openDocumentsService:" target="BDocumentsService sharedInstance" />
-			<menuitem title="%Sign In..." id="toggleDocumentsServiceAuthentication" action="toggleDocumentsServiceAuthentication:" target="BDocumentsService sharedInstance" />
-			<separator indentationLevel="1" group="documents" />
+		<menu id="com.blocks.BUserInterface.menus.main.file.cloudDocumentsService">
+			<menuitem title="%Sync" id="syncSharedDocuments" action="beginSync:" target="BCloudDocumentsService sharedInstance" keyEquivalent="s" keyEquivalentModifierMask="NSControlKeyMask|NSCommandKeyMask" />
+			<menuitem title="%New Document" id="newCloudDocument" action="newCloudDocument:" target="BCloudDocumentsService sharedInstance" />
+			<menuitem title="%Delete Document" id="deleteCloudDocument" action="deleteCloudDocument:" target="BCloudDocumentsService sharedInstance" />
+			<menuitem title="%View Documents Online" id="browseCloudDocumentsOnline" action="browseCloudDocumentsOnline:" target="BCloudDocumentsService sharedInstance" />
+			<menuitem title="%Sign In..." id="toggleDocumentsServiceAuthentication" action="toggleDocumentsServiceAuthentication:" target="BCloudDocumentsService sharedInstance" />
 		</menu>
 		
 		<menu id="com.blocks.BDocuments.menus.main.file.documentsService.sharedDocuments">

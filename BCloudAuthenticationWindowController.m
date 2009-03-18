@@ -1,23 +1,23 @@
 //
-//  BDocumentsServiceAuthenticationWindowController.m
+//  BCloudAuthenticationWindowController.m
 //  BDocuments
 //
 //  Created by Jesse Grosjean on 1/30/09.
 //  Copyright 2009 Hog Bay Software. All rights reserved.
 //
 
-#import "BDocumentsServiceAuthenticationWindowController.h"
-#import "BDocumentsService.h"
+#import "BCloudAuthenticationWindowController.h"
+#import "BCloudDocumentsService.h"
 
 
-@implementation BDocumentsServiceAuthenticationWindowController
+@implementation BCloudAuthenticationWindowController
 
 - (id)init {
 	return [self initWithUsername:nil password:nil];
 }
 
 - (id)initWithUsername:(NSString *)aUsername password:(NSString *)aPassword {
-	if (self = [super initWithWindowNibName:@"BDocumentsServiceAuthenticationWindow"]) {
+	if (self = [super initWithWindowNibName:@"BCloudAuthenticationWindow"]) {
 		self.username = aUsername;
 		self.password = aPassword;
 	}
@@ -25,7 +25,9 @@
 }
 
 - (void)awakeFromNib {
-	[heading setStringValue:[NSString stringWithFormat:[heading stringValue], [[BDocumentsService sharedInstance] serviceLabel]]];
+	NSString *serviceLabel = [[BCloudDocumentsService sharedInstance] serviceLabel];
+	[heading setStringValue:[NSString stringWithFormat:[heading stringValue], serviceLabel]];
+	[message setStringValue:[NSString stringWithFormat:[message stringValue], serviceLabel, serviceLabel, nil]];
 }
 
 - (NSString *)username {
@@ -55,7 +57,7 @@
 }
 
 - (IBAction)learnMore:(id)sender {
-	[[BDocumentsService sharedInstance] openDocumentsServiceAboutPage:sender];
+	[[BCloudDocumentsService sharedInstance] browseCloudDocumentsOnlineAboutPage:sender];
 }
 
 - (IBAction)ok:(id)sender {

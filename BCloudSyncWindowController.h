@@ -1,5 +1,5 @@
 //
-//  BDocumentsServiceSyncWindowController.h
+//  BCloudSyncWindowController.h
 //  BDocuments
 //
 //  Created by Jesse Grosjean on 2/27/09.
@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface BDocumentsServiceSyncWindowController : NSWindowController {
+@interface BCloudSyncWindowController : NSWindowController {
 	IBOutlet NSProgressIndicator *progressIndicator;
 }
 

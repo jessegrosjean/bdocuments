@@ -10,7 +10,7 @@
 #import "BDocuments.h"
 #import "BDocumentWindowController.h"
 #import "BDocumentDifferencesWindowController.h"
-#import "BDocumentsService.h"
+#import "BCloudDocumentsService.h"
 
 
 @implementation BDocument
@@ -183,7 +183,6 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 #pragma mark ODB Editor Suite support
 
 @synthesize fromExternal;
-@synthesize fromDocumentsService;
 @synthesize externalSender;
 @synthesize externalToken;
 
@@ -191,7 +190,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	if (fromExternal && externalDisplayName != nil) {
 		return externalDisplayName;
 	} else if (fromDocumentsService) {
-		return [BDocumentsService displayNameForDocumentsServiceDocument:[self fileURL]];
+		return [BCloudDocumentsService displayNameForDocumentsServiceDocument:[self fileURL]];
 	}
 	return [super displayName];
 }
@@ -234,7 +233,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 
 - (void)setFileURL:(NSURL *)absoluteURL {
 	[super setFileURL:absoluteURL];
-	fromDocumentsService = [BDocumentsService isDocumentURLManagedByDocumentsService:[self fileURL]];
+	fromDocumentsService = [BCloudDocumentsService isDocumentURLManagedByDocumentsService:[self fileURL]];
 }
 
 - (NSInteger)fileHFSTypeCode {
@@ -252,6 +251,12 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	[attributes setObject:[NSNumber numberWithUnsignedInteger:[self fileHFSTypeCode]] forKey:NSFileHFSTypeCode];
 	[attributes setObject:[NSNumber numberWithUnsignedInteger:[self fileHFSCreatorCode]] forKey:NSFileHFSCreatorCode];
 	return attributes;
+}
+
+@synthesize fromDocumentsService;
+
+- (NSString *)documentsServiceID {
+	return [[[[self fileURL] path] lastPathComponent] stringByDeletingPathExtension];
 }
 
 - (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError {
