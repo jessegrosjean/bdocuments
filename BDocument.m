@@ -330,5 +330,22 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 
 @end
 
+@implementation NSDocument (BDocumentMethodReplacements)
+
++ (void)load {
+    if (self == [NSDocument class]) {
+		[NSDocument replaceMethod:@selector(_handleDocumentFileChanges:) withMethod:@selector(BDocument_handleDocumentFileChanges:)];
+    }
+}
+
+- (void)BDocument_handleDocumentFileChanges:(id)arg {
+	if (![[NSFileManager defaultManager] fileExistsAtPath:[[self fileURL] path]]) {
+		[self BDocument_handleDocumentFileChanges:arg]; // Only allow AppKit to track moved files if the original file path has been deleted.
+	}
+}
+
+@end
+
+
 NSString *BDocumentUserDefaultsWillSynchronizeNotification = @"BDocumentUserDefaultsWillSynchronizeNotification";
 NSString *BDocumentUserDefaultsDidSynchronizeNotification = @"BDocumentUserDefaultsDidSynchronizeNotification";
