@@ -264,7 +264,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	return [[self documentDataAsText] writeToURL:absoluteURL atomically:YES encoding:NSUTF8StringEncoding error:outError];
 }
 
-- (void)readChangedFileFromDisk:(NSDate *)newModificationDate {
+- (void)readModifiedFileFromDisk:(NSDate *)newModificationDate {
 	NSError *error = nil;
 	if (![self revertToContentsOfURL:[self fileURL] ofType:[self fileType] error:&error]) {
 		BLogError(@"failed revertToSavedFromURL:ofType:");
@@ -276,7 +276,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	[self updateChangeCount:NSChangeCleared];	
 }
 
-- (void)fileWasChangedExternallyByAnotherApplication:(NSDate *)newModificationDate {
+- (void)fileWasModifiedExternallyByAnotherApplication:(NSDate *)newModificationDate {
 	if ([self isDocumentEdited]) {
 		NSString *processName = [[NSProcessInfo processInfo] processName];
 		NSString *message = BLocalizedString(@"Warning", nil);
@@ -284,9 +284,9 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 		NSString *defaultButton = BLocalizedString(@"Keep %@ Version", nil);
 		NSString *alternateButton = BLocalizedString(@"Revert", nil);
 		NSAlert *alert = [NSAlert alertWithMessageText:message defaultButton:[NSString stringWithFormat:defaultButton, processName] alternateButton:alternateButton otherButton:nil informativeTextWithFormat:informativeText, processName, processName];
-		[alert beginSheetModalForWindow:[[NSApp currentDocumentWindowController] window] modalDelegate:self didEndSelector:@selector(fileWasChangedExternallyAlertDidEnd:returnCode:contextInfo:) contextInfo:newModificationDate];
+		[alert beginSheetModalForWindow:[[NSApp currentDocumentWindowController] window] modalDelegate:self didEndSelector:@selector(fileWasModifiedExternallyAlertDidEnd:returnCode:contextInfo:) contextInfo:newModificationDate];
 	} else {
-		[self readChangedFileFromDisk:newModificationDate];
+		[self readModifiedFileFromDisk:newModificationDate];
 	}
 	
 	for (NSWindowController *each in [self windowControllers]) {
@@ -299,16 +299,16 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	if (knownFileModificationDate) {
 		NSDate *actualFileModificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[[self fileURL] path] traverseLink:YES] fileModificationDate];
 		if ([knownFileModificationDate isLessThan:actualFileModificationDate]) {
-			[self performSelector:@selector(fileWasChangedExternallyByAnotherApplication:) withObject:actualFileModificationDate];
+			[self performSelector:@selector(fileWasModifiedExternallyByAnotherApplication:) withObject:actualFileModificationDate];
 		}
 	}
 }
 
-- (void)fileWasChangedExternallyAlertDidEnd:(NSAlert *)alert returnCode:(int)returnCode contextInfo:(void *)contextInfo {
+- (void)fileWasModifiedExternallyAlertDidEnd:(NSAlert *)alert returnCode:(int)returnCode contextInfo:(void *)contextInfo {
 	if (returnCode == NSAlertDefaultReturn) { // keep current version
 		[self setFileModificationDate:contextInfo];
 	} else { // revert
-		[self readChangedFileFromDisk:contextInfo];
+		[self readModifiedFileFromDisk:contextInfo];
 	}
 }
 
@@ -317,12 +317,12 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 @implementation NSDocument (BDocumentAdditions)
 
 - (void)checkForModificationOfFileOnDisk {
-	if ([self respondsToSelector:@selector(fileWasChangedExternallyByAnotherApplication:)]) {
+	if ([self respondsToSelector:@selector(fileWasModifiedExternallyByAnotherApplication:)]) {
 		NSDate *knownFileModificationDate = [self fileModificationDate];
 		if (knownFileModificationDate) {
 			NSDate *actualFileModificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[[self fileURL] path] traverseLink:YES] fileModificationDate];
 			if ([knownFileModificationDate isLessThan:actualFileModificationDate]) {
-				[self performSelector:@selector(fileWasChangedExternallyByAnotherApplication:) withObject:actualFileModificationDate];
+				[self performSelector:@selector(fileWasModifiedExternallyByAnotherApplication:) withObject:actualFileModificationDate];
 			}
 		}
 	}
