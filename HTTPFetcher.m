@@ -1,20 +1,20 @@
 //
-//  BCloudHTTPFetcher.m
+//  HTTPFetcher.m
 //
 
-#import "BCloudHTTPFetcher.h"
-#import "BDocuments.h"
+#import "HTTPFetcher.h"
+#import "NSObject+SBJSON.h"
 
 
-@interface BCloudHTTPFetcher (BCloudHTTPFetcherPrivate)
+@interface HTTPFetcher (HTTPFetcherPrivate)
 - (void)setResponse:(NSURLResponse *)response;
 - (void)setDelegate:(id)theDelegate; 
 @end
 
-@implementation BCloudHTTPFetcher
+@implementation HTTPFetcher
 
-+ (BCloudHTTPFetcher *)fetcherWithRequest:(NSURLRequest *)request {
-	return [[[BCloudHTTPFetcher alloc] initWithRequest:request] autorelease];
++ (HTTPFetcher *)fetcherWithRequest:(NSURLRequest *)request {
+	return [[[HTTPFetcher alloc] initWithRequest:request] autorelease];
 }
 
 + (NSDictionary *)dictionaryWithResponseString:(NSString *)responseString {	
@@ -44,7 +44,7 @@
 
 - (id)initWithRequest:(NSURLRequest *)aRequest {
 	if ((self = [super init]) != nil) {
-		initialRequest = [aRequest copy];
+		initialRequest = [aRequest retain];
 		request = [aRequest mutableCopy];
 	}
 	return self;
@@ -66,26 +66,17 @@
 
 #pragma mark Attributes
 
-- (NSURLRequest *)initialRequest {
-	return initialRequest;  
+@synthesize initialRequest;
+@synthesize request;
+@synthesize postData;
+
+- (void)setPostDataJSON:(NSObject *)theJSON {
+	[self setPostDataString:[theJSON JSONRepresentation]];
+	[request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
 }
 
-- (NSMutableURLRequest *)request {
-	return request;  
-}
-
-- (void)setRequest:(NSURLRequest *)theRequest {
-	[request autorelease];
-	request = [theRequest mutableCopy];
-}
-
-- (NSData *)postData {
-	return postData; 
-}
-
-- (void)setPostData:(NSData *)theData {
-	[postData autorelease]; 
-	postData = [theData retain];
+- (void)setPostDataString:(NSString *)postDataString {
+	[self setPostData:[postDataString dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
 - (void)setFormURLEncodedPostDictionary:(NSDictionary *)theDictionary {
@@ -94,14 +85,12 @@
 		[postString appendFormat:@"%@=%@&", [key stringByURLEncodingStringParameter], [[theDictionary objectForKey:key] stringByURLEncodingStringParameter]];
 	}
 	[postString replaceCharactersInRange:NSMakeRange([postString length] - 1, 1) withString:@""];
-	[self setPostData:[postString dataUsingEncoding:NSUTF8StringEncoding]];
+	[self setPostDataString:postString];
 	[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
 
 }
 
-- (id)delegate {
-	return delegate; 
-}
+@synthesize delegate;
 
 - (void)setDelegate:(id)theDelegate {
 	if (connection) {
@@ -112,14 +101,7 @@
 	}
 }
 
-- (NSURLResponse *)response {
-	return response;
-}
-
-- (void)setResponse:(NSURLResponse *)theResponse {
-	[response autorelease];
-	response = [theResponse retain];
-}
+@synthesize response;
 
 - (NSInteger)statusCode {
 	NSInteger statusCode;
@@ -138,27 +120,9 @@
 	return nil;
 }
 
-- (NSData *)downloadedData {
-	return downloadedData;
-}
-
-- (id)userData {
-	return userData;
-}
-
-- (void)setUserData:(id)theObj {
-	[userData autorelease]; 
-	userData = [theObj retain];
-}
-
-- (NSArray *)runLoopModes {
-	return runLoopModes;
-}
-
-- (void)setRunLoopModes:(NSArray *)modes {
-	[runLoopModes autorelease]; 
-	runLoopModes = [modes retain];
-}
+@synthesize downloadedData;
+@synthesize userData;
+@synthesize runLoopModes;
 
 #pragma mark Fetching
 
@@ -179,7 +143,7 @@
 			[request setHTTPBody:postData];
 		}
 	}
-		
+	
 	if ([runLoopModes count] == 0) {
 		connection = [[NSURLConnection connectionWithRequest:request delegate:self] retain];
 	} else {
@@ -195,7 +159,7 @@
 	if (!connection) {
 		NSAssert(connection != nil, @"beginFetchWithDelegate could not create a connection");
 		if ([delegate respondsToSelector:@selector(fetcher:networkFailed:)]) {
-			NSError *error = [NSError errorWithDomain:@"com.bdocuments.BCloudHTTPFetcher" code:kBCloudHTTPFetcherErrorDownloadFailed userInfo:nil];
+			NSError *error = [NSError errorWithDomain:@"com.blocks.cloud.HTTPFetcher" code:kHTTPFetcherErrorDownloadFailed userInfo:[NSDictionary dictionaryWithObject:NSLocalizedString(@"could not create connection", nil) forKey:NSLocalizedDescriptionKey]];
 			[[self retain] autorelease]; // in case the callback releases us
 			[delegate performSelector:@selector(fetcher:networkFailed:) withObject:self withObject:error];
 		}
@@ -218,6 +182,7 @@
 		[oldConnection cancel];
 		[oldConnection autorelease]; 
 		[delegate release];
+		delegate = nil;
 	}
 }
 
@@ -252,7 +217,7 @@
 		redirectRequest = newRequest;
 		
 		[self setResponse:redirectResponse];
-		[self setRequest:redirectRequest];
+		[self setRequest:[[redirectRequest mutableCopy] autorelease]];
 	}
 	return redirectRequest;
 }
@@ -301,6 +266,36 @@
 		[delegate performSelector:@selector(fetcher:networkFailed:) withObject:self withObject:error];
 	}
 	[self stopFetching];
+}
+
+@end
+
+@implementation NSString (HTTPFetcherAdditions)
+
+- (NSString *)stringByURLEncodingStringParameter {
+	// From Google Data Objective-C client 
+	// NSURL's stringByAddingPercentEscapesUsingEncoding: does not escape
+	// some characters that should be escaped in URL parameters, like / and ?; 
+	// we'll use CFURL to force the encoding of those
+	//
+	// We'll explicitly leave spaces unescaped now, and replace them with +'s
+	//
+	// Reference: http://www.ietf.org/rfc/rfc3986.txt
+	
+	NSString *resultStr = self;
+	CFStringRef originalString = (CFStringRef) self;
+	CFStringRef leaveUnescaped = CFSTR(" ");
+	CFStringRef forceEscaped = CFSTR("!*'();:@&=+$,/?%#[]");
+	CFStringRef escapedStr = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, originalString, leaveUnescaped, forceEscaped, kCFStringEncodingUTF8);
+	
+	if (escapedStr) {
+		NSMutableString *mutableStr = [NSMutableString stringWithString:(NSString *)escapedStr];
+		CFRelease(escapedStr);
+		[mutableStr replaceOccurrencesOfString:@" " withString:@"+" options:0 range:NSMakeRange(0, [mutableStr length])];
+		resultStr = mutableStr;
+	}
+	
+	return resultStr;
 }
 
 @end

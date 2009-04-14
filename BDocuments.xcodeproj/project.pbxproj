@@ -18,26 +18,16 @@
 		437D72510C9198C90051C06D /* BDocuments.m in Sources */ = {isa = PBXBuildFile; fileRef = 437D72500C9198C90051C06D /* BDocuments.m */; };
 		43B2906E0CA3EE6700AE1802 /* BDocumentController.h in Headers */ = {isa = PBXBuildFile; fileRef = 437D71820C9179BD0051C06D /* BDocumentController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		43EF1E480CA2F14600138C91 /* BDocuments.h in Headers */ = {isa = PBXBuildFile; fileRef = 437D724F0C9198C90051C06D /* BDocuments.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		883B60B50F324DF6005D5B3A /* BCloudHTTPFetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 883B60B30F324DF6005D5B3A /* BCloudHTTPFetcher.h */; };
+		88243E8C0F9400290057A08D /* BDocumentCloudDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 88243E8A0F9400290057A08D /* BDocumentCloudDelegate.h */; };
+		88243E8D0F9400290057A08D /* BDocumentCloudDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 88243E8B0F9400290057A08D /* BDocumentCloudDelegate.m */; };
+		88243F4D0F9494310057A08D /* BDocumentCloudCache.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 88243F4C0F9494310057A08D /* BDocumentCloudCache.xcdatamodel */; };
 		883B65210F33A679005D5B3A /* BCloudAuthenticationWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 883B65200F33A679005D5B3A /* BCloudAuthenticationWindow.xib */; };
-		883B65290F33A76B005D5B3A /* BCloudAuthenticationWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 883B65270F33A76B005D5B3A /* BCloudAuthenticationWindowController.h */; };
-		883B652A0F33A76B005D5B3A /* BCloudAuthenticationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 883B65280F33A76B005D5B3A /* BCloudAuthenticationWindowController.m */; };
 		885C4E420F61BE8800624924 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 885C4E410F61BE8800624924 /* libsqlite3.dylib */; };
-		885C4E4B0F61BEA100624924 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 885C4E440F61BEA100624924 /* FMResultSet.m */; };
-		885C4E4C0F61BEA100624924 /* FMDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 885C4E450F61BEA100624924 /* FMDatabase.h */; };
-		885C4E4D0F61BEA100624924 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 885C4E460F61BEA100624924 /* FMDatabase.m */; };
-		885C4E4E0F61BEA100624924 /* FMDatabaseAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 885C4E470F61BEA100624924 /* FMDatabaseAdditions.h */; };
-		885C4E4F0F61BEA100624924 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 885C4E480F61BEA100624924 /* FMDatabaseAdditions.m */; };
-		885C4E510F61BEA100624924 /* FMResultSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 885C4E4A0F61BEA100624924 /* FMResultSet.h */; };
 		889A4F280D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 889A4F270D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown */; };
 		889A4F2B0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 889A4F2A0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown */; };
 		889A4F2D0D5A5A8300D1E8E9 /* com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 889A4F2C0D5A5A8300D1E8E9 /* com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown */; };
-		889EAE250F007874003D8453 /* BDiffMatchPatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 889EAE210F007874003D8453 /* BDiffMatchPatch.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		889EAE260F007874003D8453 /* BDiffMatchPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 889EAE220F007874003D8453 /* BDiffMatchPatch.m */; };
 		88A3519C0E97A34E0019988C /* theme.plist in Resources */ = {isa = PBXBuildFile; fileRef = 88A3519B0E97A34E0019988C /* theme.plist */; };
 		88A3521D0E980EEE0019988C /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88A3521C0E980EEE0019988C /* WebKit.framework */; };
-		88A36C860F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A36C840F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h */; };
-		88A36C870F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A36C850F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.m */; };
 		88A36CA40F14FC2C00EAA3FD /* BDocumentDifferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88A36CA30F14FC2C00EAA3FD /* BDocumentDifferencesWindow.xib */; };
 		88A46F490E914E4200E29F5B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88A46F480E914E4200E29F5B /* SystemConfiguration.framework */; };
 		88A470CE0E918EE200E29F5B /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A470C70E918EE200E29F5B /* SBJSON.m */; };
@@ -47,17 +37,18 @@
 		88A470D20E918EE200E29F5B /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */; };
 		88A470D30E918EE200E29F5B /* NSObject+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470CC0E918EE200E29F5B /* NSObject+SBJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88A470D40E918EE200E29F5B /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470CD0E918EE200E29F5B /* JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		88E62C070F59C1AA00C0E3F7 /* BCloudDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 88E62C050F59C1AA00C0E3F7 /* BCloudDocument.h */; };
-		88E62C080F59C1AA00C0E3F7 /* BCloudDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E62C060F59C1AA00C0E3F7 /* BCloudDocument.m */; };
-		88E62C0D0F59C3F400C0E3F7 /* BCloudDocumentsService.h in Headers */ = {isa = PBXBuildFile; fileRef = 88E62C0B0F59C3F400C0E3F7 /* BCloudDocumentsService.h */; };
-		88E62C0E0F59C3F400C0E3F7 /* BCloudDocumentsService.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E62C0C0F59C3F400C0E3F7 /* BCloudDocumentsService.m */; };
-		88E62FD60F5C577200C0E3F7 /* BCloudHTTPFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 883B60B40F324DF6005D5B3A /* BCloudHTTPFetcher.m */; };
 		88E631230F5C748F00C0E3F7 /* BCloudNameWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88E631220F5C748F00C0E3F7 /* BCloudNameWindow.xib */; };
-		88E631260F5C74A600C0E3F7 /* BCloudNameWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 88E631240F5C74A600C0E3F7 /* BCloudNameWindowController.h */; };
-		88E631270F5C74A600C0E3F7 /* BCloudNameWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E631250F5C74A600C0E3F7 /* BCloudNameWindowController.m */; };
-		88E98B3E0F5841A200CAAA23 /* BCloudSyncWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 88E98B3C0F5841A200CAAA23 /* BCloudSyncWindowController.h */; };
-		88E98B3F0F5841A200CAAA23 /* BCloudSyncWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88E98B3D0F5841A200CAAA23 /* BCloudSyncWindowController.m */; };
 		88E98B440F58425B00CAAA23 /* BCloudSyncWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88E98B430F58425B00CAAA23 /* BCloudSyncWindow.xib */; };
+		88F596170F8FB4D000DFBB69 /* Cloud.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F596130F8FB4D000DFBB69 /* Cloud.h */; };
+		88F596180F8FB4D000DFBB69 /* Cloud.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F596140F8FB4D000DFBB69 /* Cloud.m */; };
+		88F596190F8FB4D000DFBB69 /* CloudDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F596150F8FB4D000DFBB69 /* CloudDocument.h */; };
+		88F5961A0F8FB4D000DFBB69 /* CloudDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F596160F8FB4D000DFBB69 /* CloudDocument.m */; };
+		88F596210F8FB50F00DFBB69 /* Keychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F5961F0F8FB50F00DFBB69 /* Keychain.h */; };
+		88F596220F8FB50F00DFBB69 /* Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F596200F8FB50F00DFBB69 /* Keychain.m */; };
+		88F596250F8FB51E00DFBB69 /* HTTPFetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F596230F8FB51E00DFBB69 /* HTTPFetcher.h */; };
+		88F596260F8FB51E00DFBB69 /* HTTPFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F596240F8FB51E00DFBB69 /* HTTPFetcher.m */; };
+		88F596300F8FB52600DFBB69 /* DiffMatchPatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F5962E0F8FB52600DFBB69 /* DiffMatchPatch.h */; };
+		88F596310F8FB52600DFBB69 /* DiffMatchPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F5962F0F8FB52600DFBB69 /* DiffMatchPatch.m */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -96,18 +87,11 @@
 		437D71830C9179BD0051C06D /* BDocumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDocumentController.m; sourceTree = "<group>"; };
 		437D724F0C9198C90051C06D /* BDocuments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BDocuments.h; sourceTree = "<group>"; };
 		437D72500C9198C90051C06D /* BDocuments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDocuments.m; sourceTree = "<group>"; };
-		883B60B30F324DF6005D5B3A /* BCloudHTTPFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCloudHTTPFetcher.h; sourceTree = "<group>"; };
-		883B60B40F324DF6005D5B3A /* BCloudHTTPFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCloudHTTPFetcher.m; sourceTree = "<group>"; };
+		88243E8A0F9400290057A08D /* BDocumentCloudDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BDocumentCloudDelegate.h; sourceTree = "<group>"; };
+		88243E8B0F9400290057A08D /* BDocumentCloudDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDocumentCloudDelegate.m; sourceTree = "<group>"; };
+		88243F4C0F9494310057A08D /* BDocumentCloudCache.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = BDocumentCloudCache.xcdatamodel; sourceTree = "<group>"; };
 		883B651E0F33A673005D5B3A /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BCloudAuthenticationWindow.xib; sourceTree = "<group>"; };
-		883B65270F33A76B005D5B3A /* BCloudAuthenticationWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCloudAuthenticationWindowController.h; sourceTree = "<group>"; };
-		883B65280F33A76B005D5B3A /* BCloudAuthenticationWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCloudAuthenticationWindowController.m; sourceTree = "<group>"; };
 		885C4E410F61BE8800624924 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = /usr/lib/libsqlite3.dylib; sourceTree = "<absolute>"; };
-		885C4E440F61BEA100624924 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
-		885C4E450F61BEA100624924 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
-		885C4E460F61BEA100624924 /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
-		885C4E470F61BEA100624924 /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
-		885C4E480F61BEA100624924 /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
-		885C4E4A0F61BEA100624924 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
 		889A4F270D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = com.blocks.BDocuments.markdown; sourceTree = "<group>"; wrapsLines = 1; };
 		889A4F2A0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = com.blocks.BDocuments.documentControllerDelegate.markdown; sourceTree = "<group>"; wrapsLines = 1; };
 		889A4F2C0D5A5A8300D1E8E9 /* com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown; sourceTree = "<group>"; wrapsLines = 1; };
@@ -128,16 +112,18 @@
 		88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
 		88A470CC0E918EE200E29F5B /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
 		88A470CD0E918EE200E29F5B /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
-		88E62C050F59C1AA00C0E3F7 /* BCloudDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCloudDocument.h; sourceTree = "<group>"; };
-		88E62C060F59C1AA00C0E3F7 /* BCloudDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCloudDocument.m; sourceTree = "<group>"; };
-		88E62C0B0F59C3F400C0E3F7 /* BCloudDocumentsService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCloudDocumentsService.h; sourceTree = "<group>"; };
-		88E62C0C0F59C3F400C0E3F7 /* BCloudDocumentsService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCloudDocumentsService.m; sourceTree = "<group>"; };
 		88E631200F5C748300C0E3F7 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BCloudNameWindow.xib; sourceTree = "<group>"; };
-		88E631240F5C74A600C0E3F7 /* BCloudNameWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCloudNameWindowController.h; sourceTree = "<group>"; };
-		88E631250F5C74A600C0E3F7 /* BCloudNameWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCloudNameWindowController.m; sourceTree = "<group>"; };
-		88E98B3C0F5841A200CAAA23 /* BCloudSyncWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCloudSyncWindowController.h; sourceTree = "<group>"; };
-		88E98B3D0F5841A200CAAA23 /* BCloudSyncWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCloudSyncWindowController.m; sourceTree = "<group>"; };
 		88E98B410F58425700CAAA23 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BCloudSyncWindow.xib; sourceTree = "<group>"; };
+		88F596130F8FB4D000DFBB69 /* Cloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cloud.h; sourceTree = "<group>"; };
+		88F596140F8FB4D000DFBB69 /* Cloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cloud.m; sourceTree = "<group>"; };
+		88F596150F8FB4D000DFBB69 /* CloudDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudDocument.h; sourceTree = "<group>"; };
+		88F596160F8FB4D000DFBB69 /* CloudDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloudDocument.m; sourceTree = "<group>"; };
+		88F5961F0F8FB50F00DFBB69 /* Keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Keychain.h; sourceTree = "<group>"; };
+		88F596200F8FB50F00DFBB69 /* Keychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Keychain.m; sourceTree = "<group>"; };
+		88F596230F8FB51E00DFBB69 /* HTTPFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPFetcher.h; sourceTree = "<group>"; };
+		88F596240F8FB51E00DFBB69 /* HTTPFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPFetcher.m; sourceTree = "<group>"; };
+		88F5962E0F8FB52600DFBB69 /* DiffMatchPatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch.h; sourceTree = "<group>"; };
+		88F5962F0F8FB52600DFBB69 /* DiffMatchPatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatch.m; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* BDocuments.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BDocuments.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D2F7E65807B2D6F200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
@@ -195,6 +181,7 @@
 				88E631220F5C748F00C0E3F7 /* BCloudNameWindow.xib */,
 				883B65200F33A679005D5B3A /* BCloudAuthenticationWindow.xib */,
 				88A36CA30F14FC2C00EAA3FD /* BDocumentDifferencesWindow.xib */,
+				88243F4C0F9494310057A08D /* BDocumentCloudCache.xcdatamodel */,
 				437D716C0C9179050051C06D /* Plugin.xml */,
 				889A4F270D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown */,
 				889A4F2A0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown */,
@@ -212,8 +199,10 @@
 				431A0C3D0CC5149E00DE7BAE /* BDocument.m */,
 				431A0C420CC514B900DE7BAE /* BDocumentWindowController.h */,
 				431A0C430CC514B900DE7BAE /* BDocumentWindowController.m */,
-				883B60A70F324DC9005D5B3A /* DiffMatchPatch */,
-				883B60A40F324D9D005D5B3A /* Online Documents Service */,
+				88243E8A0F9400290057A08D /* BDocumentCloudDelegate.h */,
+				88243E8B0F9400290057A08D /* BDocumentCloudDelegate.m */,
+				883B60A70F324DC9005D5B3A /* DiffMatchPatch OLD */,
+				88F596040F8FB4B200DFBB69 /* Cloud */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -262,28 +251,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		883B60A40F324D9D005D5B3A /* Online Documents Service */ = {
-			isa = PBXGroup;
-			children = (
-				88E62C050F59C1AA00C0E3F7 /* BCloudDocument.h */,
-				88E62C060F59C1AA00C0E3F7 /* BCloudDocument.m */,
-				88E62C0B0F59C3F400C0E3F7 /* BCloudDocumentsService.h */,
-				88E62C0C0F59C3F400C0E3F7 /* BCloudDocumentsService.m */,
-				883B60B30F324DF6005D5B3A /* BCloudHTTPFetcher.h */,
-				883B60B40F324DF6005D5B3A /* BCloudHTTPFetcher.m */,
-				88E98B3C0F5841A200CAAA23 /* BCloudSyncWindowController.h */,
-				88E98B3D0F5841A200CAAA23 /* BCloudSyncWindowController.m */,
-				88E631240F5C74A600C0E3F7 /* BCloudNameWindowController.h */,
-				88E631250F5C74A600C0E3F7 /* BCloudNameWindowController.m */,
-				883B65270F33A76B005D5B3A /* BCloudAuthenticationWindowController.h */,
-				883B65280F33A76B005D5B3A /* BCloudAuthenticationWindowController.m */,
-				885C4E270F61BAE200624924 /* SQLite */,
-				88A470D60E918EE600E29F5B /* JSON */,
-			);
-			name = "Online Documents Service";
-			sourceTree = "<group>";
-		};
-		883B60A70F324DC9005D5B3A /* DiffMatchPatch */ = {
+		883B60A70F324DC9005D5B3A /* DiffMatchPatch OLD */ = {
 			isa = PBXGroup;
 			children = (
 				889EAE210F007874003D8453 /* BDiffMatchPatch.h */,
@@ -293,20 +261,7 @@
 				88A36C840F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h */,
 				88A36C850F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.m */,
 			);
-			name = DiffMatchPatch;
-			sourceTree = "<group>";
-		};
-		885C4E270F61BAE200624924 /* SQLite */ = {
-			isa = PBXGroup;
-			children = (
-				885C4E450F61BEA100624924 /* FMDatabase.h */,
-				885C4E460F61BEA100624924 /* FMDatabase.m */,
-				885C4E470F61BEA100624924 /* FMDatabaseAdditions.h */,
-				885C4E480F61BEA100624924 /* FMDatabaseAdditions.m */,
-				885C4E4A0F61BEA100624924 /* FMResultSet.h */,
-				885C4E440F61BEA100624924 /* FMResultSet.m */,
-			);
-			name = SQLite;
+			name = "DiffMatchPatch OLD";
 			sourceTree = "<group>";
 		};
 		88A470D60E918EE600E29F5B /* JSON */ = {
@@ -321,6 +276,48 @@
 				88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */,
 			);
 			name = JSON;
+			sourceTree = "<group>";
+		};
+		88F596040F8FB4B200DFBB69 /* Cloud */ = {
+			isa = PBXGroup;
+			children = (
+				88F596130F8FB4D000DFBB69 /* Cloud.h */,
+				88F596140F8FB4D000DFBB69 /* Cloud.m */,
+				88F596150F8FB4D000DFBB69 /* CloudDocument.h */,
+				88F596160F8FB4D000DFBB69 /* CloudDocument.m */,
+				88F5961C0F8FB4E000DFBB69 /* Keychain */,
+				88F5961D0F8FB4E900DFBB69 /* HTTPFetcher */,
+				88F5961E0F8FB4F800DFBB69 /* DiffMatchPatch */,
+				88A470D60E918EE600E29F5B /* JSON */,
+			);
+			name = Cloud;
+			sourceTree = "<group>";
+		};
+		88F5961C0F8FB4E000DFBB69 /* Keychain */ = {
+			isa = PBXGroup;
+			children = (
+				88F5961F0F8FB50F00DFBB69 /* Keychain.h */,
+				88F596200F8FB50F00DFBB69 /* Keychain.m */,
+			);
+			name = Keychain;
+			sourceTree = "<group>";
+		};
+		88F5961D0F8FB4E900DFBB69 /* HTTPFetcher */ = {
+			isa = PBXGroup;
+			children = (
+				88F596230F8FB51E00DFBB69 /* HTTPFetcher.h */,
+				88F596240F8FB51E00DFBB69 /* HTTPFetcher.m */,
+			);
+			name = HTTPFetcher;
+			sourceTree = "<group>";
+		};
+		88F5961E0F8FB4F800DFBB69 /* DiffMatchPatch */ = {
+			isa = PBXGroup;
+			children = (
+				88F5962E0F8FB52600DFBB69 /* DiffMatchPatch.h */,
+				88F5962F0F8FB52600DFBB69 /* DiffMatchPatch.m */,
+			);
+			name = DiffMatchPatch;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -338,17 +335,12 @@
 				88A470D10E918EE200E29F5B /* NSString+SBJSON.h in Headers */,
 				88A470D30E918EE200E29F5B /* NSObject+SBJSON.h in Headers */,
 				88A470D40E918EE200E29F5B /* JSON.h in Headers */,
-				889EAE250F007874003D8453 /* BDiffMatchPatch.h in Headers */,
-				88A36C860F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h in Headers */,
-				883B60B50F324DF6005D5B3A /* BCloudHTTPFetcher.h in Headers */,
-				883B65290F33A76B005D5B3A /* BCloudAuthenticationWindowController.h in Headers */,
-				88E98B3E0F5841A200CAAA23 /* BCloudSyncWindowController.h in Headers */,
-				88E62C070F59C1AA00C0E3F7 /* BCloudDocument.h in Headers */,
-				88E62C0D0F59C3F400C0E3F7 /* BCloudDocumentsService.h in Headers */,
-				88E631260F5C74A600C0E3F7 /* BCloudNameWindowController.h in Headers */,
-				885C4E4C0F61BEA100624924 /* FMDatabase.h in Headers */,
-				885C4E4E0F61BEA100624924 /* FMDatabaseAdditions.h in Headers */,
-				885C4E510F61BEA100624924 /* FMResultSet.h in Headers */,
+				88F596170F8FB4D000DFBB69 /* Cloud.h in Headers */,
+				88F596190F8FB4D000DFBB69 /* CloudDocument.h in Headers */,
+				88F596210F8FB50F00DFBB69 /* Keychain.h in Headers */,
+				88F596250F8FB51E00DFBB69 /* HTTPFetcher.h in Headers */,
+				88F596300F8FB52600DFBB69 /* DiffMatchPatch.h in Headers */,
+				88243E8C0F9400290057A08D /* BDocumentCloudDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,17 +451,13 @@
 				88A470CE0E918EE200E29F5B /* SBJSON.m in Sources */,
 				88A470D00E918EE200E29F5B /* NSString+SBJSON.m in Sources */,
 				88A470D20E918EE200E29F5B /* NSObject+SBJSON.m in Sources */,
-				889EAE260F007874003D8453 /* BDiffMatchPatch.m in Sources */,
-				88A36C870F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.m in Sources */,
-				883B652A0F33A76B005D5B3A /* BCloudAuthenticationWindowController.m in Sources */,
-				88E98B3F0F5841A200CAAA23 /* BCloudSyncWindowController.m in Sources */,
-				88E62C080F59C1AA00C0E3F7 /* BCloudDocument.m in Sources */,
-				88E62C0E0F59C3F400C0E3F7 /* BCloudDocumentsService.m in Sources */,
-				88E62FD60F5C577200C0E3F7 /* BCloudHTTPFetcher.m in Sources */,
-				88E631270F5C74A600C0E3F7 /* BCloudNameWindowController.m in Sources */,
-				885C4E4B0F61BEA100624924 /* FMResultSet.m in Sources */,
-				885C4E4D0F61BEA100624924 /* FMDatabase.m in Sources */,
-				885C4E4F0F61BEA100624924 /* FMDatabaseAdditions.m in Sources */,
+				88F596180F8FB4D000DFBB69 /* Cloud.m in Sources */,
+				88F5961A0F8FB4D000DFBB69 /* CloudDocument.m in Sources */,
+				88F596220F8FB50F00DFBB69 /* Keychain.m in Sources */,
+				88F596260F8FB51E00DFBB69 /* HTTPFetcher.m in Sources */,
+				88F596310F8FB52600DFBB69 /* DiffMatchPatch.m in Sources */,
+				88243E8D0F9400290057A08D /* BDocumentCloudDelegate.m in Sources */,
+				88243F4D0F9494310057A08D /* BDocumentCloudCache.xcdatamodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

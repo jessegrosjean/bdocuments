@@ -7,9 +7,10 @@
 //
 
 #import "BDocumentController.h"
-#import "BCloudDocumentsService.h"
 #import "BUserInterfaceController.h"
 #import <objc/runtime.h>
+#import "Cloud.h"
+#import "BDocumentCloudDelegate.h"
 
 
 @implementation BDocumentController
@@ -239,11 +240,11 @@
 		NSString *path = [each path];
 		NSString *title = nil;
 		
-		if ([BCloudDocumentsService isDocumentURLManagedByDocumentsService:each]) {
-			title = [[BCloudDocumentsService displayNameForDocumentsServiceDocument:each] stringByAppendingFormat:@"—%@", [[BCloudDocumentsService sharedInstance] serviceLabel]];
-		} else {
+//		if ([BCloudDocumentsService isCloudDocumentURL:each]) {
+//			title = [[BCloudDocumentsService displayNameForCloudDocument:each] stringByAppendingFormat:@"—%@", [[BCloudDocumentsService sharedInstance] serviceLabel]];
+//		} else {
 			title = [path lastPathComponent];
-		}
+//		}
 		NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:title action:@selector(openRecentDocument:) keyEquivalent:@""];
 		[eachMenuItem setRepresentedObject:each];
 		NSImage *icon = [workspace iconForFile:path];
@@ -303,7 +304,7 @@
 #pragma mark Sync
 
 - (IBAction)sync:(id)sender {
-	[[BCloudDocumentsService sharedInstance] beginSync:sender];
+	[[Cloud sharedInstance] beginSync:sender];
 }
 
 #pragma mark Loading Document Workspace

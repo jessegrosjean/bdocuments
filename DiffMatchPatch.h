@@ -1,13 +1,10 @@
 //
-//  BDiffMatchPatch.h
+//  DiffMatchPatch.h
 //  BDocuments
 //
 //  Created by Jesse Grosjean on 10/4/08.
 //  Copyright 2008 Hog Bay Software. All rights reserved.
 //
-
-#import <Cocoa/Cocoa.h>
-
 
 enum {
     BDiffDelete = 1,
@@ -18,7 +15,7 @@ typedef NSUInteger BDiffOperation;
 
 @class BPatch;
 
-@interface BDiffMatchPatch : NSObject {
+@interface DiffMatchPatch : NSObject {
 	NSTimeInterval Diff_Timeout;
 	NSInteger Diff_EditCost;
 	NSInteger Diff_DualThreshold;
@@ -57,7 +54,7 @@ typedef NSUInteger BDiffOperation;
 - (void)diffCleanupMerge:(NSMutableArray *)diffs;
 - (NSInteger)diffXIndex:(NSArray *)diffs location:(NSInteger)location;
 - (NSString *)diffPrettyHTML:(NSArray *)diffs;
-- (NSAttributedString *)diffPrettyAttributedString:(NSArray *)diffs;
+//- (NSAttributedString *)diffPrettyAttributedString:(NSArray *)diffs;
 - (NSString *)diffText1:(NSArray *)diffs;
 - (NSString *)diffText2:(NSArray *)diffs;
 - (NSString *)diffToDelta:(NSArray *)diffs;
@@ -109,4 +106,4 @@ typedef NSUInteger BDiffOperation;
 
 @end
 
-APPKIT_EXTERN NSString *BDocumentDiffTypeAttributeName;
+extern NSString *DiffTypeAttributeName;

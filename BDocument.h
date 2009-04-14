@@ -18,7 +18,7 @@
 @interface BDocument : NSDocument {
 	NSMutableDictionary *documentUserDefaults;
 	BOOL fromExternal;
-	BOOL fromDocumentsService;
+	BOOL fromCloud;
 	NSString *externalDisplayName;
 	NSAppleEventDescriptor *externalSender;
 	NSAppleEventDescriptor *externalToken;
@@ -49,8 +49,8 @@
 - (NSInteger)fileHFSTypeCode;
 - (NSInteger)fileHFSCreatorCode;
 - (IBAction)showUnsavedChanges:(id)sender;
-@property(readonly) BOOL fromDocumentsService;
-@property(readonly) NSString *documentsServiceID;
+@property(readonly) BOOL fromCloud;
+@property(readonly) NSString *cloudID;
 @property(readonly) NSString *documentDataAsText;
 - (void)checkForModificationOfFileOnDisk;
 

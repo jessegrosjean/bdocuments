@@ -47,6 +47,19 @@
 	[self setWindowControllerUserDefaultsKey:savedWindowControllerUserDefaultsKey];
 }
 
+- (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName {
+	if ([[self window] isDocumentEdited]) {
+		return [[NSString stringWithFormat:@"%C ", 0x25C6, nil] stringByAppendingString:[super windowTitleForDocumentDisplayName:displayName]];
+	} else {
+		return [super windowTitleForDocumentDisplayName:displayName];
+	}
+}
+
+- (void)setDocumentEdited:(BOOL)newDocumentEditied {
+	[super setDocumentEdited:newDocumentEditied];
+	[self synchronizeWindowTitleWithDocumentName];
+}
+
 #pragma mark WindowController Use Defaults
 
 - (NSString *)windowControllerUserDefaultsKey {

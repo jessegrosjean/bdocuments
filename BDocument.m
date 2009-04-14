@@ -9,8 +9,9 @@
 #import "BDocument.h"
 #import "BDocuments.h"
 #import "BDocumentWindowController.h"
-#import "BDocumentDifferencesWindowController.h"
-#import "BCloudDocumentsService.h"
+#import "BDocumentCloudDelegate.h"
+//#import "BDocumentDifferencesWindowController.h"
+//#import "BCloudDocumentsService.h"
 
 
 @implementation BDocument
@@ -189,8 +190,8 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 - (NSString *)displayName {
 	if (fromExternal && externalDisplayName != nil) {
 		return externalDisplayName;
-	} else if (fromDocumentsService) {
-		return [BCloudDocumentsService displayNameForDocumentsServiceDocument:[self fileURL]];
+	} else if (fromCloud) {
+		return [BDocumentCloudDelegate displayNameForCloudDocument:[self fileURL]];
 	}
 	return [super displayName];
 }
@@ -211,8 +212,9 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 		if ([savedText isEqualToString:unsavedText]) {
 			messageText = BLocalizedString(@"There are no differences between your document and the version saved on disk", nil);
 		} else {
-			BDocumentDifferencesWindowController *differencesWindowController = [[BDocumentDifferencesWindowController alloc] initWithText1:savedText text2:unsavedText];
-			[NSApp beginSheet:[differencesWindowController window] modalForWindow:window modalDelegate:self didEndSelector:@selector(showUnsavedChangesSheetDidEnd:returnCode:contextInfo:) contextInfo:nil];
+//			BDocumentDifferencesWindowController *differencesWindowController = [[BDocumentDifferencesWindowController alloc] initWithText1:savedText text2:unsavedText];
+//			[NSApp beginSheet:[differencesWindowController window] modalForWindow:window modalDelegate:self didEndSelector:@selector(showUnsavedChangesSheetDidEnd:returnCode:contextInfo:) contextInfo:nil];
+			NSBeep();
 			return;
 		}
 	} else {
@@ -233,7 +235,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 
 - (void)setFileURL:(NSURL *)absoluteURL {
 	[super setFileURL:absoluteURL];
-	fromDocumentsService = [BCloudDocumentsService isDocumentURLManagedByDocumentsService:[self fileURL]];
+	fromCloud = [BDocumentCloudDelegate isCloudDocumentURL:[self fileURL]];
 }
 
 - (NSInteger)fileHFSTypeCode {
@@ -253,10 +255,10 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	return attributes;
 }
 
-@synthesize fromDocumentsService;
+@synthesize fromCloud;
 
-- (NSString *)documentsServiceID {
-	return [[[[self fileURL] path] lastPathComponent] stringByDeletingPathExtension];
+- (NSString *)cloudID {
+	return [[[[self fileURL] path] stringByDeletingLastPathComponent] lastPathComponent];
 }
 
 - (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError {
