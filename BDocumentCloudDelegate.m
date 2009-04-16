@@ -30,7 +30,8 @@
 }
 
 + (NSString *)displayNameForCloudDocument:(NSURL *)url {
-	return [[[[url path] lastPathComponent] stringByDeletingPathExtension] stringByAppendingFormat:@" (Sync)"];
+	return [[[url path] lastPathComponent] stringByDeletingPathExtension];
+//	return [[[[url path] lastPathComponent] stringByDeletingPathExtension] stringByAppendingString:BLocalizedString(@" (Synced)", nil)];
 }
 
 #pragma mark Init
@@ -45,8 +46,9 @@
 #pragma mark Lifecycle Callback
 
 - (void)applicationDidFinishLaunching {
-	[[NSMenu menuItemForMenuItemExtensionPoint:@"com.blocks.BUserInterface.menus.main.cloudDocumentsService.browseCloudDocumentsOnline"] setTitle:[[Cloud sharedInstance] serviceLabel]];
 	[[NSMenu menuForMenuExtensionPoint:@"com.blocks.BUserInterface.menus.main.cloudDocumentsService"] setDelegate:self];
+	NSMenuItem *menuItem = [NSMenu menuItemForMenuItemExtensionPoint:@"com.blocks.BUserInterface.menus.main.cloudDocumentsService.openCloudDocumentsWebsite"];
+	[menuItem setTitle:[[menuItem title] stringByAppendingFormat:@" (%@)", [[Cloud sharedInstance] serviceLabel]]];
 	[[Cloud sharedInstance] setDelegate:self];
 }
 
@@ -78,7 +80,12 @@
 		}
 		
 		NSError *error = nil;
-		NSString *name = nameWindowController.name;
+		NSString *name = [nameWindowController.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+		
+		if ([name length] == 0) {
+			name = BLocalizedString(@"Untitled", nil);
+		}
+		
 		NSString *newDocumentPath = [newDocumentIDPath stringByAppendingPathComponent:name];
 				
 		if (![fileManager copyItemAtPath:[[NSBundle mainBundle] pathForResource:@"CloudWelcomeText" ofType:@"txt"] toPath:newDocumentPath error:&error]) {
@@ -141,14 +148,11 @@
 	}
 }
 
-- (IBAction)browseCloudDocumentsOnline:(NSMenuItem *)sender {
+- (IBAction)openCloudDocumentsWebsite:(NSMenuItem *)sender {
 	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[[[Cloud sharedInstance] serviceRootURLString] stringByAppendingString:@"/documents/"]]];
 }
 
-- (IBAction)browseCloudDocumentsOnlineAboutPage:(NSMenuItem *)sender {
-}
-
-- (IBAction)toggleDocumentsServiceAuthentication:(id)sender {
+- (IBAction)toggleCloudDocumentsAuthentication:(id)sender {
 	[[Cloud sharedInstance] toggleAuthentication:sender];
 }
 
@@ -156,7 +160,7 @@
 	SEL action = [menuItem action];
 	Cloud *cloud = [Cloud sharedInstance];
 	
-	if (action == @selector(toggleDocumentsServiceAuthentication:)) {
+	if (action == @selector(toggleCloudDocumentsAuthentication:)) {
 		if (cloud.serviceUsername != nil) {
 			[menuItem setTitle:[NSString stringWithFormat:BLocalizedString(@"Sign Out (%@)", nil), cloud.serviceUsername]];
 		} else {
@@ -168,9 +172,10 @@
 		return cloud.serviceUsername != nil;
 	} else if (action == @selector(deleteCloudDocument:)) {
 		return cloud.serviceUsername != nil && [[NSApp currentDocument] fromCloud];
-	} else if (action == @selector(browseCloudDocumentsOnline:)) {
+	} else if (action == @selector(openCloudDocumentsWebsite:)) {
 		return cloud.serviceUsername != nil;
 	}
+	
 	return YES;
 }
 
@@ -200,7 +205,6 @@
 				NSURL *eachURL = [NSURL fileURLWithPath:eachFileSystemPath];
 				NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:[BDocumentCloudDelegate displayNameForCloudDocument:eachURL] action:@selector(openCloudDocument:) keyEquivalent:@""];
 				[eachMenuItem setRepresentedObject:eachURL];
-				[eachMenuItem setIndentationLevel:1];
 				NSImage *icon = [workspace iconForFile:eachFileSystemPath];
 				[icon setSize:NSMakeSize(16, 16)];
 				[eachMenuItem setImage:icon];
@@ -305,6 +309,14 @@
 	[[BCloudSyncWindowController sharedInstance] showWindow:nil];
 	[BCloudSyncWindowController sharedInstance].progress = 0.5;
 
+	for (NSDocument *eachDocument in [[NSDocumentController sharedDocumentController] documents]) {
+		if ([eachDocument isKindOfClass:[BDocument class]]) {
+			if ([(BDocument *)eachDocument fromCloud]) {
+				[eachDocument saveDocument:nil];
+			}
+		}
+	}
+	
 	NSError *error = nil;
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSArray *cloudCacheDocuments = [self cloudCacheDocuments:&error];
@@ -364,6 +376,7 @@
 	NSError *error = nil;
 	BCloudCacheDocument *cloudCacheDocument = [self cloudCacheDocumentForID:originalDocumentID error:&error];
 	NSString *originalName = nil;
+	NSDocument *document = nil;
 	
 	if (!cloudCacheDocument) {
 		if (error) {
@@ -375,6 +388,7 @@
 		originalName = aCloudDocument.localName;
 	} else {
 		originalName = cloudCacheDocument.localName;
+		document = [[NSDocumentController sharedDocumentController] documentForURL:[NSURL fileURLWithPath:[cloudCacheDocument fileSystemPath]]];
 	}
 	
 	cloudCacheDocument.documentID = aCloudDocument.documentID;
@@ -413,6 +427,13 @@
 	if (![fileManager setAttributes:[self localFileAttributes] ofItemAtPath:newFilePath error:&error]) {
 		BLogError([error description]);
 	}
+
+	[document setFileURL:[NSURL fileURLWithPath:newFilePath]];
+	if ([document respondsToSelector:@selector(_resetMoveAndRenameSensing)]) {
+		[document performSelector:@selector(_resetMoveAndRenameSensing)];
+	}
+	[document checkForModificationOfFileOnDisk]; // bring in changes from disk.
+	[document saveDocument:nil]; // do final sync save.
 	
 	return YES;
 }
@@ -423,9 +444,17 @@
 
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSString *deletedFilePath = [cloudCacheDocument fileSystemPath];
+
+	NSDocument *document = [[NSDocumentController sharedDocumentController] documentForURL:[NSURL fileURLWithPath:deletedFilePath]];
+	if (document) {
+		[document saveDocument:nil];
+		[document close];
+	}
 	
-	if (![fileManager removeItemAtPath:[deletedFilePath stringByDeletingLastPathComponent] error:&error]) {
-		BLogError([error description]);
+	if ([fileManager fileExistsAtPath:[deletedFilePath stringByDeletingLastPathComponent]]) {
+		if (![fileManager removeItemAtPath:[deletedFilePath stringByDeletingLastPathComponent] error:&error]) {
+			BLogError([error description]);
+		}
 	}
 	
 	[managedObjectContext deleteObject:cloudCacheDocument];
@@ -470,9 +499,9 @@
 	
 	if ([conflicts length] > 0) {
 		NSString *serviceLabel = [[Cloud sharedInstance] serviceLabel];
-		NSString *messageText = [NSString stringWithFormat:BLocalizedString(@"%@ Syncing Conflicts", nil), serviceLabel];
-		NSString *informativeTextText = [NSString stringWithFormat:BLocalizedString(@"Some of your edits could not be synced with %@ because they conflict with other recent edits on %@. Please go to the %@ website to resolve these conflicts.", nil), serviceLabel, serviceLabel, serviceLabel];
-		NSAlert *alert = [NSAlert alertWithMessageText:messageText defaultButton:BLocalizedString(@"Resolve Conflicts", nil) alternateButton:BLocalizedString(@"Close", nil) otherButton:nil informativeTextWithFormat:informativeTextText];
+		NSString *messageText = [NSString stringWithFormat:BLocalizedString(@"%@ Conflicts", nil), serviceLabel];
+		NSString *informativeTextText = [NSString stringWithFormat:BLocalizedString(@"Some of your edits conflict with recent changes made on %@. Please go to the website to resolve these conflicts.", nil), serviceLabel];
+		NSAlert *alert = [NSAlert alertWithMessageText:messageText defaultButton:BLocalizedString(@"Resolve", nil) alternateButton:BLocalizedString(@"Close", nil) otherButton:nil informativeTextWithFormat:informativeTextText];
 		if ([alert runModal] == NSOKButton) {
 			[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[[[Cloud sharedInstance] serviceRootURLString] stringByAppendingString:@"/documents/#conflicts"]]];
 		}
@@ -615,7 +644,7 @@
 }
 
 - (IBAction)learnMore:(id)sender {
-	//	[[BCloudDocumentsService sharedInstance] browseCloudDocumentsOnlineAboutPage:sender];
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[[Cloud sharedInstance] serviceRootURLString]]];
 }
 
 - (IBAction)ok:(id)sender {

@@ -7,20 +7,20 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <WebKit/WebKit.h>
 
 
 @interface BDocumentDifferencesWindowController : NSWindowController {
-	IBOutlet NSTextView *textView;
-	NSString *text1;
-	NSString *text2;
+	IBOutlet NSTextField *messageTextField;
+	IBOutlet WebView *webView;
+	NSMutableArray *diffs;
 }
 
+- (id)initWithDiffs:(NSMutableArray *)diffs;
 - (id)initWithText1:(NSString *)text1 text2:(NSString *)text2;
 
-- (IBAction)nextChange:(id)sender;
-- (IBAction)previousChange:(id)sender;
-- (IBAction)acceptChange:(id)sender;
-- (IBAction)rejectChange:(id)sender;
+- (void)setMessageText:(NSString *)messageText;
+
 - (IBAction)close:(id)sender;
 
 @end

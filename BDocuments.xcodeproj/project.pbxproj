@@ -49,6 +49,8 @@
 		88F596260F8FB51E00DFBB69 /* HTTPFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F596240F8FB51E00DFBB69 /* HTTPFetcher.m */; };
 		88F596300F8FB52600DFBB69 /* DiffMatchPatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F5962E0F8FB52600DFBB69 /* DiffMatchPatch.h */; };
 		88F596310F8FB52600DFBB69 /* DiffMatchPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F5962F0F8FB52600DFBB69 /* DiffMatchPatch.m */; };
+		88FFAE0F0F9778D700D7A3B5 /* BDocumentDifferencesWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A36C840F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h */; };
+		88FFAE100F9778D700D7A3B5 /* BDocumentDifferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A36C850F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.m */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -199,6 +201,8 @@
 				431A0C3D0CC5149E00DE7BAE /* BDocument.m */,
 				431A0C420CC514B900DE7BAE /* BDocumentWindowController.h */,
 				431A0C430CC514B900DE7BAE /* BDocumentWindowController.m */,
+				88A36C840F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h */,
+				88A36C850F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.m */,
 				88243E8A0F9400290057A08D /* BDocumentCloudDelegate.h */,
 				88243E8B0F9400290057A08D /* BDocumentCloudDelegate.m */,
 				883B60A70F324DC9005D5B3A /* DiffMatchPatch OLD */,
@@ -258,8 +262,6 @@
 				889EAE220F007874003D8453 /* BDiffMatchPatch.m */,
 				889EAE230F007874003D8453 /* BDiffMatchPatchTest.h */,
 				889EAE200F007874003D8453 /* BDiffMatchPatchTest.m */,
-				88A36C840F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h */,
-				88A36C850F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.m */,
 			);
 			name = "DiffMatchPatch OLD";
 			sourceTree = "<group>";
@@ -341,6 +343,7 @@
 				88F596250F8FB51E00DFBB69 /* HTTPFetcher.h in Headers */,
 				88F596300F8FB52600DFBB69 /* DiffMatchPatch.h in Headers */,
 				88243E8C0F9400290057A08D /* BDocumentCloudDelegate.h in Headers */,
+				88FFAE0F0F9778D700D7A3B5 /* BDocumentDifferencesWindowController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -458,6 +461,7 @@
 				88F596310F8FB52600DFBB69 /* DiffMatchPatch.m in Sources */,
 				88243E8D0F9400290057A08D /* BDocumentCloudDelegate.m in Sources */,
 				88243F4D0F9494310057A08D /* BDocumentCloudCache.xcdatamodel in Sources */,
+				88FFAE100F9778D700D7A3B5 /* BDocumentDifferencesWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

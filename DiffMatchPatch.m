@@ -823,37 +823,6 @@
 	return html;
 }
 
-/*
-- (NSAttributedString *)diffPrettyAttributedString:(NSArray *)diffs {
-	NSColor *insertBackgroundColor = [NSColor colorWithDeviceRed:0.9 green:1.0 blue:0.9 alpha:1.0];
-	NSColor *deleteBackgroundColor = [NSColor colorWithDeviceRed:1.0 green:0.9 blue:0.9 alpha:1.0];	
-	NSMutableAttributedString *attributedString = [[[NSMutableAttributedString alloc] init] autorelease];
-	NSInteger i = 0;
-	for (BDiff *aDiff in diffs) {
-		NSDictionary *attributes = nil;
-		switch (aDiff.operation) {
-			case BDiffInsert:
-				attributes = [NSDictionary dictionaryWithObjectsAndKeys:[NSColor greenColor], NSForegroundColorAttributeName, [NSNumber numberWithInteger:BDiffInsert], DiffTypeAttributeName, insertBackgroundColor, NSBackgroundColorAttributeName, [NSNumber numberWithInteger:NSUnderlineStyleSingle], NSUnderlineStyleAttributeName, nil];
-				break;
-			case BDiffDelete:
-				attributes = [NSDictionary dictionaryWithObjectsAndKeys:[NSColor redColor], NSForegroundColorAttributeName, [NSNumber numberWithInteger:BDiffDelete], DiffTypeAttributeName, deleteBackgroundColor, NSBackgroundColorAttributeName, [NSNumber numberWithInteger:NSUnderlineStyleSingle], NSStrikethroughStyleAttributeName, nil];
-				break;
-			case BDiffEqual:
-				attributes = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:BDiffEqual], DiffTypeAttributeName, nil];
-				break;
-		}
-		if (aDiff.operation != BDiffDelete) {
-			i += [aDiff.text length];
-		}		
-		[attributedString appendAttributedString:[[[NSAttributedString alloc] initWithString:aDiff.text attributes:attributes] autorelease]];
-	}
-	
-	[attributedString addAttribute:NSFontAttributeName value:[NSFont userFixedPitchFontOfSize:10] range:NSMakeRange(0, [attributedString length])];
-	
-	return attributedString;
-}
-*/
-
 - (NSString *)diffText1:(NSArray *)diffs {
 	NSMutableString *text = [NSMutableString string];
 	for (BDiff *aDiff in diffs) {

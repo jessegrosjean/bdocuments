@@ -22,6 +22,7 @@
 	NSString *externalDisplayName;
 	NSAppleEventDescriptor *externalSender;
 	NSAppleEventDescriptor *externalToken;
+	NSString *lastKnownTextContentsOnDisk;
 }
 
 #pragma mark Document Defaults Repository
@@ -51,8 +52,8 @@
 - (IBAction)showUnsavedChanges:(id)sender;
 @property(readonly) BOOL fromCloud;
 @property(readonly) NSString *cloudID;
-@property(readonly) NSString *documentDataAsText;
-- (void)checkForModificationOfFileOnDisk;
+- (NSString *)savedTextContents:(NSError **)error;
+@property(retain) NSString *textContents;
 
 @end
 

@@ -99,10 +99,15 @@
 			return nil;
 		}
 	} else if (self.isScheduledForDeleteOnClient) {
-		if ([self hasServerEdits]) {
-			return [cloud GETServerDocument:self];
+		if (self.isScheduledForInsertOnClient) {
+			[cloud.delegate cloudSyncDeleteLocalDocument:self.documentID];
+			return nil;
 		} else {
-			return [cloud DELETEServerDocument:self];
+			if ([self hasServerEdits]) {
+				return [cloud GETServerDocument:self];
+			} else {
+				return [cloud DELETEServerDocument:self];
+			}
 		}
 	}
 	

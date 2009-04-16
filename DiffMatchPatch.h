@@ -54,7 +54,6 @@ typedef NSUInteger BDiffOperation;
 - (void)diffCleanupMerge:(NSMutableArray *)diffs;
 - (NSInteger)diffXIndex:(NSArray *)diffs location:(NSInteger)location;
 - (NSString *)diffPrettyHTML:(NSArray *)diffs;
-//- (NSAttributedString *)diffPrettyAttributedString:(NSArray *)diffs;
 - (NSString *)diffText1:(NSArray *)diffs;
 - (NSString *)diffText2:(NSArray *)diffs;
 - (NSString *)diffToDelta:(NSArray *)diffs;

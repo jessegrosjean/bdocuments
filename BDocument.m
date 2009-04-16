@@ -10,8 +10,8 @@
 #import "BDocuments.h"
 #import "BDocumentWindowController.h"
 #import "BDocumentCloudDelegate.h"
-//#import "BDocumentDifferencesWindowController.h"
-//#import "BCloudDocumentsService.h"
+#import "DiffMatchPatch.h"
+#import "BDocumentDifferencesWindowController.h"
 
 
 @implementation BDocument
@@ -24,6 +24,12 @@
 #pragma mark Document Defaults Repository
 
 static NSMutableArray *documentUserDefautlsArchive = nil;
+
+
+- (void)updateChangeCount:(NSDocumentChangeType)changeType {
+	[super updateChangeCount:changeType];
+}
+
 
 + (NSString *)documentUserDefaultsArchivePath {
 	return [[[NSFileManager defaultManager] processesApplicationSupportFolder] stringByAppendingPathComponent:@"DocumentsUserDefaults.archive"];
@@ -203,25 +209,27 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	NSWindow *window = [windowController window];
 	NSURL *fileURL = [self fileURL];
 	NSString *messageText = nil;
-	NSString *informativeTextText = @"";
+	NSString *informativeText = @"";
 	
 	if (fileURL) {
-		NSString *unsavedText = [self documentDataAsText];
-		NSString *savedText = [NSString stringWithContentsOfFile:[fileURL path] encoding:NSUTF8StringEncoding error:nil];
+		NSString *unsavedText = [self textContents];
+		NSString *savedText = [self savedTextContents:nil];
 		
 		if ([savedText isEqualToString:unsavedText]) {
-			messageText = BLocalizedString(@"There are no differences between your document and the version saved on disk", nil);
+			messageText = BLocalizedString(@"Your document has no unsaved changes.", nil);
+			informativeText = BLocalizedString(@"The content of your open document is exactly the same as the content that is saved on disk.", nil);
 		} else {
-//			BDocumentDifferencesWindowController *differencesWindowController = [[BDocumentDifferencesWindowController alloc] initWithText1:savedText text2:unsavedText];
-//			[NSApp beginSheet:[differencesWindowController window] modalForWindow:window modalDelegate:self didEndSelector:@selector(showUnsavedChangesSheetDidEnd:returnCode:contextInfo:) contextInfo:nil];
-			NSBeep();
+			BDocumentDifferencesWindowController *differencesWindowController = [[BDocumentDifferencesWindowController alloc] initWithText1:savedText text2:unsavedText];
+			[differencesWindowController setMessageText:BLocalizedString(@"These are your unsaved changes.", nil)];
+			[NSApp beginSheet:[differencesWindowController window] modalForWindow:window modalDelegate:self didEndSelector:@selector(showUnsavedChangesSheetDidEnd:returnCode:contextInfo:) contextInfo:nil];
 			return;
 		}
 	} else {
-		messageText = BLocalizedString(@"Your document has not been saved yet", nil);
+		messageText = BLocalizedString(@"Your document has not been saved.", nil);
+		informativeText = BLocalizedString(@"You must first save your document before you can compare it to the content that is saved on disk.", nil);
 	}
 	
-	NSAlert *alert = [NSAlert alertWithMessageText:messageText defaultButton:BLocalizedString(@"OK", nil) alternateButton:nil otherButton:nil informativeTextWithFormat:informativeTextText];
+	NSAlert *alert = [NSAlert alertWithMessageText:messageText defaultButton:BLocalizedString(@"OK", nil) alternateButton:nil otherButton:nil informativeTextWithFormat:informativeText];
 	[alert beginSheetModalForWindow:window modalDelegate:nil didEndSelector:nil contextInfo:nil];
 }
 
@@ -229,8 +237,51 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	[sheet orderOut:self];
 }
 
-- (NSString *)documentDataAsText {
+- (NSString *)textContentsFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {
+	NSMutableString *string = [[NSMutableString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	if (string) {
+		NSString *windowsLineEnding = [[NSString alloc] initWithFormat:@"%C%C", 0x000D, 0x000A];
+		NSString *macLineEnding = [[NSString alloc] initWithFormat:@"%C", 0x000D];
+		[string replaceOccurrencesOfString:windowsLineEnding withString:@"\n" options:NSLiteralSearch range:NSMakeRange(0, [string length])];
+		[string replaceOccurrencesOfString:macLineEnding withString:@"\n" options:NSLiteralSearch range:NSMakeRange(0, [string length])];
+		return string;
+	} else {
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+								  BLocalizedString(@"The file is not in the right format.", nil), NSLocalizedDescriptionKey,
+								  BLocalizedString(@"The file might be corrupted, truncated, or in a different format than you expect.", nil), NSLocalizedRecoverySuggestionErrorKey,
+								  BLocalizedString(@"The file is not in the right format.", nil), NSLocalizedFailureReasonErrorKey,
+								  nil];
+		
+		*outError = [[NSError alloc] initWithDomain:@"com.hogbaysoftware.taskpaper.TPDocument" code:1 userInfo:userInfo]; // Why does none of this error info get displayed?
+		
+		return nil;
+	}
+}
+
+- (NSString *)savedTextContents:(NSError **)error {
+	return [self textContentsFromData:[NSData dataWithContentsOfURL:[self fileURL]] ofType:[self fileType] error:error];
+}
+
+- (NSString *)textContents {
 	return nil;
+}
+
+- (void)setTextContents:(NSString *)newString {
+}
+
+- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {
+	NSString *string = [self textContentsFromData:data ofType:typeName error:outError];
+	
+	if (string) {
+		[[self undoManager] disableUndoRegistration];
+		[self setTextContents:string];
+		[[self undoManager] enableUndoRegistration];
+		[self addDocumentUserDefaultsFromDictionary:[BDocument loadDocumentUserDefaultsForDocumentURL:[self fileURL]]];			
+		lastKnownTextContentsOnDisk = string;
+		return YES;
+	} else {
+		return NO;
+	}
 }
 
 - (void)setFileURL:(NSURL *)absoluteURL {
@@ -261,72 +312,71 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	return [[[[self fileURL] path] stringByDeletingLastPathComponent] lastPathComponent];
 }
 
-- (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError {
-	[BDocument storeDocumentUserDefaults:[self documentUserDefaults] forDocumentURL:[self fileURL]];
-	return [[self documentDataAsText] writeToURL:absoluteURL atomically:YES encoding:NSUTF8StringEncoding error:outError];
-}
+- (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation originalContentsURL:(NSURL *)absoluteOriginalContentsURL error:(NSError **)outError {
+	NSString *textContents = [self textContents];
 
-- (void)readModifiedFileFromDisk:(NSDate *)newModificationDate {
-	NSError *error = nil;
-	if (![self revertToContentsOfURL:[self fileURL] ofType:[self fileType] error:&error]) {
-		BLogError(@"failed revertToSavedFromURL:ofType:");
-		[self presentError:error];
-	} else {
-		[self setFileModificationDate:newModificationDate];
-	}
-	[[self undoManager] removeAllActions];
-	[self updateChangeCount:NSChangeCleared];	
-}
-
-- (void)fileWasModifiedExternallyByAnotherApplication:(NSDate *)newModificationDate {
-	if ([self isDocumentEdited]) {
-		NSString *processName = [[NSProcessInfo processInfo] processName];
-		NSString *message = BLocalizedString(@"Warning", nil);
-		NSString *informativeText = BLocalizedString(@"The file for this document has been modified by another application. There are also unsaved changes in %@. Do you want to keep the %@ version or revert to the version on disk?", nil);
-		NSString *defaultButton = BLocalizedString(@"Keep %@ Version", nil);
-		NSString *alternateButton = BLocalizedString(@"Revert", nil);
-		NSAlert *alert = [NSAlert alertWithMessageText:message defaultButton:[NSString stringWithFormat:defaultButton, processName] alternateButton:alternateButton otherButton:nil informativeTextWithFormat:informativeText, processName, processName];
-		[alert beginSheetModalForWindow:[[NSApp currentDocumentWindowController] window] modalDelegate:self didEndSelector:@selector(fileWasModifiedExternallyAlertDidEnd:returnCode:contextInfo:) contextInfo:newModificationDate];
-	} else {
-		[self readModifiedFileFromDisk:newModificationDate];
+	if ([textContents writeToURL:absoluteURL atomically:YES encoding:NSUTF8StringEncoding error:outError]) {
+		if (saveOperation == NSSaveOperation || saveOperation == NSSaveAsOperation) {
+			[BDocument storeDocumentUserDefaults:[self documentUserDefaults] forDocumentURL:[self fileURL]];
+			lastKnownTextContentsOnDisk = textContents;
+		}
+		return YES;
 	}
 	
-	for (NSWindowController *each in [self windowControllers]) {
-		[each synchronizeWindowTitleWithDocumentName];
-	}
+	return NO;
 }
 
-- (void)checkForModificationOfFileOnDisk {
+- (void)BDocument_checkForModificationOfFileOnDisk {
 	NSDate *knownFileModificationDate = [self fileModificationDate];
 	if (knownFileModificationDate) {
 		NSDate *actualFileModificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[[self fileURL] path] traverseLink:YES] fileModificationDate];
+		
 		if ([knownFileModificationDate isLessThan:actualFileModificationDate]) {
-			[self performSelector:@selector(fileWasModifiedExternallyByAnotherApplication:) withObject:actualFileModificationDate];
+			NSError *error = nil;
+			NSString *savedTextContents = [self savedTextContents:&error];
+			if (savedTextContents) {
+				DiffMatchPatch *dmp = [[DiffMatchPatch alloc] init];
+				NSMutableArray *patches = [dmp patchMakeText1:lastKnownTextContentsOnDisk text2:savedTextContents];
+				if ([patches count] > 0) {
+					NSArray *patchResults = [dmp patchApply:patches text:[self textContents]];
+					NSString *patchedDocumentText = [patchResults objectAtIndex:0];
+					[self setTextContents:patchedDocumentText];
+					
+					NSUInteger index = 0;
+					NSMutableArray *failedDiffs = [NSMutableArray array];
+					for (NSNumber *each in [patchResults objectAtIndex:1]) {
+						if ([each boolValue] == NO) {
+							[failedDiffs addObjectsFromArray:[[patches objectAtIndex:index] diffs]];
+						}
+						index++;
+					}
+					
+					if ([failedDiffs count] > 0) {
+						NSWindow *window = [[[self windowControllers] lastObject] window];
+						BDocumentDifferencesWindowController *differencesWindowController = [[BDocumentDifferencesWindowController alloc] initWithDiffs:failedDiffs];
+						[differencesWindowController setMessageText:BLocalizedString(@"This document's file has been changed by another application. These changes could not be merged back into your open document.", nil)];
+						[NSApp beginSheet:[differencesWindowController window] modalForWindow:window modalDelegate:self didEndSelector:@selector(showMergeFailuresSheetDidEnd:returnCode:contextInfo:) contextInfo:nil];
+					}
+				}
+				
+				[self setFileModificationDate:actualFileModificationDate];
+			}
 		}
 	}
 }
 
-- (void)fileWasModifiedExternallyAlertDidEnd:(NSAlert *)alert returnCode:(int)returnCode contextInfo:(void *)contextInfo {
-	if (returnCode == NSAlertDefaultReturn) { // keep current version
-		[self setFileModificationDate:contextInfo];
-	} else { // revert
-		[self readModifiedFileFromDisk:contextInfo];
-	}
-}
+- (void)showMergeFailuresSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo {
+	[sheet orderOut:self];
+}						
+
 
 @end
 
 @implementation NSDocument (BDocumentAdditions)
 
 - (void)checkForModificationOfFileOnDisk {
-	if ([self respondsToSelector:@selector(fileWasModifiedExternallyByAnotherApplication:)]) {
-		NSDate *knownFileModificationDate = [self fileModificationDate];
-		if (knownFileModificationDate) {
-			NSDate *actualFileModificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[[self fileURL] path] traverseLink:YES] fileModificationDate];
-			if ([knownFileModificationDate isLessThan:actualFileModificationDate]) {
-				[self performSelector:@selector(fileWasModifiedExternallyByAnotherApplication:) withObject:actualFileModificationDate];
-			}
-		}
+	if ([self respondsToSelector:@selector(BDocument_checkForModificationOfFileOnDisk)]) {
+		[self performSelector:@selector(BDocument_checkForModificationOfFileOnDisk)];
 	}
 }
 
