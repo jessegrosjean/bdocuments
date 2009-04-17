@@ -214,7 +214,7 @@
 						<object class="NSBox" id="279522312">
 							<reference key="NSNextResponder" ref="1006"/>
 							<int key="NSvFlags">10</int>
-							<string key="NSFrame">{{0, 232}, {600, 5}}</string>
+							<string key="NSFrame">{{0, 233}, {600, 5}}</string>
 							<reference key="NSSuperview" ref="1006"/>
 							<string key="NSOffsets">{0, 0}</string>
 							<object class="NSTextFieldCell" key="NSTitleCell">
@@ -244,7 +244,7 @@
 						<object class="NSBox" id="842676505">
 							<reference key="NSNextResponder" ref="1006"/>
 							<int key="NSvFlags">34</int>
-							<string key="NSFrame">{{0, 58}, {600, 5}}</string>
+							<string key="NSFrame">{{0, 57}, {600, 5}}</string>
 							<reference key="NSSuperview" ref="1006"/>
 							<string key="NSOffsets">{0, 0}</string>
 							<object class="NSTextFieldCell" key="NSTitleCell">
