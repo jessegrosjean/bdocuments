@@ -18,11 +18,23 @@
 		437D72510C9198C90051C06D /* BDocuments.m in Sources */ = {isa = PBXBuildFile; fileRef = 437D72500C9198C90051C06D /* BDocuments.m */; };
 		43B2906E0CA3EE6700AE1802 /* BDocumentController.h in Headers */ = {isa = PBXBuildFile; fileRef = 437D71820C9179BD0051C06D /* BDocumentController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		43EF1E480CA2F14600138C91 /* BDocuments.h in Headers */ = {isa = PBXBuildFile; fileRef = 437D724F0C9198C90051C06D /* BDocuments.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		88243E8C0F9400290057A08D /* BDocumentCloudDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 88243E8A0F9400290057A08D /* BDocumentCloudDelegate.h */; };
-		88243E8D0F9400290057A08D /* BDocumentCloudDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 88243E8B0F9400290057A08D /* BDocumentCloudDelegate.m */; };
-		88243F4D0F9494310057A08D /* BDocumentCloudCache.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 88243F4C0F9494310057A08D /* BDocumentCloudCache.xcdatamodel */; };
-		883B65210F33A679005D5B3A /* BCloudAuthenticationWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 883B65200F33A679005D5B3A /* BCloudAuthenticationWindow.xib */; };
+		88243E8C0F9400290057A08D /* SyncedDocumentsControllerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 88243E8A0F9400290057A08D /* SyncedDocumentsControllerDelegate.h */; };
+		88243E8D0F9400290057A08D /* SyncedDocumentsControllerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 88243E8B0F9400290057A08D /* SyncedDocumentsControllerDelegate.m */; };
+		883B65210F33A679005D5B3A /* BSyncedDocumentsAuthenticationWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 883B65200F33A679005D5B3A /* BSyncedDocumentsAuthenticationWindow.xib */; };
 		885C4E420F61BE8800624924 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 885C4E410F61BE8800624924 /* libsqlite3.dylib */; };
+		88750D1D0FADD13100C870FE /* HTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 88750D1B0FADD13100C870FE /* HTTPClient.h */; };
+		88750D1E0FADD13100C870FE /* HTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 88750D1C0FADD13100C870FE /* HTTPClient.m */; };
+		88750D540FADD36F00C870FE /* SyncedDocuments.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 88750D4F0FADD36F00C870FE /* SyncedDocuments.xcdatamodel */; };
+		88750D550FADD36F00C870FE /* SyncedDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 88750D500FADD36F00C870FE /* SyncedDocument.h */; };
+		88750D560FADD36F00C870FE /* SyncedDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 88750D510FADD36F00C870FE /* SyncedDocument.m */; };
+		88750D570FADD36F00C870FE /* SyncedDocumentsController.h in Headers */ = {isa = PBXBuildFile; fileRef = 88750D520FADD36F00C870FE /* SyncedDocumentsController.h */; };
+		88750D580FADD36F00C870FE /* SyncedDocumentsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88750D530FADD36F00C870FE /* SyncedDocumentsController.m */; };
+		88750D620FADD3DD00C870FE /* SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88750D5C0FADD3DD00C870FE /* SBJSON.h */; };
+		88750D630FADD3DD00C870FE /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88750D5D0FADD3DD00C870FE /* SBJSON.m */; };
+		88750D640FADD3DD00C870FE /* NSString+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88750D5E0FADD3DD00C870FE /* NSString+SBJSON.h */; };
+		88750D650FADD3DD00C870FE /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88750D5F0FADD3DD00C870FE /* NSString+SBJSON.m */; };
+		88750D660FADD3DD00C870FE /* NSObject+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88750D600FADD3DD00C870FE /* NSObject+SBJSON.h */; };
+		88750D670FADD3DD00C870FE /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88750D610FADD3DD00C870FE /* NSObject+SBJSON.m */; };
 		889A4F280D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 889A4F270D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown */; };
 		889A4F2B0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 889A4F2A0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown */; };
 		889A4F2D0D5A5A8300D1E8E9 /* com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 889A4F2C0D5A5A8300D1E8E9 /* com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown */; };
@@ -30,23 +42,8 @@
 		88A3521D0E980EEE0019988C /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88A3521C0E980EEE0019988C /* WebKit.framework */; };
 		88A36CA40F14FC2C00EAA3FD /* BDocumentDifferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88A36CA30F14FC2C00EAA3FD /* BDocumentDifferencesWindow.xib */; };
 		88A46F490E914E4200E29F5B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88A46F480E914E4200E29F5B /* SystemConfiguration.framework */; };
-		88A470CE0E918EE200E29F5B /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A470C70E918EE200E29F5B /* SBJSON.m */; };
-		88A470CF0E918EE200E29F5B /* SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470C80E918EE200E29F5B /* SBJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		88A470D00E918EE200E29F5B /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A470C90E918EE200E29F5B /* NSString+SBJSON.m */; };
-		88A470D10E918EE200E29F5B /* NSString+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470CA0E918EE200E29F5B /* NSString+SBJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		88A470D20E918EE200E29F5B /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */; };
-		88A470D30E918EE200E29F5B /* NSObject+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470CC0E918EE200E29F5B /* NSObject+SBJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		88A470D40E918EE200E29F5B /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A470CD0E918EE200E29F5B /* JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		88E631230F5C748F00C0E3F7 /* BCloudNameWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88E631220F5C748F00C0E3F7 /* BCloudNameWindow.xib */; };
-		88E98B440F58425B00CAAA23 /* BCloudSyncWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88E98B430F58425B00CAAA23 /* BCloudSyncWindow.xib */; };
-		88F596170F8FB4D000DFBB69 /* Cloud.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F596130F8FB4D000DFBB69 /* Cloud.h */; };
-		88F596180F8FB4D000DFBB69 /* Cloud.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F596140F8FB4D000DFBB69 /* Cloud.m */; };
-		88F596190F8FB4D000DFBB69 /* CloudDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F596150F8FB4D000DFBB69 /* CloudDocument.h */; };
-		88F5961A0F8FB4D000DFBB69 /* CloudDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F596160F8FB4D000DFBB69 /* CloudDocument.m */; };
-		88F596210F8FB50F00DFBB69 /* Keychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F5961F0F8FB50F00DFBB69 /* Keychain.h */; };
-		88F596220F8FB50F00DFBB69 /* Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F596200F8FB50F00DFBB69 /* Keychain.m */; };
-		88F596250F8FB51E00DFBB69 /* HTTPFetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F596230F8FB51E00DFBB69 /* HTTPFetcher.h */; };
-		88F596260F8FB51E00DFBB69 /* HTTPFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F596240F8FB51E00DFBB69 /* HTTPFetcher.m */; };
+		88E631230F5C748F00C0E3F7 /* BSyncedDocumentsNameWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88E631220F5C748F00C0E3F7 /* BSyncedDocumentsNameWindow.xib */; };
+		88E98B440F58425B00CAAA23 /* BSyncedDocumentsSyncWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88E98B430F58425B00CAAA23 /* BSyncedDocumentsSyncWindow.xib */; };
 		88F596300F8FB52600DFBB69 /* DiffMatchPatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F5962E0F8FB52600DFBB69 /* DiffMatchPatch.h */; };
 		88F596310F8FB52600DFBB69 /* DiffMatchPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F5962F0F8FB52600DFBB69 /* DiffMatchPatch.m */; };
 		88FFAE0F0F9778D700D7A3B5 /* BDocumentDifferencesWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 88A36C840F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h */; };
@@ -89,41 +86,36 @@
 		437D71830C9179BD0051C06D /* BDocumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDocumentController.m; sourceTree = "<group>"; };
 		437D724F0C9198C90051C06D /* BDocuments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BDocuments.h; sourceTree = "<group>"; };
 		437D72500C9198C90051C06D /* BDocuments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDocuments.m; sourceTree = "<group>"; };
-		88243E8A0F9400290057A08D /* BDocumentCloudDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BDocumentCloudDelegate.h; sourceTree = "<group>"; };
-		88243E8B0F9400290057A08D /* BDocumentCloudDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDocumentCloudDelegate.m; sourceTree = "<group>"; };
-		88243F4C0F9494310057A08D /* BDocumentCloudCache.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = BDocumentCloudCache.xcdatamodel; sourceTree = "<group>"; };
-		883B651E0F33A673005D5B3A /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BCloudAuthenticationWindow.xib; sourceTree = "<group>"; };
+		88243E8A0F9400290057A08D /* SyncedDocumentsControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncedDocumentsControllerDelegate.h; sourceTree = "<group>"; };
+		88243E8B0F9400290057A08D /* SyncedDocumentsControllerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncedDocumentsControllerDelegate.m; sourceTree = "<group>"; };
+		883B651E0F33A673005D5B3A /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BSyncedDocumentsAuthenticationWindow.xib; sourceTree = "<group>"; };
 		885C4E410F61BE8800624924 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = /usr/lib/libsqlite3.dylib; sourceTree = "<absolute>"; };
+		88750D1B0FADD13100C870FE /* HTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPClient.h; sourceTree = "<group>"; };
+		88750D1C0FADD13100C870FE /* HTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPClient.m; sourceTree = "<group>"; };
+		88750D4F0FADD36F00C870FE /* SyncedDocuments.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = SyncedDocuments.xcdatamodel; sourceTree = "<group>"; };
+		88750D500FADD36F00C870FE /* SyncedDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncedDocument.h; sourceTree = "<group>"; };
+		88750D510FADD36F00C870FE /* SyncedDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncedDocument.m; sourceTree = "<group>"; };
+		88750D520FADD36F00C870FE /* SyncedDocumentsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncedDocumentsController.h; sourceTree = "<group>"; };
+		88750D530FADD36F00C870FE /* SyncedDocumentsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncedDocumentsController.m; sourceTree = "<group>"; };
+		88750D5C0FADD3DD00C870FE /* SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJSON.h; sourceTree = "<group>"; };
+		88750D5D0FADD3DD00C870FE /* SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJSON.m; sourceTree = "<group>"; };
+		88750D5E0FADD3DD00C870FE /* NSString+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SBJSON.h"; sourceTree = "<group>"; };
+		88750D5F0FADD3DD00C870FE /* NSString+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SBJSON.m"; sourceTree = "<group>"; };
+		88750D600FADD3DD00C870FE /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
+		88750D610FADD3DD00C870FE /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
 		889A4F270D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = com.blocks.BDocuments.markdown; sourceTree = "<group>"; wrapsLines = 1; };
 		889A4F2A0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = com.blocks.BDocuments.documentControllerDelegate.markdown; sourceTree = "<group>"; wrapsLines = 1; };
 		889A4F2C0D5A5A8300D1E8E9 /* com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown; sourceTree = "<group>"; wrapsLines = 1; };
-		889EAE200F007874003D8453 /* BDiffMatchPatchTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDiffMatchPatchTest.m; sourceTree = "<group>"; };
-		889EAE210F007874003D8453 /* BDiffMatchPatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BDiffMatchPatch.h; sourceTree = "<group>"; };
-		889EAE220F007874003D8453 /* BDiffMatchPatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDiffMatchPatch.m; sourceTree = "<group>"; };
-		889EAE230F007874003D8453 /* BDiffMatchPatchTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BDiffMatchPatchTest.h; sourceTree = "<group>"; };
+		889EAE200F007874003D8453 /* DiffMatchPatchTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatchTest.m; sourceTree = "<group>"; };
+		889EAE230F007874003D8453 /* DiffMatchPatchTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatchTest.h; sourceTree = "<group>"; };
 		88A3519B0E97A34E0019988C /* theme.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = theme.plist; sourceTree = "<group>"; };
 		88A3521C0E980EEE0019988C /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		88A36C840F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BDocumentDifferencesWindowController.h; sourceTree = "<group>"; };
 		88A36C850F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BDocumentDifferencesWindowController.m; sourceTree = "<group>"; };
 		88A36CA10F14FC2700EAA3FD /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BDocumentDifferencesWindow.xib; sourceTree = "<group>"; };
 		88A46F480E914E4200E29F5B /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
-		88A470C70E918EE200E29F5B /* SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJSON.m; sourceTree = "<group>"; };
-		88A470C80E918EE200E29F5B /* SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJSON.h; sourceTree = "<group>"; };
-		88A470C90E918EE200E29F5B /* NSString+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SBJSON.m"; sourceTree = "<group>"; };
-		88A470CA0E918EE200E29F5B /* NSString+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SBJSON.h"; sourceTree = "<group>"; };
-		88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
-		88A470CC0E918EE200E29F5B /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
-		88A470CD0E918EE200E29F5B /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
-		88E631200F5C748300C0E3F7 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BCloudNameWindow.xib; sourceTree = "<group>"; };
-		88E98B410F58425700CAAA23 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BCloudSyncWindow.xib; sourceTree = "<group>"; };
-		88F596130F8FB4D000DFBB69 /* Cloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cloud.h; sourceTree = "<group>"; };
-		88F596140F8FB4D000DFBB69 /* Cloud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cloud.m; sourceTree = "<group>"; };
-		88F596150F8FB4D000DFBB69 /* CloudDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloudDocument.h; sourceTree = "<group>"; };
-		88F596160F8FB4D000DFBB69 /* CloudDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CloudDocument.m; sourceTree = "<group>"; };
-		88F5961F0F8FB50F00DFBB69 /* Keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Keychain.h; sourceTree = "<group>"; };
-		88F596200F8FB50F00DFBB69 /* Keychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Keychain.m; sourceTree = "<group>"; };
-		88F596230F8FB51E00DFBB69 /* HTTPFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPFetcher.h; sourceTree = "<group>"; };
-		88F596240F8FB51E00DFBB69 /* HTTPFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPFetcher.m; sourceTree = "<group>"; };
+		88E631200F5C748300C0E3F7 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BSyncedDocumentsNameWindow.xib; sourceTree = "<group>"; };
+		88E98B410F58425700CAAA23 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BSyncedDocumentsSyncWindow.xib; sourceTree = "<group>"; };
 		88F5962E0F8FB52600DFBB69 /* DiffMatchPatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch.h; sourceTree = "<group>"; };
 		88F5962F0F8FB52600DFBB69 /* DiffMatchPatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatch.m; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* BDocuments.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BDocuments.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -179,11 +171,10 @@
 				88A3519B0E97A34E0019988C /* theme.plist */,
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
 				437D71740C91792B0051C06D /* Localizable.strings */,
-				88E98B430F58425B00CAAA23 /* BCloudSyncWindow.xib */,
-				88E631220F5C748F00C0E3F7 /* BCloudNameWindow.xib */,
-				883B65200F33A679005D5B3A /* BCloudAuthenticationWindow.xib */,
+				88E98B430F58425B00CAAA23 /* BSyncedDocumentsSyncWindow.xib */,
+				88E631220F5C748F00C0E3F7 /* BSyncedDocumentsNameWindow.xib */,
+				883B65200F33A679005D5B3A /* BSyncedDocumentsAuthenticationWindow.xib */,
 				88A36CA30F14FC2C00EAA3FD /* BDocumentDifferencesWindow.xib */,
-				88243F4C0F9494310057A08D /* BDocumentCloudCache.xcdatamodel */,
 				437D716C0C9179050051C06D /* Plugin.xml */,
 				889A4F270D5A5A3C00D1E8E9 /* com.blocks.BDocuments.markdown */,
 				889A4F2A0D5A5A5D00D1E8E9 /* com.blocks.BDocuments.documentControllerDelegate.markdown */,
@@ -203,10 +194,7 @@
 				431A0C430CC514B900DE7BAE /* BDocumentWindowController.m */,
 				88A36C840F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h */,
 				88A36C850F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.m */,
-				88243E8A0F9400290057A08D /* BDocumentCloudDelegate.h */,
-				88243E8B0F9400290057A08D /* BDocumentCloudDelegate.m */,
-				883B60A70F324DC9005D5B3A /* DiffMatchPatch OLD */,
-				88F596040F8FB4B200DFBB69 /* Cloud */,
+				88F596040F8FB4B200DFBB69 /* Synced Documents */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -255,62 +243,43 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		883B60A70F324DC9005D5B3A /* DiffMatchPatch OLD */ = {
-			isa = PBXGroup;
-			children = (
-				889EAE210F007874003D8453 /* BDiffMatchPatch.h */,
-				889EAE220F007874003D8453 /* BDiffMatchPatch.m */,
-				889EAE230F007874003D8453 /* BDiffMatchPatchTest.h */,
-				889EAE200F007874003D8453 /* BDiffMatchPatchTest.m */,
-			);
-			name = "DiffMatchPatch OLD";
-			sourceTree = "<group>";
-		};
 		88A470D60E918EE600E29F5B /* JSON */ = {
 			isa = PBXGroup;
 			children = (
-				88A470CD0E918EE200E29F5B /* JSON.h */,
-				88A470C80E918EE200E29F5B /* SBJSON.h */,
-				88A470C70E918EE200E29F5B /* SBJSON.m */,
-				88A470CA0E918EE200E29F5B /* NSString+SBJSON.h */,
-				88A470C90E918EE200E29F5B /* NSString+SBJSON.m */,
-				88A470CC0E918EE200E29F5B /* NSObject+SBJSON.h */,
-				88A470CB0E918EE200E29F5B /* NSObject+SBJSON.m */,
+				88750D5C0FADD3DD00C870FE /* SBJSON.h */,
+				88750D5D0FADD3DD00C870FE /* SBJSON.m */,
+				88750D5E0FADD3DD00C870FE /* NSString+SBJSON.h */,
+				88750D5F0FADD3DD00C870FE /* NSString+SBJSON.m */,
+				88750D600FADD3DD00C870FE /* NSObject+SBJSON.h */,
+				88750D610FADD3DD00C870FE /* NSObject+SBJSON.m */,
 			);
 			name = JSON;
 			sourceTree = "<group>";
 		};
-		88F596040F8FB4B200DFBB69 /* Cloud */ = {
+		88F596040F8FB4B200DFBB69 /* Synced Documents */ = {
 			isa = PBXGroup;
 			children = (
-				88F596130F8FB4D000DFBB69 /* Cloud.h */,
-				88F596140F8FB4D000DFBB69 /* Cloud.m */,
-				88F596150F8FB4D000DFBB69 /* CloudDocument.h */,
-				88F596160F8FB4D000DFBB69 /* CloudDocument.m */,
-				88F5961C0F8FB4E000DFBB69 /* Keychain */,
-				88F5961D0F8FB4E900DFBB69 /* HTTPFetcher */,
+				88750D4F0FADD36F00C870FE /* SyncedDocuments.xcdatamodel */,
+				88750D500FADD36F00C870FE /* SyncedDocument.h */,
+				88750D510FADD36F00C870FE /* SyncedDocument.m */,
+				88750D520FADD36F00C870FE /* SyncedDocumentsController.h */,
+				88750D530FADD36F00C870FE /* SyncedDocumentsController.m */,
+				88243E8A0F9400290057A08D /* SyncedDocumentsControllerDelegate.h */,
+				88243E8B0F9400290057A08D /* SyncedDocumentsControllerDelegate.m */,
+				88F5961D0F8FB4E900DFBB69 /* HTTPClient */,
 				88F5961E0F8FB4F800DFBB69 /* DiffMatchPatch */,
 				88A470D60E918EE600E29F5B /* JSON */,
 			);
-			name = Cloud;
+			name = "Synced Documents";
 			sourceTree = "<group>";
 		};
-		88F5961C0F8FB4E000DFBB69 /* Keychain */ = {
+		88F5961D0F8FB4E900DFBB69 /* HTTPClient */ = {
 			isa = PBXGroup;
 			children = (
-				88F5961F0F8FB50F00DFBB69 /* Keychain.h */,
-				88F596200F8FB50F00DFBB69 /* Keychain.m */,
+				88750D1B0FADD13100C870FE /* HTTPClient.h */,
+				88750D1C0FADD13100C870FE /* HTTPClient.m */,
 			);
-			name = Keychain;
-			sourceTree = "<group>";
-		};
-		88F5961D0F8FB4E900DFBB69 /* HTTPFetcher */ = {
-			isa = PBXGroup;
-			children = (
-				88F596230F8FB51E00DFBB69 /* HTTPFetcher.h */,
-				88F596240F8FB51E00DFBB69 /* HTTPFetcher.m */,
-			);
-			name = HTTPFetcher;
+			name = HTTPClient;
 			sourceTree = "<group>";
 		};
 		88F5961E0F8FB4F800DFBB69 /* DiffMatchPatch */ = {
@@ -318,6 +287,8 @@
 			children = (
 				88F5962E0F8FB52600DFBB69 /* DiffMatchPatch.h */,
 				88F5962F0F8FB52600DFBB69 /* DiffMatchPatch.m */,
+				889EAE230F007874003D8453 /* DiffMatchPatchTest.h */,
+				889EAE200F007874003D8453 /* DiffMatchPatchTest.m */,
 			);
 			name = DiffMatchPatch;
 			sourceTree = "<group>";
@@ -333,17 +304,15 @@
 				43EF1E480CA2F14600138C91 /* BDocuments.h in Headers */,
 				431A0C3E0CC5149E00DE7BAE /* BDocument.h in Headers */,
 				431A0C440CC514B900DE7BAE /* BDocumentWindowController.h in Headers */,
-				88A470CF0E918EE200E29F5B /* SBJSON.h in Headers */,
-				88A470D10E918EE200E29F5B /* NSString+SBJSON.h in Headers */,
-				88A470D30E918EE200E29F5B /* NSObject+SBJSON.h in Headers */,
-				88A470D40E918EE200E29F5B /* JSON.h in Headers */,
-				88F596170F8FB4D000DFBB69 /* Cloud.h in Headers */,
-				88F596190F8FB4D000DFBB69 /* CloudDocument.h in Headers */,
-				88F596210F8FB50F00DFBB69 /* Keychain.h in Headers */,
-				88F596250F8FB51E00DFBB69 /* HTTPFetcher.h in Headers */,
 				88F596300F8FB52600DFBB69 /* DiffMatchPatch.h in Headers */,
-				88243E8C0F9400290057A08D /* BDocumentCloudDelegate.h in Headers */,
+				88243E8C0F9400290057A08D /* SyncedDocumentsControllerDelegate.h in Headers */,
 				88FFAE0F0F9778D700D7A3B5 /* BDocumentDifferencesWindowController.h in Headers */,
+				88750D1D0FADD13100C870FE /* HTTPClient.h in Headers */,
+				88750D550FADD36F00C870FE /* SyncedDocument.h in Headers */,
+				88750D570FADD36F00C870FE /* SyncedDocumentsController.h in Headers */,
+				88750D620FADD3DD00C870FE /* SBJSON.h in Headers */,
+				88750D640FADD3DD00C870FE /* NSString+SBJSON.h in Headers */,
+				88750D660FADD3DD00C870FE /* NSObject+SBJSON.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -417,9 +386,9 @@
 				889A4F2D0D5A5A8300D1E8E9 /* com.blocks.BDocuments.documentDefaultWindowControllersFactory.markdown in Resources */,
 				88A3519C0E97A34E0019988C /* theme.plist in Resources */,
 				88A36CA40F14FC2C00EAA3FD /* BDocumentDifferencesWindow.xib in Resources */,
-				883B65210F33A679005D5B3A /* BCloudAuthenticationWindow.xib in Resources */,
-				88E98B440F58425B00CAAA23 /* BCloudSyncWindow.xib in Resources */,
-				88E631230F5C748F00C0E3F7 /* BCloudNameWindow.xib in Resources */,
+				883B65210F33A679005D5B3A /* BSyncedDocumentsAuthenticationWindow.xib in Resources */,
+				88E98B440F58425B00CAAA23 /* BSyncedDocumentsSyncWindow.xib in Resources */,
+				88E631230F5C748F00C0E3F7 /* BSyncedDocumentsNameWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -451,17 +420,16 @@
 				437D72510C9198C90051C06D /* BDocuments.m in Sources */,
 				431A0C3F0CC5149E00DE7BAE /* BDocument.m in Sources */,
 				431A0C450CC514B900DE7BAE /* BDocumentWindowController.m in Sources */,
-				88A470CE0E918EE200E29F5B /* SBJSON.m in Sources */,
-				88A470D00E918EE200E29F5B /* NSString+SBJSON.m in Sources */,
-				88A470D20E918EE200E29F5B /* NSObject+SBJSON.m in Sources */,
-				88F596180F8FB4D000DFBB69 /* Cloud.m in Sources */,
-				88F5961A0F8FB4D000DFBB69 /* CloudDocument.m in Sources */,
-				88F596220F8FB50F00DFBB69 /* Keychain.m in Sources */,
-				88F596260F8FB51E00DFBB69 /* HTTPFetcher.m in Sources */,
 				88F596310F8FB52600DFBB69 /* DiffMatchPatch.m in Sources */,
-				88243E8D0F9400290057A08D /* BDocumentCloudDelegate.m in Sources */,
-				88243F4D0F9494310057A08D /* BDocumentCloudCache.xcdatamodel in Sources */,
+				88243E8D0F9400290057A08D /* SyncedDocumentsControllerDelegate.m in Sources */,
 				88FFAE100F9778D700D7A3B5 /* BDocumentDifferencesWindowController.m in Sources */,
+				88750D1E0FADD13100C870FE /* HTTPClient.m in Sources */,
+				88750D540FADD36F00C870FE /* SyncedDocuments.xcdatamodel in Sources */,
+				88750D560FADD36F00C870FE /* SyncedDocument.m in Sources */,
+				88750D580FADD36F00C870FE /* SyncedDocumentsController.m in Sources */,
+				88750D630FADD3DD00C870FE /* SBJSON.m in Sources */,
+				88750D650FADD3DD00C870FE /* NSString+SBJSON.m in Sources */,
+				88750D670FADD3DD00C870FE /* NSObject+SBJSON.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -492,12 +460,12 @@
 			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
-		883B65200F33A679005D5B3A /* BCloudAuthenticationWindow.xib */ = {
+		883B65200F33A679005D5B3A /* BSyncedDocumentsAuthenticationWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				883B651E0F33A673005D5B3A /* English */,
 			);
-			name = BCloudAuthenticationWindow.xib;
+			name = BSyncedDocumentsAuthenticationWindow.xib;
 			sourceTree = "<group>";
 		};
 		88A36CA30F14FC2C00EAA3FD /* BDocumentDifferencesWindow.xib */ = {
@@ -508,20 +476,20 @@
 			name = BDocumentDifferencesWindow.xib;
 			sourceTree = "<group>";
 		};
-		88E631220F5C748F00C0E3F7 /* BCloudNameWindow.xib */ = {
+		88E631220F5C748F00C0E3F7 /* BSyncedDocumentsNameWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				88E631200F5C748300C0E3F7 /* English */,
 			);
-			name = BCloudNameWindow.xib;
+			name = BSyncedDocumentsNameWindow.xib;
 			sourceTree = "<group>";
 		};
-		88E98B430F58425B00CAAA23 /* BCloudSyncWindow.xib */ = {
+		88E98B430F58425B00CAAA23 /* BSyncedDocumentsSyncWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				88E98B410F58425700CAAA23 /* English */,
 			);
-			name = BCloudSyncWindow.xib;
+			name = BSyncedDocumentsSyncWindow.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

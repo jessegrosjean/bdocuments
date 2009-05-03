@@ -9,8 +9,8 @@
 #import "BDocumentController.h"
 #import "BUserInterfaceController.h"
 #import <objc/runtime.h>
-#import "Cloud.h"
-#import "BDocumentCloudDelegate.h"
+#import "SyncedDocumentsController.h"
+#import "SyncedDocumentsControllerDelegate.h"
 
 
 @implementation BDocumentController
@@ -299,12 +299,6 @@
 
 - (void)applicationWillTerminate {
 	[BDocument synchronizeDocumentUserDefaultsRepository];
-}
-
-#pragma mark Sync
-
-- (IBAction)sync:(id)sender {
-	[[Cloud sharedInstance] beginSync:sender];
 }
 
 #pragma mark Loading Document Workspace

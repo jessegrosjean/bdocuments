@@ -1,20 +1,20 @@
 //
-//  HTTPFetcher.m
+//  HTTPClient.m
 //
 
-#import "HTTPFetcher.h"
+#import "HTTPClient.h"
 #import "NSObject+SBJSON.h"
 
 
-@interface HTTPFetcher (HTTPFetcherPrivate)
+@interface HTTPClient (HTTPClientPrivate)
 - (void)setResponse:(NSURLResponse *)response;
 - (void)setDelegate:(id)theDelegate; 
 @end
 
-@implementation HTTPFetcher
+@implementation HTTPClient
 
-+ (HTTPFetcher *)fetcherWithRequest:(NSURLRequest *)request {
-	return [[[HTTPFetcher alloc] initWithRequest:request] autorelease];
++ (HTTPClient *)clientWithRequest:(NSURLRequest *)request {
+	return [[[HTTPClient alloc] initWithRequest:request] autorelease];
 }
 
 + (NSDictionary *)dictionaryWithResponseString:(NSString *)responseString {	
@@ -158,10 +158,10 @@
 	
 	if (!connection) {
 		NSAssert(connection != nil, @"beginFetchWithDelegate could not create a connection");
-		if ([delegate respondsToSelector:@selector(fetcher:networkFailed:)]) {
-			NSError *error = [NSError errorWithDomain:@"com.blocks.cloud.HTTPFetcher" code:kHTTPFetcherErrorDownloadFailed userInfo:[NSDictionary dictionaryWithObject:NSLocalizedString(@"could not create connection", nil) forKey:NSLocalizedDescriptionKey]];
+		if ([delegate respondsToSelector:@selector(client:networkFailed:)]) {
+			NSError *error = [NSError errorWithDomain:@"com.blocks.cloud.HTTPClient" code:kHTTPClientErrorDownloadFailed userInfo:[NSDictionary dictionaryWithObject:NSLocalizedString(@"could not create connection", nil) forKey:NSLocalizedDescriptionKey]];
 			[[self retain] autorelease]; // in case the callback releases us
-			[delegate performSelector:@selector(fetcher:networkFailed:) withObject:self withObject:error];
+			[delegate performSelector:@selector(client:networkFailed:) withObject:self withObject:error];
 		}
 		return NO;
 	}
@@ -234,8 +234,8 @@
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
 	[downloadedData appendData:data];
 	
-	if ([delegate respondsToSelector:@selector(fetcher:receivedData:)]) {
-		[delegate performSelector:@selector(fetcher:receivedData:) withObject:self withObject:downloadedData];
+	if ([delegate respondsToSelector:@selector(client:receivedData:)]) {
+		[delegate performSelector:@selector(client:receivedData:) withObject:self withObject:downloadedData];
 	}
 }
 
@@ -244,33 +244,33 @@
     
 	NSInteger status = [self statusCode];
 
-	if (status >= 300 && [delegate respondsToSelector:@selector(fetcher:failedWithStatusCode:data:)]) {
-		NSMethodSignature *signature = [delegate methodSignatureForSelector:@selector(fetcher:failedWithStatusCode:data:)];
+	if (status >= 300 && [delegate respondsToSelector:@selector(client:failedWithStatusCode:data:)]) {
+		NSMethodSignature *signature = [delegate methodSignatureForSelector:@selector(client:failedWithStatusCode:data:)];
 		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-		[invocation setSelector:@selector(fetcher:failedWithStatusCode:data:)];
+		[invocation setSelector:@selector(client:failedWithStatusCode:data:)];
 		[invocation setTarget:delegate];
 		[invocation setArgument:&self atIndex:2];
 		[invocation setArgument:&status atIndex:3];
 		[invocation setArgument:&downloadedData atIndex:4];
 		[invocation invoke];
 		[self stopFetching];
-	} else if ([delegate respondsToSelector:@selector(fetcher:finishedWithData:)]) {
-		[delegate performSelector:@selector(fetcher:finishedWithData:) withObject:self withObject:downloadedData];
+	} else if ([delegate respondsToSelector:@selector(client:finishedWithData:)]) {
+		[delegate performSelector:@selector(client:finishedWithData:) withObject:self withObject:downloadedData];
 		[self stopFetching];
 	}
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-	if ([delegate respondsToSelector:@selector(fetcher:networkFailed:)]) {
+	if ([delegate respondsToSelector:@selector(client:networkFailed:)]) {
 		[[self retain] autorelease]; // in case the callback releases us
-		[delegate performSelector:@selector(fetcher:networkFailed:) withObject:self withObject:error];
+		[delegate performSelector:@selector(client:networkFailed:) withObject:self withObject:error];
 	}
 	[self stopFetching];
 }
 
 @end
 
-@implementation NSString (HTTPFetcherAdditions)
+@implementation NSString (HTTPClientAdditions)
 
 - (NSString *)stringByURLEncodingStringParameter {
 	// From Google Data Objective-C client 

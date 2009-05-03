@@ -1,8 +1,8 @@
 enum {
-	kHTTPFetcherErrorDownloadFailed = -1,
+	kHTTPClientErrorDownloadFailed = -1,
 };
 
-@interface HTTPFetcher : NSObject {
+@interface HTTPClient : NSObject {
 	NSURLRequest *initialRequest;
 	NSMutableURLRequest *request;
 	NSURLConnection *connection;
@@ -14,7 +14,7 @@ enum {
 	NSArray *runLoopModes;
 }
 
-+ (HTTPFetcher *)fetcherWithRequest:(NSURLRequest *)request;
++ (HTTPClient *)clientWithRequest:(NSURLRequest *)request;
 + (NSDictionary *)dictionaryWithResponseString:(NSString *)responseString;
 
 #pragma mark Init
@@ -45,13 +45,13 @@ enum {
 
 @end
 
-@interface NSObject (HTTPFetcherDelegate)
-- (void)fetcher:(HTTPFetcher *)fetcher receivedData:(NSData *)dataReceivedSoFar;
-- (void)fetcher:(HTTPFetcher *)fetcher finishedWithData:(NSData *)data;
-- (void)fetcher:(HTTPFetcher *)fetcher networkFailed:(NSError *)error;
-- (void)fetcher:(HTTPFetcher *)fetcher failedWithStatusCode:(NSInteger)statusCode data:(NSData *)data;
+@interface NSObject (HTTPClientDelegate)
+- (void)client:(HTTPClient *)client receivedData:(NSData *)dataReceivedSoFar;
+- (void)client:(HTTPClient *)client finishedWithData:(NSData *)data;
+- (void)client:(HTTPClient *)client networkFailed:(NSError *)error;
+- (void)client:(HTTPClient *)client failedWithStatusCode:(NSInteger)statusCode data:(NSData *)data;
 @end
 
-@interface NSString (HTTPFetcherAdditions)
+@interface NSString (HTTPClientAdditions)
 - (NSString *)stringByURLEncodingStringParameter;
 @end

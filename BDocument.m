@@ -9,7 +9,7 @@
 #import "BDocument.h"
 #import "BDocuments.h"
 #import "BDocumentWindowController.h"
-#import "BDocumentCloudDelegate.h"
+#import "SyncedDocumentsControllerDelegate.h"
 #import "DiffMatchPatch.h"
 #import "BDocumentDifferencesWindowController.h"
 
@@ -196,8 +196,8 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 - (NSString *)displayName {
 	if (fromExternal && externalDisplayName != nil) {
 		return externalDisplayName;
-	} else if (fromCloud) {
-		return [BDocumentCloudDelegate displayNameForCloudDocument:[self fileURL]];
+	} else if (fromSyncedDocument) {
+		return [SyncedDocumentsControllerDelegate displayNameForSyncedDocument:[self fileURL]];
 	}
 	return [super displayName];
 }
@@ -286,7 +286,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 
 - (void)setFileURL:(NSURL *)absoluteURL {
 	[super setFileURL:absoluteURL];
-	fromCloud = [BDocumentCloudDelegate isCloudDocumentURL:[self fileURL]];
+	fromSyncedDocument = [SyncedDocumentsControllerDelegate isSyncedDocumentURL:[self fileURL]];
 }
 
 - (NSInteger)fileHFSTypeCode {
@@ -306,11 +306,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	return attributes;
 }
 
-@synthesize fromCloud;
-
-- (NSString *)cloudID {
-	return [[[[self fileURL] path] stringByDeletingLastPathComponent] lastPathComponent];
-}
+@synthesize fromSyncedDocument;
 
 - (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation originalContentsURL:(NSURL *)absoluteOriginalContentsURL error:(NSError **)outError {
 	NSString *textContents = [self textContents];

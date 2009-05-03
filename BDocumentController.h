@@ -25,10 +25,6 @@
 
 + (id)sharedInstance;
 
-#pragma mark Sync
-
-- (IBAction)sync:(id)sender;
-
 #pragma mark Loading Document Workspace
 
 - (void)removeRecentDocumentURL:(NSURL *)removedURL;

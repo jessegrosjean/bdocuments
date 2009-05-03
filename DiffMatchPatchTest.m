@@ -1,18 +1,18 @@
 //
-//  BDiffMatchPatchTest.m
+//  DiffMatchPatchTest.m
 //  DiffMatchPatch
 //
 //  Created by Jesse Grosjean on 12/18/08.
 //  Copyright 2008 Hog Bay Software. All rights reserved.
 //
 
-#import "BDiffMatchPatchTest.h"
-#import "BDiffMatchPatch.h"
+#import "DiffMatchPatchTest.h"
+#import "DiffMatchPatch.h"
 
-@implementation BDiffMatchPatchTest
+@implementation DiffMatchPatchTest
 
 - (void)setUp {
-	dmp = [[BDiffMatchPatch alloc] init];
+	dmp = [[DiffMatchPatch alloc] init];
 }
 
 - (void)tearDown {

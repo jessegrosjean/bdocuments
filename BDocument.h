@@ -18,7 +18,7 @@
 @interface BDocument : NSDocument {
 	NSMutableDictionary *documentUserDefaults;
 	BOOL fromExternal;
-	BOOL fromCloud;
+	BOOL fromSyncedDocument;
 	NSString *externalDisplayName;
 	NSAppleEventDescriptor *externalSender;
 	NSAppleEventDescriptor *externalToken;
@@ -50,8 +50,7 @@
 - (NSInteger)fileHFSTypeCode;
 - (NSInteger)fileHFSCreatorCode;
 - (IBAction)showUnsavedChanges:(id)sender;
-@property(readonly) BOOL fromCloud;
-@property(readonly) NSString *cloudID;
+@property(readonly) BOOL fromSyncedDocument;
 - (NSString *)savedTextContents:(NSError **)error;
 @property(retain) NSString *textContents;
 
