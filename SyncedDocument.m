@@ -41,6 +41,11 @@
 	//	[self setPrimitiveValue:@"jesse" forKey:@"name"];
 }
 
+- (void)willSave {
+	[super willSave];
+	[self setPrimitiveValue:[NSDate date] forKey:@"modified"];
+}
+
 @dynamic name;
 
 - (NSString *)displayName {

@@ -11,7 +11,7 @@
 
 @interface NSDocument (BDocumentAdditions)
 
-- (void)checkForModificationOfFileOnDisk;
+- (BOOL)checkForModificationOfFileOnDisk;
 
 @end
 

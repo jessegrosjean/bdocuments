@@ -15,6 +15,12 @@
 
 @implementation SyncedDocumentsControllerDelegate
 
++ (void)initialize {
+	[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [[[NSFileManager defaultManager] processesApplicationSupportFolder] stringByAppendingPathComponent:[[SyncedDocumentsController sharedInstance] serviceLabel]], SyncedDocumentsFolderKey,
+															 nil]];
+}
+
 + (id)sharedInstance {
     static id sharedInstance = nil;
     if (sharedInstance == nil) {
@@ -24,20 +30,21 @@
 }
 
 + (BOOL)isSyncedDocumentURL:(NSURL *)url {
-	NSString *documentPath = [url path];
-	NSString *documentIDPath = [documentPath stringByDeletingLastPathComponent];
-	NSString *documentCacheDirectory = [documentIDPath stringByDeletingLastPathComponent];
-	return [[self syncedDocumentsCacheDirectory] isEqualToString:documentCacheDirectory];
+	return [[url path] rangeOfString:[self syncedDocumentsEditableFilesFolder]].location == 0;
 }
 
-+ (SyncedDocument *)syncedDocumentForCacheURL:(NSURL *)url {
++ (SyncedDocument *)syncedDocumentForEditableFileURL:(NSURL *)url {
 	SyncedDocumentsController *syncedDocumentsController = [SyncedDocumentsController sharedInstance];
 	NSURL *URIRepresentation = [NSURL URLWithString:[NSString stringWithFormat:@"x-coredata://%@", [[[[url path] stringByDeletingLastPathComponent] lastPathComponent] stringByReplacingOccurrencesOfString:@"_" withString:@"/"]]];
 	NSManagedObjectID *objectID = [syncedDocumentsController.persistentStoreCoordinator managedObjectIDForURIRepresentation:URIRepresentation];
-	return (id) [syncedDocumentsController.managedObjectContext objectWithID:objectID];
+	if (objectID) {
+		return (id) [syncedDocumentsController.managedObjectContext objectWithID:objectID];
+	} else {
+		return nil;
+	}
 }
 
-+ (NSString *)cacheFilenameForSyncedDocument:(SyncedDocument *)syncedDocument {
++ (NSString *)validFilenameForSyncedDocument:(SyncedDocument *)syncedDocument {
 	NSString *name = syncedDocument.displayName;
 	name = [name stringByReplacingOccurrencesOfString:@"/" withString:@"-"];	
 	if ([name isEqualToString:@"."] || [name isEqualToString:@".."]) {
@@ -49,30 +56,40 @@
 	return name;
 }
 
-+ (NSURL *)cacheURLForSyncedDocument:(SyncedDocument *)syncedDocument {
++ (NSURL *)editableFileURLForSyncedDocument:(SyncedDocument *)syncedDocument {
 	NSURL *URIRepresentation = [[syncedDocument objectID] URIRepresentation];
 	NSString *normalizedPath = [[URIRepresentation path] stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
-	return [NSURL fileURLWithPath:[[NSString stringWithFormat:@"%@/%@%@", [self syncedDocumentsCacheDirectory], [URIRepresentation host], normalizedPath] stringByAppendingPathComponent:[self cacheFilenameForSyncedDocument:syncedDocument]]];
+	return [NSURL fileURLWithPath:[[NSString stringWithFormat:@"%@/%@%@", [self syncedDocumentsEditableFilesFolder], [URIRepresentation host], normalizedPath] stringByAppendingPathComponent:[self validFilenameForSyncedDocument:syncedDocument]]];
 }
 
 + (NSString *)displayNameForSyncedDocument:(NSURL *)url {
-	return [[[url path] lastPathComponent] stringByDeletingPathExtension];
+	SyncedDocument *syncedDocument = [self syncedDocumentForEditableFileURL:url];
+	NSDate *syncModificationDate = syncedDocument.modified;
+	NSDate *localModificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[url path] traverseLink:YES] objectForKey:NSFileModificationDate];
+	int difference = abs(floor([syncModificationDate timeIntervalSinceDate:localModificationDate]));
+	
+	if (difference > 0) {
+		return [NSString stringWithFormat:@"%@ (Sync)", syncedDocument.name];
+		//return [NSString stringWithFormat:@"%@ (↺)", syncedDocument.name];
+	} else {
+		return syncedDocument.name;
+	}
 }
 
 + (NSString *)syncedDocumentsFolder {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSString *syncedDocumentsFolder = [fileManager.processesApplicationSupportFolder stringByAppendingPathComponent:[[SyncedDocumentsController sharedInstance] serviceLabel]];
+	NSString *syncedDocumentsFolder = [[NSUserDefaults standardUserDefaults] objectForKey:SyncedDocumentsFolderKey];
 	if ([fileManager createDirectoriesForPath:syncedDocumentsFolder]) {
 		return syncedDocumentsFolder;
 	}
 	return nil;
 }
 
-+ (NSString *)syncedDocumentsCacheDirectory {
++ (NSString *)syncedDocumentsEditableFilesFolder {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSString *syncedDocumentsCacheDirectory = [[self syncedDocumentsFolder] stringByAppendingPathComponent:@"SyncedDocumentsCacheDirectory"];
-	if ([fileManager createDirectoriesForPath:syncedDocumentsCacheDirectory]) {
-		return syncedDocumentsCacheDirectory;
+	NSString *syncedDocumentsEditableFiles = [[self syncedDocumentsFolder] stringByAppendingPathComponent:@"SyncedDocumentsEditableFiles"];
+	if ([fileManager createDirectoriesForPath:syncedDocumentsEditableFiles]) {
+		return syncedDocumentsEditableFiles;
 	}
 	return nil;
 }
@@ -140,7 +157,7 @@
 			NSBeep();
 			BLogError([error description]);
 		} else {
-			[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:[SyncedDocumentsControllerDelegate cacheURLForSyncedDocument:newDocument] display:YES error:&error];
+			[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:[SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:newDocument] display:YES error:&error];
 		}
 	}
 }
@@ -165,7 +182,7 @@
 	if (returnCode == NSOKButton) {
 		NSError *error = nil;
 		BDocument *document = [windowController document];
-		SyncedDocument *syncedDocument = [SyncedDocumentsControllerDelegate syncedDocumentForCacheURL:[document fileURL]];
+		SyncedDocument *syncedDocument = [SyncedDocumentsControllerDelegate syncedDocumentForEditableFileURL:[document fileURL]];
 		
 		if (syncedDocument) {
 			[document saveDocument:nil];
@@ -225,15 +242,15 @@
 		
 		for (SyncedDocument *eachSyncedDocument in [syncedDocumentsController documents:&error]) {
 			if (![eachSyncedDocument.userDeleted boolValue]) {
-				NSURL *eachCacheURL = [SyncedDocumentsControllerDelegate cacheURLForSyncedDocument:eachSyncedDocument];
+				NSURL *eachEditableFileURL = [SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:eachSyncedDocument];
 				if (!addedSeparator) {
 					addedSeparator = YES;
 					[menuItems addObject:[NSMenuItem separatorItem]];
 				}
 				
-				NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:[SyncedDocumentsControllerDelegate displayNameForSyncedDocument:eachCacheURL] action:@selector(openSyncedDocument:) keyEquivalent:@""];
-				[eachMenuItem setRepresentedObject:eachCacheURL];
-				NSImage *icon = [workspace iconForFile:[eachCacheURL path]];
+				NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:[SyncedDocumentsControllerDelegate displayNameForSyncedDocument:eachEditableFileURL] action:@selector(openSyncedDocument:) keyEquivalent:@""];
+				[eachMenuItem setRepresentedObject:eachEditableFileURL];
+				NSImage *icon = [workspace iconForFile:[eachEditableFileURL path]];
 				[icon setSize:NSMakeSize(16, 16)];
 				[eachMenuItem setImage:icon];
 				[eachMenuItem setTarget:self];
@@ -285,13 +302,13 @@
 	}
 	
 	for (SyncedDocument *eachSyncedDocument in syncedDocuments) {
-		NSString *eachCachePath = [[SyncedDocumentsControllerDelegate cacheURLForSyncedDocument:eachSyncedDocument] path];
+		NSString *eachEditableFilePath = [[SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:eachSyncedDocument] path];
 		
-		if ([fileManager fileExistsAtPath:eachCachePath isDirectory:&isDirectory] && !isDirectory) {
-			NSString *localCacheContent = [NSString stringWithContentsOfFile:eachCachePath encoding:NSUTF8StringEncoding error:&error];
-			if (localCacheContent) {
-				if (![eachSyncedDocument.content isEqualToString:localCacheContent]) {
-					eachSyncedDocument.content = localCacheContent;
+		if ([fileManager fileExistsAtPath:eachEditableFilePath isDirectory:&isDirectory] && !isDirectory) {
+			NSString *editableFileContent = [NSString stringWithContentsOfFile:eachEditableFilePath encoding:NSUTF8StringEncoding error:&error];
+			if (editableFileContent) {
+				if (![eachSyncedDocument.content isEqualToString:editableFileContent]) {
+					eachSyncedDocument.content = editableFileContent;
 				}
 			} else {
 				BLogError([error description]);
@@ -345,17 +362,17 @@
 	}
 }
 
-- (BOOL)deleteLocalCacheFor:(SyncedDocument *)syncedDocument {
+- (BOOL)deleteEditableFileForSyncedDocument:(SyncedDocument *)syncedDocument {
 	NSError *error = nil;
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSURL *eachCacheURL = [SyncedDocumentsControllerDelegate cacheURLForSyncedDocument:syncedDocument];
-	NSDocument *eachDocument = [[NSDocumentController sharedDocumentController] documentForURL:eachCacheURL];
+	NSURL *eachEditableFileURL = [SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:syncedDocument];
+	NSDocument *eachDocument = [[NSDocumentController sharedDocumentController] documentForURL:eachEditableFileURL];
 	if (eachDocument) {
 		[eachDocument saveDocument:nil];
 		[eachDocument close];
 	}
-	if ([fileManager fileExistsAtPath:[eachCacheURL path]]) {
-		if (![fileManager removeItemAtPath:[[eachCacheURL path] stringByDeletingLastPathComponent] error:&error]) {
+	if ([fileManager fileExistsAtPath:[eachEditableFileURL path]]) {
+		if (![fileManager removeItemAtPath:[[eachEditableFileURL path] stringByDeletingLastPathComponent] error:&error]) {
 			return NO;
 		}
 	}
@@ -364,47 +381,58 @@
 
 - (void)syncedDocumentsManagedObjectContextDidSave:(NSNotification *)notification {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSMutableDictionary *localFileAttributes = [[SyncedDocumentsControllerDelegate localFileAttributes] mutableCopy];
 	
 	for (SyncedDocument *eachInserted in [[notification userInfo] objectForKey:NSInsertedObjectsKey]) {
-		NSURL *eachCacheURL = [SyncedDocumentsControllerDelegate cacheURLForSyncedDocument:eachInserted];
+		NSURL *eachEditableFileURL = [SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:eachInserted];
 		
-		if (![fileManager createDirectoriesForPath:[[eachCacheURL path] stringByDeletingLastPathComponent]]) {
+		if (![fileManager createDirectoriesForPath:[[eachEditableFileURL path] stringByDeletingLastPathComponent]]) {
 			BLogError(@"");
 		}
+
+		[localFileAttributes setObject:eachInserted.modified forKey:NSFileModificationDate];
 		
-		if (![fileManager createFileAtPath:[eachCacheURL path] contents:[eachInserted.content dataUsingEncoding:NSUTF8StringEncoding] attributes:[SyncedDocumentsControllerDelegate localFileAttributes]]) {
+		if (![fileManager createFileAtPath:[eachEditableFileURL path] contents:[eachInserted.content dataUsingEncoding:NSUTF8StringEncoding] attributes:localFileAttributes]) {
 			BLogError(@"");
 		}
 	}
 
 	for (SyncedDocument *eachUpdated in [[notification userInfo] objectForKey:NSUpdatedObjectsKey]) {
 		if ([eachUpdated.userDeleted boolValue]) {
-			if (![self deleteLocalCacheFor:eachUpdated]) {
+			if (![self deleteEditableFileForSyncedDocument:eachUpdated]) {
 				BLogError(@"");
 			}
 		} else {
-			NSURL *eachCacheURL = [SyncedDocumentsControllerDelegate cacheURLForSyncedDocument:eachUpdated];
-			NSDocument *eachDocument = [[NSDocumentController sharedDocumentController] documentForURL:eachCacheURL];
+			NSURL *eachEditableFileURL = [SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:eachUpdated];
+			NSDocument *eachDocument = [[NSDocumentController sharedDocumentController] documentForURL:eachEditableFileURL];
 			
-			if (![fileManager createFileAtPath:[eachCacheURL path] contents:[eachUpdated.content dataUsingEncoding:NSUTF8StringEncoding] attributes:[SyncedDocumentsControllerDelegate localFileAttributes]]) {
+			if (![fileManager createDirectoriesForPath:[[eachEditableFileURL path] stringByDeletingLastPathComponent]]) {
+				BLogError(@"");
+			}
+			
+			[localFileAttributes setObject:eachUpdated.modified forKey:NSFileModificationDate];
+
+			if (![fileManager createFileAtPath:[eachEditableFileURL path] contents:[eachUpdated.content dataUsingEncoding:NSUTF8StringEncoding] attributes:localFileAttributes]) {
 				BLogError(@"");
 			}
 			
 			if (eachDocument) {
-				if (![[eachDocument fileURL] isEqual:eachCacheURL]) {
-					[eachDocument setFileURL:eachCacheURL];
+				if (![[eachDocument fileURL] isEqual:eachEditableFileURL]) {
+					[eachDocument setFileURL:eachEditableFileURL];
 					if ([eachDocument respondsToSelector:@selector(_resetMoveAndRenameSensing)]) {
 						[eachDocument performSelector:@selector(_resetMoveAndRenameSensing)];
 					}
 				}
 				[eachDocument checkForModificationOfFileOnDisk];
-				[eachDocument saveDocument:nil];
+				[eachDocument saveDocument:nil];				
+				[fileManager setAttributes:localFileAttributes ofItemAtPath:[eachEditableFileURL path] error:NULL];
+				[[eachDocument windowControllers] makeObjectsPerformSelector:@selector(synchronizeWindowTitleWithDocumentName)];
 			}
 	
-			NSString *eachCacheURLFolderPath = [[eachCacheURL path] stringByDeletingLastPathComponent];
-			for (NSString *eachFilename in [fileManager contentsOfDirectoryAtPath:eachCacheURLFolderPath error:nil]) {
-				NSString *eachPath = [eachCacheURLFolderPath stringByAppendingPathComponent:eachFilename];
-				if (![eachPath isEqualToString:[eachCacheURL path]]) {
+			NSString *eachEditableFileURLFolderPath = [[eachEditableFileURL path] stringByDeletingLastPathComponent];
+			for (NSString *eachFilename in [fileManager contentsOfDirectoryAtPath:eachEditableFileURLFolderPath error:nil]) {
+				NSString *eachPath = [eachEditableFileURLFolderPath stringByAppendingPathComponent:eachFilename];
+				if (![eachPath isEqualToString:[eachEditableFileURL path]]) {
 					[fileManager removeItemAtPath:eachPath error:nil]; // delete old files in case of rename.
 				}
 			}
@@ -412,7 +440,7 @@
 	}
 
 	for (SyncedDocument *eachDeleted in [[notification userInfo] objectForKey:NSDeletedObjectsKey]) {
-		if (![self deleteLocalCacheFor:eachDeleted]) {
+		if (![self deleteEditableFileForSyncedDocument:eachDeleted]) {
 			BLogError(@"");
 		}
 	}
@@ -563,3 +591,5 @@
 }
 
 @end
+
+NSString *SyncedDocumentsFolderKey = @"SyncedDocumentsFolderKey";

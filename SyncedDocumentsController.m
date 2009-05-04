@@ -120,7 +120,7 @@
 	NSError *error;
     NSURL *storeUrl = [NSURL fileURLWithPath:[[self documentDatabaseDirectory] stringByAppendingPathComponent:@"SyncedDocuments.coredata"]];
 	
-	[[NSFileManager defaultManager] removeItemAtPath:[storeUrl path] error:nil];
+	//[[NSFileManager defaultManager] removeItemAtPath:[storeUrl path] error:nil];
 	
     persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
     if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeUrl options:nil error:&error]) {

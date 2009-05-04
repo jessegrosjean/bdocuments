@@ -308,6 +308,19 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 
 @synthesize fromSyncedDocument;
 
+- (void)saveDocumentWithDelegate:(id)delegate didSaveSelector:(SEL)didSaveSelector contextInfo:(void *)contextInfo {
+	if ([self checkForModificationOfFileOnDisk]) {
+		NSInvocation *callback = [NSInvocation invocationWithMethodSignature:[delegate methodSignatureForSelector:didSaveSelector]];
+		[callback setSelector:didSaveSelector];
+		[callback setArgument:&self atIndex:2];
+		[callback setArgument:NO atIndex:3];
+		[callback setArgument:contextInfo atIndex:4];
+		[callback invokeWithTarget:delegate];
+		return;
+	}
+	[super saveDocumentWithDelegate:delegate didSaveSelector:didSaveSelector contextInfo:contextInfo];
+}
+
 - (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation originalContentsURL:(NSURL *)absoluteOriginalContentsURL error:(NSError **)outError {
 	NSString *textContents = [self textContents];
 
@@ -322,43 +335,55 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	return NO;
 }
 
-- (void)BDocument_checkForModificationOfFileOnDisk {
+- (BOOL)BDocument_checkForModificationOfFileOnDisk {
 	NSDate *knownFileModificationDate = [self fileModificationDate];
+	BOOL result = NO;
+	
 	if (knownFileModificationDate) {
-		NSDate *actualFileModificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[[self fileURL] path] traverseLink:YES] fileModificationDate];
+		NSFileManager *fileManager = [NSFileManager defaultManager];
 		
-		if ([knownFileModificationDate isLessThan:actualFileModificationDate]) {
-			NSError *error = nil;
-			NSString *savedTextContents = [self savedTextContents:&error];
-			if (savedTextContents) {
-				DiffMatchPatch *dmp = [[DiffMatchPatch alloc] init];
-				NSMutableArray *patches = [dmp patchMakeText1:lastKnownTextContentsOnDisk text2:savedTextContents];
-				if ([patches count] > 0) {
-					NSArray *patchResults = [dmp patchApply:patches text:[self textContents]];
-					NSString *patchedDocumentText = [patchResults objectAtIndex:0];
-					[self setTextContents:patchedDocumentText];
-					
-					NSUInteger index = 0;
-					NSMutableArray *failedDiffs = [NSMutableArray array];
-					for (NSNumber *each in [patchResults objectAtIndex:1]) {
-						if ([each boolValue] == NO) {
-							[failedDiffs addObjectsFromArray:[[patches objectAtIndex:index] diffs]];
+		if ([fileManager fileExistsAtPath:[[self fileURL] path]]) {
+			if ([self respondsToSelector:@selector(_resetMoveAndRenameSensing)]) {
+				[self performSelector:@selector(_resetMoveAndRenameSensing)];
+			}
+			
+			NSDate *actualFileModificationDate = [[fileManager fileAttributesAtPath:[[self fileURL] path] traverseLink:YES] fileModificationDate];
+			
+			if ([knownFileModificationDate isLessThan:actualFileModificationDate]) {
+				NSError *error = nil;
+				NSString *savedTextContents = [self savedTextContents:&error];
+				if (savedTextContents) {
+					DiffMatchPatch *dmp = [[DiffMatchPatch alloc] init];
+					NSMutableArray *patches = [dmp patchMakeText1:lastKnownTextContentsOnDisk text2:savedTextContents];
+					if ([patches count] > 0) {
+						NSArray *patchResults = [dmp patchApply:patches text:[self textContents]];
+						NSString *patchedDocumentText = [patchResults objectAtIndex:0];
+						[self setTextContents:patchedDocumentText];
+						
+						NSUInteger index = 0;
+						NSMutableArray *failedDiffs = [NSMutableArray array];
+						for (NSNumber *each in [patchResults objectAtIndex:1]) {
+							if ([each boolValue] == NO) {
+								[failedDiffs addObjectsFromArray:[[patches objectAtIndex:index] diffs]];
+							}
+							index++;
 						}
-						index++;
+						
+						if ([failedDiffs count] > 0) {
+							NSWindow *window = [[[self windowControllers] lastObject] window];
+							BDocumentDifferencesWindowController *differencesWindowController = [[BDocumentDifferencesWindowController alloc] initWithDiffs:failedDiffs];
+							[differencesWindowController setMessageText:BLocalizedString(@"This document's file has been changed by another application. These changes could not be merged back into your open document.", nil)];
+							[NSApp beginSheet:[differencesWindowController window] modalForWindow:window modalDelegate:self didEndSelector:@selector(showMergeFailuresSheetDidEnd:returnCode:contextInfo:) contextInfo:nil];
+							result = YES;
+						}
 					}
 					
-					if ([failedDiffs count] > 0) {
-						NSWindow *window = [[[self windowControllers] lastObject] window];
-						BDocumentDifferencesWindowController *differencesWindowController = [[BDocumentDifferencesWindowController alloc] initWithDiffs:failedDiffs];
-						[differencesWindowController setMessageText:BLocalizedString(@"This document's file has been changed by another application. These changes could not be merged back into your open document.", nil)];
-						[NSApp beginSheet:[differencesWindowController window] modalForWindow:window modalDelegate:self didEndSelector:@selector(showMergeFailuresSheetDidEnd:returnCode:contextInfo:) contextInfo:nil];
-					}
+					[self setFileModificationDate:actualFileModificationDate];
 				}
-				
-				[self setFileModificationDate:actualFileModificationDate];
 			}
 		}
 	}
+	return result;
 }
 
 - (void)showMergeFailuresSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo {
@@ -370,10 +395,11 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 
 @implementation NSDocument (BDocumentAdditions)
 
-- (void)checkForModificationOfFileOnDisk {
+- (BOOL)checkForModificationOfFileOnDisk {
 	if ([self respondsToSelector:@selector(BDocument_checkForModificationOfFileOnDisk)]) {
-		[self performSelector:@selector(BDocument_checkForModificationOfFileOnDisk)];
+		return [((id)self) BDocument_checkForModificationOfFileOnDisk];
 	}
+	return NO;
 }
 
 @end

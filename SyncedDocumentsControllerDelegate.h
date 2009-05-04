@@ -14,11 +14,11 @@
 
 + (id)sharedInstance;
 + (BOOL)isSyncedDocumentURL:(NSURL *)url;
-+ (SyncedDocument *)syncedDocumentForCacheURL:(NSURL *)url;
-+ (NSURL *)cacheURLForSyncedDocument:(SyncedDocument *)syncedDocument;
++ (SyncedDocument *)syncedDocumentForEditableFileURL:(NSURL *)url;
++ (NSURL *)editableFileURLForSyncedDocument:(SyncedDocument *)syncedDocument;
 + (NSString *)displayNameForSyncedDocument:(NSURL *)url;
 + (NSString *)syncedDocumentsFolder;
-+ (NSString *)syncedDocumentsCacheDirectory;
++ (NSString *)syncedDocumentsEditableFilesFolder;
 + (NSDictionary *)localFileAttributes;
 	
 @end
@@ -66,3 +66,5 @@
 - (IBAction)cancel:(id)sender;
 
 @end
+
+APPKIT_EXTERN NSString *SyncedDocumentsFolderKey;
