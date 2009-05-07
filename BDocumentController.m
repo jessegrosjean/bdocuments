@@ -11,6 +11,7 @@
 #import <objc/runtime.h>
 #import "SyncedDocumentsController.h"
 #import "SyncedDocumentsControllerDelegate.h"
+#import "UKKQueue.h"
 
 
 @implementation BDocumentController
@@ -41,9 +42,16 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidBecomeMainNotification:) name:NSWindowDidBecomeMainNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowWillCloseNotification:) name:NSWindowWillCloseNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActiveNotification:) name:NSApplicationDidBecomeActiveNotification object:[NSApplication sharedApplication]];
-		
+		[[UKKQueue sharedFileWatcher] setDelegate:self];
+
 	}
 	return self;
+}
+
+- (void)watcher: (id<UKFileWatcher>)kq receivedNotification:(NSString*)nm forPath:(NSString*)fpath {
+	if ([nm isEqualToString:UKFileWatcherWriteNotification]) {
+		[[self documents] makeObjectsPerformSelector:@selector(checkForModificationOfFileOnDisk)];
+	}
 }
 
 #pragma mark Dynamic Document types
@@ -203,7 +211,7 @@
 	if (document) {
 		[NSApp setValue:document forKey:@"currentDocument"];
 		[NSApp setValue:windowController forKey:@"currentDocumentWindowController"];
-		[document checkForModificationOfFileOnDisk];
+		//[document checkForModificationOfFileOnDisk];
 	}
 }
 
@@ -217,7 +225,7 @@
 }
 
 - (void)applicationDidBecomeActiveNotification:(NSNotification *)notification {
-	[[NSApp currentDocument] checkForModificationOfFileOnDisk];
+	//[[NSApp currentDocument] checkForModificationOfFileOnDisk];
 }
 
 #pragma mark Lifecycle Callback

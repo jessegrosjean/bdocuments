@@ -171,6 +171,32 @@ static NSWindowController *currentDocumentWindowController = nil;
 	return YES;
 }
 
+- (BOOL)deleteEmptyDirectoriesForPath:(NSString *)path {
+	NSError *error = nil;
+	BOOL isDirectory;
+	
+	while ([self fileExistsAtPath:path isDirectory:&isDirectory] && isDirectory) {
+		NSArray *contents = [self contentsOfDirectoryAtPath:path error:&error];
+		if (contents) {
+			if ([contents count] == 0) {
+				if ([self removeItemAtPath:path error:&error]) {
+					path = [path stringByDeletingLastPathComponent];
+				} else {
+					BLogError([error description]);
+					return NO;
+				}
+			} else {
+				return YES;
+			}
+		} else {
+			BLogError([error description]);
+			return NO;
+		}
+	}
+	
+	return YES;
+}
+
 @end
 
 @implementation NSString (BDocumentsAdditions)

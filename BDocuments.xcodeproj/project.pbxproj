@@ -21,6 +21,32 @@
 		88243E8C0F9400290057A08D /* SyncedDocumentsControllerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 88243E8A0F9400290057A08D /* SyncedDocumentsControllerDelegate.h */; };
 		88243E8D0F9400290057A08D /* SyncedDocumentsControllerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 88243E8B0F9400290057A08D /* SyncedDocumentsControllerDelegate.m */; };
 		883B65210F33A679005D5B3A /* BSyncedDocumentsAuthenticationWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 883B65200F33A679005D5B3A /* BSyncedDocumentsAuthenticationWindow.xib */; };
+		884D54BA0FB1BAAD00F71A74 /* UKKQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D54B10FB1BAAD00F71A74 /* UKKQueue.m */; };
+		884D54BB0FB1BAAD00F71A74 /* UKKQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D54B20FB1BAAD00F71A74 /* UKKQueue.h */; };
+		884D54BC0FB1BAAD00F71A74 /* UKKQueue Readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 884D54B30FB1BAAD00F71A74 /* UKKQueue Readme.txt */; };
+		884D55630FB242DF00F71A74 /* NSURL+NDCarbonUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D55500FB242DF00F71A74 /* NSURL+NDCarbonUtilities.m */; };
+		884D55640FB242DF00F71A74 /* NSURL+NDCarbonUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D55510FB242DF00F71A74 /* NSURL+NDCarbonUtilities.h */; };
+		884D55650FB242DF00F71A74 /* NSString+NDCarbonUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D55520FB242DF00F71A74 /* NSString+NDCarbonUtilities.m */; };
+		884D55660FB242DF00F71A74 /* NSString+NDCarbonUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D55530FB242DF00F71A74 /* NSString+NDCarbonUtilities.h */; };
+		884D55670FB242DF00F71A74 /* NSSavePanel+NDAlias.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D55540FB242DF00F71A74 /* NSSavePanel+NDAlias.m */; };
+		884D55680FB242DF00F71A74 /* NSSavePanel+NDAlias.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D55550FB242DF00F71A74 /* NSSavePanel+NDAlias.h */; };
+		884D55690FB242DF00F71A74 /* NSPathControl+NDAlias.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D55560FB242DF00F71A74 /* NSPathControl+NDAlias.m */; };
+		884D556A0FB242DF00F71A74 /* NSPathControl+NDAlias.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D55570FB242DF00F71A74 /* NSPathControl+NDAlias.h */; };
+		884D556B0FB242DF00F71A74 /* NSOpenPanel+NDAlias.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D55580FB242DF00F71A74 /* NSOpenPanel+NDAlias.m */; };
+		884D556C0FB242DF00F71A74 /* NSOpenPanel+NDAlias.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D55590FB242DF00F71A74 /* NSOpenPanel+NDAlias.h */; };
+		884D556D0FB242DF00F71A74 /* NDSDKCompatibility.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D555A0FB242DF00F71A74 /* NDSDKCompatibility.h */; };
+		884D556E0FB242DF00F71A74 /* NDResourceFork+OtherSorces.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D555B0FB242DF00F71A74 /* NDResourceFork+OtherSorces.m */; };
+		884D556F0FB242DF00F71A74 /* NDResourceFork+OtherSorces.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D555C0FB242DF00F71A74 /* NDResourceFork+OtherSorces.h */; };
+		884D55700FB242DF00F71A74 /* NDResourceFork.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D555D0FB242DF00F71A74 /* NDResourceFork.m */; };
+		884D55710FB242DF00F71A74 /* NDResourceFork.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D555E0FB242DF00F71A74 /* NDResourceFork.h */; };
+		884D55720FB242DF00F71A74 /* NDAlias+AliasFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D555F0FB242DF00F71A74 /* NDAlias+AliasFile.m */; };
+		884D55730FB242DF00F71A74 /* NDAlias+AliasFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D55600FB242DF00F71A74 /* NDAlias+AliasFile.h */; };
+		884D55740FB242DF00F71A74 /* NDAlias.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D55610FB242DF00F71A74 /* NDAlias.m */; };
+		884D55750FB242DF00F71A74 /* NDAlias.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D55620FB242DF00F71A74 /* NDAlias.h */; };
+		884D58790FB33F2700F71A74 /* UKFileWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D58750FB33F2700F71A74 /* UKFileWatcher.h */; };
+		884D587A0FB33F2700F71A74 /* UKFileWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D58760FB33F2700F71A74 /* UKFileWatcher.m */; };
+		884D590B0FB3450A00F71A74 /* UKMainThreadProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 884D59090FB3450A00F71A74 /* UKMainThreadProxy.h */; };
+		884D590C0FB3450A00F71A74 /* UKMainThreadProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 884D590A0FB3450A00F71A74 /* UKMainThreadProxy.m */; };
 		885C4E420F61BE8800624924 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 885C4E410F61BE8800624924 /* libsqlite3.dylib */; };
 		88750D1D0FADD13100C870FE /* HTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 88750D1B0FADD13100C870FE /* HTTPClient.h */; };
 		88750D1E0FADD13100C870FE /* HTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 88750D1C0FADD13100C870FE /* HTTPClient.m */; };
@@ -89,6 +115,32 @@
 		88243E8A0F9400290057A08D /* SyncedDocumentsControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncedDocumentsControllerDelegate.h; sourceTree = "<group>"; };
 		88243E8B0F9400290057A08D /* SyncedDocumentsControllerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncedDocumentsControllerDelegate.m; sourceTree = "<group>"; };
 		883B651E0F33A673005D5B3A /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/BSyncedDocumentsAuthenticationWindow.xib; sourceTree = "<group>"; };
+		884D54B10FB1BAAD00F71A74 /* UKKQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKKQueue.m; sourceTree = "<group>"; };
+		884D54B20FB1BAAD00F71A74 /* UKKQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKKQueue.h; sourceTree = "<group>"; };
+		884D54B30FB1BAAD00F71A74 /* UKKQueue Readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "UKKQueue Readme.txt"; sourceTree = "<group>"; };
+		884D55500FB242DF00F71A74 /* NSURL+NDCarbonUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+NDCarbonUtilities.m"; sourceTree = "<group>"; };
+		884D55510FB242DF00F71A74 /* NSURL+NDCarbonUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+NDCarbonUtilities.h"; sourceTree = "<group>"; };
+		884D55520FB242DF00F71A74 /* NSString+NDCarbonUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+NDCarbonUtilities.m"; sourceTree = "<group>"; };
+		884D55530FB242DF00F71A74 /* NSString+NDCarbonUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+NDCarbonUtilities.h"; sourceTree = "<group>"; };
+		884D55540FB242DF00F71A74 /* NSSavePanel+NDAlias.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSSavePanel+NDAlias.m"; sourceTree = "<group>"; };
+		884D55550FB242DF00F71A74 /* NSSavePanel+NDAlias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSSavePanel+NDAlias.h"; sourceTree = "<group>"; };
+		884D55560FB242DF00F71A74 /* NSPathControl+NDAlias.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSPathControl+NDAlias.m"; sourceTree = "<group>"; };
+		884D55570FB242DF00F71A74 /* NSPathControl+NDAlias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSPathControl+NDAlias.h"; sourceTree = "<group>"; };
+		884D55580FB242DF00F71A74 /* NSOpenPanel+NDAlias.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSOpenPanel+NDAlias.m"; sourceTree = "<group>"; };
+		884D55590FB242DF00F71A74 /* NSOpenPanel+NDAlias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSOpenPanel+NDAlias.h"; sourceTree = "<group>"; };
+		884D555A0FB242DF00F71A74 /* NDSDKCompatibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NDSDKCompatibility.h; sourceTree = "<group>"; };
+		884D555B0FB242DF00F71A74 /* NDResourceFork+OtherSorces.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NDResourceFork+OtherSorces.m"; sourceTree = "<group>"; };
+		884D555C0FB242DF00F71A74 /* NDResourceFork+OtherSorces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NDResourceFork+OtherSorces.h"; sourceTree = "<group>"; };
+		884D555D0FB242DF00F71A74 /* NDResourceFork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NDResourceFork.m; sourceTree = "<group>"; };
+		884D555E0FB242DF00F71A74 /* NDResourceFork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NDResourceFork.h; sourceTree = "<group>"; };
+		884D555F0FB242DF00F71A74 /* NDAlias+AliasFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NDAlias+AliasFile.m"; sourceTree = "<group>"; };
+		884D55600FB242DF00F71A74 /* NDAlias+AliasFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NDAlias+AliasFile.h"; sourceTree = "<group>"; };
+		884D55610FB242DF00F71A74 /* NDAlias.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NDAlias.m; sourceTree = "<group>"; };
+		884D55620FB242DF00F71A74 /* NDAlias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NDAlias.h; sourceTree = "<group>"; };
+		884D58750FB33F2700F71A74 /* UKFileWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKFileWatcher.h; sourceTree = "<group>"; };
+		884D58760FB33F2700F71A74 /* UKFileWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKFileWatcher.m; sourceTree = "<group>"; };
+		884D59090FB3450A00F71A74 /* UKMainThreadProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKMainThreadProxy.h; sourceTree = "<group>"; };
+		884D590A0FB3450A00F71A74 /* UKMainThreadProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKMainThreadProxy.m; sourceTree = "<group>"; };
 		885C4E410F61BE8800624924 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = /usr/lib/libsqlite3.dylib; sourceTree = "<absolute>"; };
 		88750D1B0FADD13100C870FE /* HTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPClient.h; sourceTree = "<group>"; };
 		88750D1C0FADD13100C870FE /* HTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPClient.m; sourceTree = "<group>"; };
@@ -194,6 +246,7 @@
 				431A0C430CC514B900DE7BAE /* BDocumentWindowController.m */,
 				88A36C840F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.h */,
 				88A36C850F14FBCE00EAA3FD /* BDocumentDifferencesWindowController.m */,
+				884D54AD0FB1BA9E00F71A74 /* UKKQueue */,
 				88F596040F8FB4B200DFBB69 /* Synced Documents */,
 			);
 			name = Classes;
@@ -243,6 +296,46 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		884D54AD0FB1BA9E00F71A74 /* UKKQueue */ = {
+			isa = PBXGroup;
+			children = (
+				884D54B30FB1BAAD00F71A74 /* UKKQueue Readme.txt */,
+				884D54B20FB1BAAD00F71A74 /* UKKQueue.h */,
+				884D54B10FB1BAAD00F71A74 /* UKKQueue.m */,
+				884D58750FB33F2700F71A74 /* UKFileWatcher.h */,
+				884D58760FB33F2700F71A74 /* UKFileWatcher.m */,
+				884D59090FB3450A00F71A74 /* UKMainThreadProxy.h */,
+				884D590A0FB3450A00F71A74 /* UKMainThreadProxy.m */,
+			);
+			name = UKKQueue;
+			sourceTree = "<group>";
+		};
+		884D55460FB2420200F71A74 /* NDAlias */ = {
+			isa = PBXGroup;
+			children = (
+				884D55610FB242DF00F71A74 /* NDAlias.m */,
+				884D55620FB242DF00F71A74 /* NDAlias.h */,
+				884D55500FB242DF00F71A74 /* NSURL+NDCarbonUtilities.m */,
+				884D55510FB242DF00F71A74 /* NSURL+NDCarbonUtilities.h */,
+				884D55520FB242DF00F71A74 /* NSString+NDCarbonUtilities.m */,
+				884D55530FB242DF00F71A74 /* NSString+NDCarbonUtilities.h */,
+				884D55540FB242DF00F71A74 /* NSSavePanel+NDAlias.m */,
+				884D55550FB242DF00F71A74 /* NSSavePanel+NDAlias.h */,
+				884D55560FB242DF00F71A74 /* NSPathControl+NDAlias.m */,
+				884D55570FB242DF00F71A74 /* NSPathControl+NDAlias.h */,
+				884D55580FB242DF00F71A74 /* NSOpenPanel+NDAlias.m */,
+				884D55590FB242DF00F71A74 /* NSOpenPanel+NDAlias.h */,
+				884D555A0FB242DF00F71A74 /* NDSDKCompatibility.h */,
+				884D555B0FB242DF00F71A74 /* NDResourceFork+OtherSorces.m */,
+				884D555C0FB242DF00F71A74 /* NDResourceFork+OtherSorces.h */,
+				884D555D0FB242DF00F71A74 /* NDResourceFork.m */,
+				884D555E0FB242DF00F71A74 /* NDResourceFork.h */,
+				884D555F0FB242DF00F71A74 /* NDAlias+AliasFile.m */,
+				884D55600FB242DF00F71A74 /* NDAlias+AliasFile.h */,
+			);
+			name = NDAlias;
+			sourceTree = "<group>";
+		};
 		88A470D60E918EE600E29F5B /* JSON */ = {
 			isa = PBXGroup;
 			children = (
@@ -269,6 +362,7 @@
 				88F5961D0F8FB4E900DFBB69 /* HTTPClient */,
 				88F5961E0F8FB4F800DFBB69 /* DiffMatchPatch */,
 				88A470D60E918EE600E29F5B /* JSON */,
+				884D55460FB2420200F71A74 /* NDAlias */,
 			);
 			name = "Synced Documents";
 			sourceTree = "<group>";
@@ -313,6 +407,19 @@
 				88750D620FADD3DD00C870FE /* SBJSON.h in Headers */,
 				88750D640FADD3DD00C870FE /* NSString+SBJSON.h in Headers */,
 				88750D660FADD3DD00C870FE /* NSObject+SBJSON.h in Headers */,
+				884D54BB0FB1BAAD00F71A74 /* UKKQueue.h in Headers */,
+				884D55640FB242DF00F71A74 /* NSURL+NDCarbonUtilities.h in Headers */,
+				884D55660FB242DF00F71A74 /* NSString+NDCarbonUtilities.h in Headers */,
+				884D55680FB242DF00F71A74 /* NSSavePanel+NDAlias.h in Headers */,
+				884D556A0FB242DF00F71A74 /* NSPathControl+NDAlias.h in Headers */,
+				884D556C0FB242DF00F71A74 /* NSOpenPanel+NDAlias.h in Headers */,
+				884D556D0FB242DF00F71A74 /* NDSDKCompatibility.h in Headers */,
+				884D556F0FB242DF00F71A74 /* NDResourceFork+OtherSorces.h in Headers */,
+				884D55710FB242DF00F71A74 /* NDResourceFork.h in Headers */,
+				884D55730FB242DF00F71A74 /* NDAlias+AliasFile.h in Headers */,
+				884D55750FB242DF00F71A74 /* NDAlias.h in Headers */,
+				884D58790FB33F2700F71A74 /* UKFileWatcher.h in Headers */,
+				884D590B0FB3450A00F71A74 /* UKMainThreadProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +496,7 @@
 				883B65210F33A679005D5B3A /* BSyncedDocumentsAuthenticationWindow.xib in Resources */,
 				88E98B440F58425B00CAAA23 /* BSyncedDocumentsSyncWindow.xib in Resources */,
 				88E631230F5C748F00C0E3F7 /* BSyncedDocumentsNameWindow.xib in Resources */,
+				884D54BC0FB1BAAD00F71A74 /* UKKQueue Readme.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,6 +538,18 @@
 				88750D630FADD3DD00C870FE /* SBJSON.m in Sources */,
 				88750D650FADD3DD00C870FE /* NSString+SBJSON.m in Sources */,
 				88750D670FADD3DD00C870FE /* NSObject+SBJSON.m in Sources */,
+				884D54BA0FB1BAAD00F71A74 /* UKKQueue.m in Sources */,
+				884D55630FB242DF00F71A74 /* NSURL+NDCarbonUtilities.m in Sources */,
+				884D55650FB242DF00F71A74 /* NSString+NDCarbonUtilities.m in Sources */,
+				884D55670FB242DF00F71A74 /* NSSavePanel+NDAlias.m in Sources */,
+				884D55690FB242DF00F71A74 /* NSPathControl+NDAlias.m in Sources */,
+				884D556B0FB242DF00F71A74 /* NSOpenPanel+NDAlias.m in Sources */,
+				884D556E0FB242DF00F71A74 /* NDResourceFork+OtherSorces.m in Sources */,
+				884D55700FB242DF00F71A74 /* NDResourceFork.m in Sources */,
+				884D55720FB242DF00F71A74 /* NDAlias+AliasFile.m in Sources */,
+				884D55740FB242DF00F71A74 /* NDAlias.m in Sources */,
+				884D587A0FB33F2700F71A74 /* UKFileWatcher.m in Sources */,
+				884D590C0FB3450A00F71A74 /* UKMainThreadProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

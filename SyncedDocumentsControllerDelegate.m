@@ -11,13 +11,14 @@
 #import "SyncedDocument.h"
 #import "HTTPClient.h"
 #import "BDocuments.h"
+#import "NDAlias.h"
 
 
 @implementation SyncedDocumentsControllerDelegate
 
 + (void)initialize {
 	[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [[[NSFileManager defaultManager] processesApplicationSupportFolder] stringByAppendingPathComponent:[[SyncedDocumentsController sharedInstance] serviceLabel]], SyncedDocumentsFolderKey,
+															 [[[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingPathComponent:[[SyncedDocumentsController sharedInstance] serviceLabel]] stringByAppendingString:BLocalizedString(@" Synced/", nil)], SyncedDocumentsFolderKey,
 															 nil]];
 }
 
@@ -29,40 +30,30 @@
     return sharedInstance;
 }
 
++ (NSString *)syncedDocumentsFolder {
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSString *syncedDocumentsFolder = [[NSUserDefaults standardUserDefaults] objectForKey:SyncedDocumentsFolderKey];
+	if ([fileManager createDirectoriesForPath:syncedDocumentsFolder]) {
+		return syncedDocumentsFolder;
+	}
+	return nil;
+}
+
 + (BOOL)isSyncedDocumentURL:(NSURL *)url {
-	return [[url path] rangeOfString:[self syncedDocumentsEditableFilesFolder]].location == 0;
-}
-
-+ (SyncedDocument *)syncedDocumentForEditableFileURL:(NSURL *)url {
-	SyncedDocumentsController *syncedDocumentsController = [SyncedDocumentsController sharedInstance];
-	NSURL *URIRepresentation = [NSURL URLWithString:[NSString stringWithFormat:@"x-coredata://%@", [[[[url path] stringByDeletingLastPathComponent] lastPathComponent] stringByReplacingOccurrencesOfString:@"_" withString:@"/"]]];
-	NSManagedObjectID *objectID = [syncedDocumentsController.persistentStoreCoordinator managedObjectIDForURIRepresentation:URIRepresentation];
-	if (objectID) {
-		return (id) [syncedDocumentsController.managedObjectContext objectWithID:objectID];
-	} else {
-		return nil;
-	}
-}
-
-+ (NSString *)validFilenameForSyncedDocument:(SyncedDocument *)syncedDocument {
-	NSString *name = syncedDocument.displayName;
-	name = [name stringByReplacingOccurrencesOfString:@"/" withString:@"-"];	
-	if ([name isEqualToString:@"."] || [name isEqualToString:@".."]) {
-		name = @"reserved";
-	}
-	if ([name length] > 255) {
-		name = [name substringToIndex:255];
-	}
-	return name;
-}
-
-+ (NSURL *)editableFileURLForSyncedDocument:(SyncedDocument *)syncedDocument {
-	NSURL *URIRepresentation = [[syncedDocument objectID] URIRepresentation];
-	NSString *normalizedPath = [[URIRepresentation path] stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
-	return [NSURL fileURLWithPath:[[NSString stringWithFormat:@"%@/%@%@", [self syncedDocumentsEditableFilesFolder], [URIRepresentation host], normalizedPath] stringByAppendingPathComponent:[self validFilenameForSyncedDocument:syncedDocument]]];
+	return [[url path] rangeOfString:[self syncedDocumentsFolder]].location == 0;
 }
 
 + (NSString *)displayNameForSyncedDocument:(NSURL *)url {
+	NSDate *modificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[url path] traverseLink:YES] objectForKey:NSFileModificationDate];
+	NSDate *lastSyncDate = [NSDate dateWithString:[NSFileManager stringForKey:@"BDocumentsLastSyncDate" atPath:[url path] traverseLink:YES]];
+	NSString *name = [[url path] lastPathComponent];
+	
+	//if (lastSyncDate == nil || abs(floor([lastSyncDate timeIntervalSinceDate:modificationDate])) > 1) {
+	//	return [NSString stringWithFormat:@"[SYNC] %@", name];
+	//} else {
+		return name;
+	//}
+	/*
 	SyncedDocument *syncedDocument = [self syncedDocumentForEditableFileURL:url];
 	NSDate *syncModificationDate = syncedDocument.modified;
 	NSDate *localModificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:[url path] traverseLink:YES] objectForKey:NSFileModificationDate];
@@ -73,25 +64,32 @@
 		//return [NSString stringWithFormat:@"%@ (↺)", syncedDocument.name];
 	} else {
 		return syncedDocument.name;
-	}
+	}*/
 }
 
-+ (NSString *)syncedDocumentsFolder {
++ (NSArray *)localSyncedDocumentPaths {
+	NSError *error = nil;
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSString *syncedDocumentsFolder = [[NSUserDefaults standardUserDefaults] objectForKey:SyncedDocumentsFolderKey];
-	if ([fileManager createDirectoriesForPath:syncedDocumentsFolder]) {
-		return syncedDocumentsFolder;
+	NSString *syncedDocumentsFolder = [SyncedDocumentsControllerDelegate syncedDocumentsFolder];
+	NSArray *localSyncedDocumentPaths = [fileManager contentsOfDirectoryAtPath:syncedDocumentsFolder error:&error];
+	NSMutableArray *results = [NSMutableArray array];
+	BOOL isDirectory;
+	
+	if (!localSyncedDocumentPaths) {
+		BLogError([error description]);
 	}
-	return nil;
-}
-
-+ (NSString *)syncedDocumentsEditableFilesFolder {
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSString *syncedDocumentsEditableFiles = [[self syncedDocumentsFolder] stringByAppendingPathComponent:@"SyncedDocumentsEditableFiles"];
-	if ([fileManager createDirectoriesForPath:syncedDocumentsEditableFiles]) {
-		return syncedDocumentsEditableFiles;
+		
+	for (NSString *eachLocalSyncedDocumentPath in localSyncedDocumentPaths) {
+		eachLocalSyncedDocumentPath = [syncedDocumentsFolder stringByAppendingPathComponent:eachLocalSyncedDocumentPath];
+		if ([fileManager fileExistsAtPath:eachLocalSyncedDocumentPath isDirectory:&isDirectory] && !isDirectory) {
+			NSString *filename = [[eachLocalSyncedDocumentPath lastPathComponent] stringByDeletingPathExtension];
+			if (![filename rangeOfString:@"."].location == 0 && ![[filename substringWithRange:NSMakeRange([filename length] - 1, 1)] isEqualToString:@"~"]) {
+				[results addObject:eachLocalSyncedDocumentPath];
+			}
+		}
 	}
-	return nil;
+	
+	return results;
 }
 
 + (NSDictionary *)localFileAttributes {
@@ -121,45 +119,12 @@
 	[menuItem setTitle:[[menuItem title] stringByAppendingFormat:@" (%@)", [[SyncedDocumentsController sharedInstance] serviceLabel]]];
 	[[SyncedDocumentsController sharedInstance] setDocumentDatabaseDirectory:[SyncedDocumentsControllerDelegate syncedDocumentsFolder]];
 	[[SyncedDocumentsController sharedInstance] setSyncDelegate:self];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(syncedDocumentsManagedObjectContextDidSave:) name:NSManagedObjectContextDidSaveNotification object:[[SyncedDocumentsController sharedInstance] managedObjectContext]];
 }
 
 #pragma mark Actions
 
 - (IBAction)beginSync:(NSMenuItem *)sender {
 	[[SyncedDocumentsController sharedInstance] beginSync:sender];
-}
-
-- (IBAction)newSyncedDocument:(NSMenuItem *)sender {
-	BSyncedDocumentsNameWindowController *nameWindowController = [[BSyncedDocumentsNameWindowController alloc] init];
-	[[nameWindowController window] center];
-	NSInteger result = [NSApp runModalForWindow:[nameWindowController window]];	
-	
-	if (result == NSOKButton) {
-		NSError *error = nil;
-		NSMutableDictionary *newDocumentValues = [NSMutableDictionary dictionary];
-		NSString *name = [nameWindowController.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-		
-		if ([name length] == 0) {
-			name = BLocalizedString(@"Untitled", nil);
-		}
-		
-		[newDocumentValues setObject:name forKey:@"name"];
-		
-		NSString *content = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"CloudWelcomeText" ofType:@"txt"] encoding:NSUTF8StringEncoding error:&error];
-		if (content) {
-			[newDocumentValues setObject:content forKey:@"content"];
-		}
-		
-		SyncedDocument *newDocument = [[SyncedDocumentsController sharedInstance] newDocumentWithValues:newDocumentValues error:&error];
-		
-		if (!newDocument) {
-			NSBeep();
-			BLogError([error description]);
-		} else {
-			[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:[SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:newDocument] display:YES error:&error];
-		}
-	}
 }
 
 - (IBAction)openSyncedDocument:(NSMenuItem *)sender {
@@ -169,29 +134,8 @@
 	}
 }
 
-- (IBAction)deleteSyncedDocument :(id)sender {
-	SyncedDocumentsController *syncedDocumentsController = [SyncedDocumentsController sharedInstance];
-	BDocumentWindowController *windowController = [NSApp currentDocumentWindowController];
-	NSString *messageText = [NSString stringWithFormat:BLocalizedString(@"Are you sure that you want to delete this document from %@?", nil), syncedDocumentsController.serviceLabel];
-	NSString *informativeTextText = [NSString stringWithFormat:BLocalizedString(@"If you choose \"Delete\" this document will be deleted from your computer and then deleted from %@ next time you sync.", nil), syncedDocumentsController.serviceLabel];
-	NSAlert *alert = [NSAlert alertWithMessageText:messageText defaultButton:BLocalizedString(@"Delete", nil) alternateButton:BLocalizedString(@"Cancel", nil) otherButton:nil informativeTextWithFormat:informativeTextText];
-	[alert beginSheetModalForWindow:[windowController window] modalDelegate:self didEndSelector:@selector(deleteSyncedDocumentDidEnd:returnCode:contextInfo:) contextInfo:windowController];
-}
-
-- (void)deleteSyncedDocumentDidEnd:(NSAlert *)alert returnCode:(int)returnCode contextInfo:(BDocumentWindowController *)windowController {
-	if (returnCode == NSOKButton) {
-		NSError *error = nil;
-		BDocument *document = [windowController document];
-		SyncedDocument *syncedDocument = [SyncedDocumentsControllerDelegate syncedDocumentForEditableFileURL:[document fileURL]];
-		
-		if (syncedDocument) {
-			[document saveDocument:nil];
-			[document close];
-			if (![[SyncedDocumentsController sharedInstance] userDeleteDocument:syncedDocument error:&error]) {
-				BLogError([error description]);
-			}
-		}
-	}
+- (IBAction)openSyncedDocumentsFolder:(NSMenuItem *)sender {
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL fileURLWithPath:[[NSUserDefaults standardUserDefaults] stringForKey:SyncedDocumentsFolderKey]]];
 }
 
 - (IBAction)openSyncedDocumentsWebsite:(NSMenuItem *)sender {
@@ -214,10 +158,6 @@
 		}
 	} else if (action == @selector(beginSync:)) {
 		return syncedDocumentsController.serviceUsername != nil;
-	} else if (action == @selector(newSyncedDocument:)) {
-		return syncedDocumentsController.serviceUsername != nil;
-	} else if (action == @selector(deleteSyncedDocument :)) {
-		return syncedDocumentsController.serviceUsername != nil && [[NSApp currentDocument] fromSyncedDocument];
 	} else if (action == @selector(openSyncedDocumentsWebsite:)) {
 		return syncedDocumentsController.serviceUsername != nil;
 	}
@@ -236,26 +176,24 @@
 	
 	if (syncedDocumentsController.serviceUsername != nil) {
 		NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
-		BOOL addedSeparator = NO;
-		NSError *error = nil;
 		NSMutableArray *menuItems = [NSMutableArray array];
+		BOOL addedSeparator = NO;
 		
-		for (SyncedDocument *eachSyncedDocument in [syncedDocumentsController documents:&error]) {
-			if (![eachSyncedDocument.userDeleted boolValue]) {
-				NSURL *eachEditableFileURL = [SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:eachSyncedDocument];
-				if (!addedSeparator) {
-					addedSeparator = YES;
-					[menuItems addObject:[NSMenuItem separatorItem]];
-				}
-				
-				NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:[SyncedDocumentsControllerDelegate displayNameForSyncedDocument:eachEditableFileURL] action:@selector(openSyncedDocument:) keyEquivalent:@""];
-				[eachMenuItem setRepresentedObject:eachEditableFileURL];
-				NSImage *icon = [workspace iconForFile:[eachEditableFileURL path]];
-				[icon setSize:NSMakeSize(16, 16)];
-				[eachMenuItem setImage:icon];
-				[eachMenuItem setTarget:self];
-				[menuItems addObject:eachMenuItem];
+		for (NSString *eachLocalSyncedDocumentPath in [SyncedDocumentsControllerDelegate localSyncedDocumentPaths]) {
+			NSURL *eachLocalSyncedDocumentURL = [NSURL fileURLWithPath:eachLocalSyncedDocumentPath];;
+
+			if (!addedSeparator) {
+				addedSeparator = YES;
+				[menuItems addObject:[NSMenuItem separatorItem]];
 			}
+			
+			NSMenuItem *eachMenuItem = [[NSMenuItem alloc] initWithTitle:[SyncedDocumentsControllerDelegate displayNameForSyncedDocument:eachLocalSyncedDocumentURL] action:@selector(openSyncedDocument:) keyEquivalent:@""];
+			[eachMenuItem setRepresentedObject:eachLocalSyncedDocumentURL];
+			NSImage *icon = [workspace iconForFile:[eachLocalSyncedDocumentURL path]];
+			[icon setSize:NSMakeSize(16, 16)];
+			[eachMenuItem setImage:icon];
+			[eachMenuItem setTarget:self];
+			[menuItems addObject:eachMenuItem];
 		}
 				
 		[menuItems sortUsingDescriptors:[NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES] autorelease]]];
@@ -279,7 +217,9 @@
 	}
 }
 
-- (void)documentsControllerWillBeginSync:(SyncedDocumentsController *)documentsController {
+- (void)documentsControllerWillBeginSync:(SyncedDocumentsController *)documentsController {	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:[[SyncedDocumentsController sharedInstance] managedObjectContext]];
+	 
 	[[BSyncedDocumentsSyncWindowController sharedInstance] showWindow:nil];
 	[BSyncedDocumentsSyncWindowController sharedInstance].progress = 0.5;
 	
@@ -290,35 +230,86 @@
 			}
 		}
 	}
-	
-	NSError *error = nil;
-	NSFileManager *fileManager = [NSFileManager defaultManager];
+
 	SyncedDocumentsController *syncedDocumentsController = [SyncedDocumentsController sharedInstance];
-	NSArray *syncedDocuments = [syncedDocumentsController documents:&error];
-	BOOL isDirectory;
-	
+
+	NSError *error = nil;
+	NSMutableArray *syncedDocuments = [[[syncedDocumentsController documents:&error] mutableCopy] autorelease];
+	NSMutableDictionary *fileAliasPathsToSyncedDocuments = [NSMutableDictionary dictionary];
+	NSString *syncedDocumentsFolder = [SyncedDocumentsControllerDelegate syncedDocumentsFolder];
+		
+	// 1. Update mapping of database documents to disk documents. If mapping fails schedule database document for user delete.
 	if (!syncedDocuments) {
 		BLogError([error description]);
-	}
-	
-	for (SyncedDocument *eachSyncedDocument in syncedDocuments) {
-		NSString *eachEditableFilePath = [[SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:eachSyncedDocument] path];
-		
-		if ([fileManager fileExistsAtPath:eachEditableFilePath isDirectory:&isDirectory] && !isDirectory) {
-			NSString *editableFileContent = [NSString stringWithContentsOfFile:eachEditableFilePath encoding:NSUTF8StringEncoding error:&error];
-			if (editableFileContent) {
-				if (![eachSyncedDocument.content isEqualToString:editableFileContent]) {
-					eachSyncedDocument.content = editableFileContent;
+	} else {
+		for (SyncedDocument *eachSyncedDocument in [syncedDocuments copy]) {
+			NDAlias *eachFileAlias = [NDAlias aliasWithData:eachSyncedDocument.fileAliasData];
+			NSString *eachFileAliasPath = [eachFileAlias path];
+			if (eachFileAliasPath) {
+				[fileAliasPathsToSyncedDocuments setObject:eachSyncedDocument forKey:eachFileAliasPath];
+				if ([eachFileAlias changed]) {
+					eachSyncedDocument.fileAliasData = [eachFileAlias data];
 				}
 			} else {
-				BLogError([error description]);
+				if (![syncedDocumentsController userDeleteDocument:eachSyncedDocument error:&error]) {
+					NSLog([error description]);
+				}
+				[syncedDocuments removeObject:eachSyncedDocument];
 			}
+		}
+	}
+	
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	//NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+	
+	// 2. Scan file system, updating database to match.
+	for (NSString *eachLocalSyncedDocumentPath in [SyncedDocumentsControllerDelegate localSyncedDocumentPaths]) {
+		SyncedDocument *eachSyncedDocument = [fileAliasPathsToSyncedDocuments objectForKey:eachLocalSyncedDocumentPath];
+		NSDictionary *fileAttributes = [fileManager fileAttributesAtPath:eachLocalSyncedDocumentPath traverseLink:YES];
+		NSString *name = [eachLocalSyncedDocumentPath substringFromIndex:[syncedDocumentsFolder length]];
+
+		// 2.a If mapping from filesystem to database document. Then update database document if needed.
+		if (eachSyncedDocument) {
+			if ([eachSyncedDocument isUpdated] || abs(floor([eachSyncedDocument.modified timeIntervalSinceDate:[fileAttributes objectForKey:NSFileModificationDate]])) > 1) {
+				NSString *eachLocalSyncedDocumentPathContent = [NSString stringWithContentsOfFile:eachLocalSyncedDocumentPath encoding:NSUTF8StringEncoding error:&error];
+				if (eachLocalSyncedDocumentPathContent) {
+					eachSyncedDocument.name = name;
+					eachSyncedDocument.content = eachLocalSyncedDocumentPathContent;
+					eachSyncedDocument.modified = [fileAttributes objectForKey:NSFileModificationDate];
+				} else {
+					BLogWarning(@"Failed to load text file: %@", eachLocalSyncedDocumentPath);
+				}
+			}
+			[syncedDocuments removeObject:eachSyncedDocument];
+		// 2.b If no mapping then create new database document. 
+		} else {
+			//NSString *uti = [workspace typeOfFile:eachLocalSyncedDocumentPath error:&error];
+			//if (uti == nil || [workspace type:uti conformsToType:@"public.plain-text"]) {
+				NSString *eachLocalSyncedDocumentPathContent = [NSString stringWithContentsOfFile:eachLocalSyncedDocumentPath encoding:NSUTF8StringEncoding error:&error];			
+				if (eachLocalSyncedDocumentPathContent) {
+					if (![documentsController newDocumentWithValues:[NSDictionary dictionaryWithObjectsAndKeys:name, @"name", [fileAttributes objectForKey:NSFileCreationDate], @"created", [fileAttributes objectForKey:NSFileModificationDate], @"modified", eachLocalSyncedDocumentPathContent, @"content", [[NDAlias aliasWithPath:eachLocalSyncedDocumentPath] data], @"fileAliasData", nil] error:&error]) {
+						BLogError([error description]);
+					}
+				} else {
+					BLogWarning(@"Failed to load text file: %@", eachLocalSyncedDocumentPath);
+				}
+			//}
+		}
+	}
+	
+	// 3. For each remaining database document that hasn't been mapped to file system, schedule for delete.
+	for (SyncedDocument *eachSyncedDocument in syncedDocuments) {
+		eachSyncedDocument.fileAliasData = nil;
+		if (![documentsController userDeleteDocument:eachSyncedDocument error:&error]) {
+			BLogError([error description]);
 		}
 	}
 	
 	if (![syncedDocumentsController save:&error]) {
 		BLogError([error description]);
 	}
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(syncedDocumentsManagedObjectContextDidSave:) name:NSManagedObjectContextDidSaveNotification object:[[SyncedDocumentsController sharedInstance] managedObjectContext]];
 }
 
 - (void)documentsController:(SyncedDocumentsController *)documentsController syncProgress:(CGFloat)progress {
@@ -362,88 +353,127 @@
 	}
 }
 
-- (BOOL)deleteEditableFileForSyncedDocument:(SyncedDocument *)syncedDocument {
-	NSError *error = nil;
+- (NSString *)filenameForSyncedDocument:(SyncedDocument *)syncedDocument {
+	NSString *filename = syncedDocument.displayName;
+	filename = [filename stringByReplacingOccurrencesOfString:@"/" withString:@":"];
+	return filename;
+}
+
+- (NSURL *)uniqueLocalURLForSyncedDocument:(SyncedDocument *)syncedDocument {
+	NSString *syncedDocumentsFolder = [SyncedDocumentsControllerDelegate syncedDocumentsFolder];
+	NDAlias *originalFileAlias = [NDAlias aliasWithData:syncedDocument.fileAliasData];
+
+	if ([originalFileAlias changed]) {
+		syncedDocument.fileAliasData = [originalFileAlias data];
+	}
+	
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSURL *eachEditableFileURL = [SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:syncedDocument];
-	NSDocument *eachDocument = [[NSDocumentController sharedDocumentController] documentForURL:eachEditableFileURL];
-	if (eachDocument) {
-		[eachDocument saveDocument:nil];
-		[eachDocument close];
-	}
-	if ([fileManager fileExistsAtPath:[eachEditableFileURL path]]) {
-		if (![fileManager removeItemAtPath:[[eachEditableFileURL path] stringByDeletingLastPathComponent] error:&error]) {
-			return NO;
+	NSString *originalLocalPath = [originalFileAlias path];
+	NSString *newLocalPath = [syncedDocumentsFolder stringByAppendingPathComponent:[self filenameForSyncedDocument:syncedDocument]];
+
+	if (![originalLocalPath isEqualToString:newLocalPath]) {
+		NSString *uniqueNewLocalPath = newLocalPath;
+		NSUInteger i = 1;
+		
+		while ([fileManager fileExistsAtPath:uniqueNewLocalPath]) {
+			uniqueNewLocalPath = [NSString stringWithFormat:@"%@ %i", newLocalPath, i];		
+			i++;
 		}
+		
+		newLocalPath = uniqueNewLocalPath;
 	}
-	return YES;
+		
+	return [NSURL fileURLWithPath:newLocalPath];
 }
 
 - (void)syncedDocumentsManagedObjectContextDidSave:(NSNotification *)notification {
+	NSError *error = nil;
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSMutableDictionary *localFileAttributes = [[SyncedDocumentsControllerDelegate localFileAttributes] mutableCopy];
 	
+	// 1. For each inserted database document (from server) map the documents content to the file system.
 	for (SyncedDocument *eachInserted in [[notification userInfo] objectForKey:NSInsertedObjectsKey]) {
-		NSURL *eachEditableFileURL = [SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:eachInserted];
+		NSURL *eachNewLocalFileURL = [self uniqueLocalURLForSyncedDocument:eachInserted];
 		
-		if (![fileManager createDirectoriesForPath:[[eachEditableFileURL path] stringByDeletingLastPathComponent]]) {
-			BLogError(@"");
-		}
-
+		[localFileAttributes setObject:eachInserted.created forKey:NSFileCreationDate];
 		[localFileAttributes setObject:eachInserted.modified forKey:NSFileModificationDate];
 		
-		if (![fileManager createFileAtPath:[eachEditableFileURL path] contents:[eachInserted.content dataUsingEncoding:NSUTF8StringEncoding] attributes:localFileAttributes]) {
-			BLogError(@"");
-		}
-	}
-
-	for (SyncedDocument *eachUpdated in [[notification userInfo] objectForKey:NSUpdatedObjectsKey]) {
-		if ([eachUpdated.userDeleted boolValue]) {
-			if (![self deleteEditableFileForSyncedDocument:eachUpdated]) {
-				BLogError(@"");
-			}
+		if (![fileManager createFileAtPath:[eachNewLocalFileURL path] contents:[eachInserted.content dataUsingEncoding:NSUTF8StringEncoding] attributes:localFileAttributes]) {
+			BLogError(@"Failed to create fileAtPath %@", [eachNewLocalFileURL path]);
 		} else {
-			NSURL *eachEditableFileURL = [SyncedDocumentsControllerDelegate editableFileURLForSyncedDocument:eachUpdated];
-			NSDocument *eachDocument = [[NSDocumentController sharedDocumentController] documentForURL:eachEditableFileURL];
-			
-			if (![fileManager createDirectoriesForPath:[[eachEditableFileURL path] stringByDeletingLastPathComponent]]) {
-				BLogError(@"");
-			}
-			
-			[localFileAttributes setObject:eachUpdated.modified forKey:NSFileModificationDate];
-
-			if (![fileManager createFileAtPath:[eachEditableFileURL path] contents:[eachUpdated.content dataUsingEncoding:NSUTF8StringEncoding] attributes:localFileAttributes]) {
-				BLogError(@"");
-			}
-			
-			if (eachDocument) {
-				if (![[eachDocument fileURL] isEqual:eachEditableFileURL]) {
-					[eachDocument setFileURL:eachEditableFileURL];
-					if ([eachDocument respondsToSelector:@selector(_resetMoveAndRenameSensing)]) {
-						[eachDocument performSelector:@selector(_resetMoveAndRenameSensing)];
-					}
-				}
-				[eachDocument checkForModificationOfFileOnDisk];
-				[eachDocument saveDocument:nil];				
-				[fileManager setAttributes:localFileAttributes ofItemAtPath:[eachEditableFileURL path] error:NULL];
-				[[eachDocument windowControllers] makeObjectsPerformSelector:@selector(synchronizeWindowTitleWithDocumentName)];
-			}
-	
-			NSString *eachEditableFileURLFolderPath = [[eachEditableFileURL path] stringByDeletingLastPathComponent];
-			for (NSString *eachFilename in [fileManager contentsOfDirectoryAtPath:eachEditableFileURLFolderPath error:nil]) {
-				NSString *eachPath = [eachEditableFileURLFolderPath stringByAppendingPathComponent:eachFilename];
-				if (![eachPath isEqualToString:[eachEditableFileURL path]]) {
-					[fileManager removeItemAtPath:eachPath error:nil]; // delete old files in case of rename.
-				}
-			}
+			eachInserted.fileAliasData = [[NDAlias aliasWithPath:[eachNewLocalFileURL path]] data];
+			[NSFileManager setString:[eachInserted.modified description] forKey:@"BDocumentsLastSyncDate" atPath:[eachNewLocalFileURL path] traverseLink:YES];
 		}
 	}
 
+	// 2. For each updated document sync changes back to file sysem.
+	for (SyncedDocument *eachUpdated in [[notification userInfo] objectForKey:NSUpdatedObjectsKey]) {
+		NDAlias *eachUpdatedFileAlias = [NDAlias aliasWithData:eachUpdated.fileAliasData];
+		NSString *eachLocalFilePath = [eachUpdatedFileAlias path];
+		NSURL *eachNewLocalFileURL = [self uniqueLocalURLForSyncedDocument:eachUpdated];
+		NSURL *eachLocalFileURL = nil;
+
+		// 2.a If mapping to file system isn't broken, update alias and update file at that path.
+		if (eachLocalFilePath) {
+			if ([eachUpdatedFileAlias changed]) {
+				eachUpdated.fileAliasData = [eachUpdatedFileAlias data];
+			}
+			eachLocalFileURL = [NSURL fileURLWithPath:eachLocalFilePath];
+		}
+
+		BDocument *eachDocument = [[NSDocumentController sharedDocumentController] documentForURL:eachLocalFileURL];
+
+		if (![eachLocalFileURL isEqual:eachNewLocalFileURL]) {
+			if (eachLocalFileURL) {
+				if (![fileManager moveItemAtPath:[eachLocalFileURL path] toPath:[eachNewLocalFileURL path] error:&error]) {
+					BLogError([error description]);
+				}
+			}
+		}
+		
+		if (eachDocument) {
+			if (![[eachDocument fileURL] isEqual:eachNewLocalFileURL]) {
+				[eachDocument setFileURL:eachNewLocalFileURL];
+			}
+			[eachDocument setTextContents:eachUpdated.content];
+			[eachDocument saveDocument:nil];
+		} else {
+			if (![[eachUpdated.content dataUsingEncoding:NSUTF8StringEncoding] writeToURL:eachNewLocalFileURL atomically:NO]) {
+				BLogError(@"Failed to create fileAtPath %@", [eachNewLocalFileURL path]);
+			}
+		}
+
+		eachUpdated.fileAliasData = [[NDAlias aliasWithURL:eachNewLocalFileURL] data];
+		[localFileAttributes setObject:eachUpdated.modified forKey:NSFileModificationDate];
+		[fileManager setAttributes:localFileAttributes ofItemAtPath:[eachNewLocalFileURL path] error:NULL];
+		[NSFileManager setString:[eachUpdated.modified description] forKey:@"BDocumentsLastSyncDate" atPath:[eachNewLocalFileURL path] traverseLink:YES];
+		[[eachDocument windowControllers] makeObjectsPerformSelector:@selector(synchronizeWindowTitleWithDocumentName)];
+	}
+
+	// 3. For each deleted database document (deleted on server) remove file system representation.
 	for (SyncedDocument *eachDeleted in [[notification userInfo] objectForKey:NSDeletedObjectsKey]) {
-		if (![self deleteEditableFileForSyncedDocument:eachDeleted]) {
-			BLogError(@"");
+		if (![eachDeleted.userDeleted boolValue]) {
+			NDAlias *eachDeletedFileAlias = [NDAlias aliasWithData:eachDeleted.fileAliasData];
+			NSString *eachDeletedFilePath = [eachDeletedFileAlias path];
+			if (eachDeletedFilePath) {
+				BDocument *eachDocument = [[NSDocumentController sharedDocumentController] documentForURL:[NSURL fileURLWithPath:eachDeletedFilePath]];
+				if (![fileManager removeItemAtPath:eachDeletedFilePath error:&error]) {
+					BLogError([error description]);
+				}
+				// XXX should show sheet. This document has been deleted on the server. Close or save as.
+			}
 		}
+
 	}
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:[[SyncedDocumentsController sharedInstance] managedObjectContext]];
+
+	SyncedDocumentsController *syncedDocumentsController = [SyncedDocumentsController sharedInstance];
+	if (![syncedDocumentsController save:&error]) {
+		BLogError([error description]);
+	}
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(syncedDocumentsManagedObjectContextDidSave:) name:NSManagedObjectContextDidSaveNotification object:[[SyncedDocumentsController sharedInstance] managedObjectContext]];
 }
 
 @end

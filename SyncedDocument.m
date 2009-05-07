@@ -43,7 +43,9 @@
 
 - (void)willSave {
 	[super willSave];
-	[self setPrimitiveValue:[NSDate date] forKey:@"modified"];
+	if (![[self changedValues] objectForKey:@"modified"]) {
+		[self setPrimitiveValue:[NSDate date] forKey:@"modified"];
+	}
 }
 
 @dynamic name;
@@ -91,6 +93,8 @@
 }
 
 #pragma mark Edits
+
+@dynamic fileAliasData;
 
 - (NSDictionary *)localEdits {
 	if (self.shadowID != nil && self.shadowVersion != nil) {

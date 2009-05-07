@@ -41,6 +41,7 @@
 
 #pragma mark Edits
 
+@property(nonatomic, retain) NSData *fileAliasData;
 - (NSDictionary *)localEdits;
 - (BOOL)hasServerEdits;
 
@@ -49,7 +50,6 @@
 @property(readonly) BOOL isServerDocument;
 @property(assign) BOOL isDeletedFromServer;
 @property(nonatomic, retain) NSNumber *userDeleted;
-
 @property(readonly) BOOL isInsertedFromServer;
 
 - (HTTPClient *)buildSyncRequest;

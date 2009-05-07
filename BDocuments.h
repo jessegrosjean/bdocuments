@@ -35,6 +35,7 @@
 @property(readonly) NSString *processesApplicationSupportFolder;
 - (NSString *)findSystemFolderType:(NSInteger)folderType forDomain:(NSInteger)domain;
 - (BOOL)createDirectoriesForPath:(NSString *)path;
+- (BOOL)deleteEmptyDirectoriesForPath:(NSString *)path;
 
 @end
 

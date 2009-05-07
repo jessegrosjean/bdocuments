@@ -14,12 +14,7 @@
 
 + (id)sharedInstance;
 + (BOOL)isSyncedDocumentURL:(NSURL *)url;
-+ (SyncedDocument *)syncedDocumentForEditableFileURL:(NSURL *)url;
-+ (NSURL *)editableFileURLForSyncedDocument:(SyncedDocument *)syncedDocument;
 + (NSString *)displayNameForSyncedDocument:(NSURL *)url;
-+ (NSString *)syncedDocumentsFolder;
-+ (NSString *)syncedDocumentsEditableFilesFolder;
-+ (NSDictionary *)localFileAttributes;
 	
 @end
 

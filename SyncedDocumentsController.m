@@ -45,9 +45,9 @@
 
 - (id)init {
 	if (self = [super init]) {
-		service = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"Cloud"] retain];
-		serviceLabel = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CloudLabel"] retain];
-		serviceRootURLString = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CloudURL"] retain];
+		service = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"SyncedDocumentsService"] retain];
+		serviceLabel = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"SyncedDocumentsLabel"] retain];
+		serviceRootURLString = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"SyncedDocumentsURL"] retain];
 		activeClients = [[NSMutableArray alloc] init];
 		queuedClients = [[NSMutableArray alloc] init];
 		conflicts = [[NSMutableString alloc] init];
@@ -76,14 +76,14 @@
 @synthesize serviceRootURLString;
 
 - (NSString *)serviceUsername {
-	return [[NSUserDefaults standardUserDefaults] stringForKey:@"CloudServiceUsername"];
+	return [[NSUserDefaults standardUserDefaults] stringForKey:@"SyncedDocumentsUsernameKey"];
 }
 
 - (void)setServiceUsername:(NSString *)aUsername {
 	if (aUsername) {
-		[[NSUserDefaults standardUserDefaults] setObject:aUsername forKey:@"CloudServiceUsername"];
+		[[NSUserDefaults standardUserDefaults] setObject:aUsername forKey:@"SyncedDocumentsUsernameKey"];
 	} else {
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"CloudServiceUsername"];
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SyncedDocumentsUsernameKey"];
 	}
 }
 
@@ -99,7 +99,7 @@
 	return documentDatabaseDirectory;
 }
 
-- (NSManagedObjectContext *) managedObjectContext {
+- (NSManagedObjectContext *)managedObjectContext {
 	if (managedObjectContext != nil) return managedObjectContext;
     NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
     if (coordinator != nil) {
@@ -118,7 +118,7 @@
 - (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
     if (persistentStoreCoordinator != nil) return persistentStoreCoordinator;
 	NSError *error;
-    NSURL *storeUrl = [NSURL fileURLWithPath:[[self documentDatabaseDirectory] stringByAppendingPathComponent:@"SyncedDocuments.coredata"]];
+    NSURL *storeUrl = [NSURL fileURLWithPath:[[self documentDatabaseDirectory] stringByAppendingPathComponent:@".syncedDocuments.coredata"]];
 	
 	//[[NSFileManager defaultManager] removeItemAtPath:[storeUrl path] error:nil];
 	

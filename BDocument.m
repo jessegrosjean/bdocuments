@@ -12,6 +12,7 @@
 #import "SyncedDocumentsControllerDelegate.h"
 #import "DiffMatchPatch.h"
 #import "BDocumentDifferencesWindowController.h"
+#import "UKKQueue.h"
 
 
 @implementation BDocument
@@ -184,6 +185,13 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 
 - (void)close {
 	[BDocument storeDocumentUserDefaults:[self documentUserDefaults] forDocumentURL:[self fileURL]];
+	NSURL *fileURL = [self fileURL];
+	if (fileURL) {
+		UKKQueue *sharedFileWatcher = [UKKQueue sharedFileWatcher];
+		[sharedFileWatcher removePathFromQueue:[[fileURL path] stringByDeletingLastPathComponent]];
+		[[NSNotificationCenter defaultCenter] removeObserver:self name:nil object:sharedFileWatcher];
+	}
+	
 	[super close];
 }
 
@@ -284,7 +292,28 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 	}
 }
 
+void BDocumentSubscriptionProc(FNMessage message, OptionBits flags, void *refcon, FNSubscriptionRef subscription) {
+    BDocument *document = (BDocument *) refcon;
+    
+    if( message == kFNDirectoryModifiedMessage )    // No others exist as of 10.4
+		[document checkForModificationOfFileOnDisk];
+    else
+        NSLog(@"BDocumentSubscriptionProc: Unknown message %d", message);
+}
+
 - (void)setFileURL:(NSURL *)absoluteURL {
+	UKKQueue *sharedFileWatcher = [UKKQueue sharedFileWatcher];
+	NSURL *oldFileURL = [self fileURL];
+	if (oldFileURL) {
+		[sharedFileWatcher removePathFromQueue:[[oldFileURL path] stringByDeletingLastPathComponent]];
+		[[NSNotificationCenter defaultCenter] removeObserver:self name:nil object:sharedFileWatcher];
+	}
+
+	if (absoluteURL) {
+		[sharedFileWatcher addPathToQueue:[[absoluteURL path] stringByDeletingLastPathComponent]];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeFileSomewhere:) name:nil object:sharedFileWatcher];
+	}
+	
 	[super setFileURL:absoluteURL];
 	fromSyncedDocument = [SyncedDocumentsControllerDelegate isSyncedDocumentURL:[self fileURL]];
 }
@@ -308,7 +337,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 
 @synthesize fromSyncedDocument;
 
-- (void)saveDocumentWithDelegate:(id)delegate didSaveSelector:(SEL)didSaveSelector contextInfo:(void *)contextInfo {
+/*- (void)saveDocumentWithDelegate:(id)delegate didSaveSelector:(SEL)didSaveSelector contextInfo:(void *)contextInfo {
 	if ([self checkForModificationOfFileOnDisk]) {
 		NSInvocation *callback = [NSInvocation invocationWithMethodSignature:[delegate methodSignatureForSelector:didSaveSelector]];
 		[callback setSelector:didSaveSelector];
@@ -319,7 +348,7 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 		return;
 	}
 	[super saveDocumentWithDelegate:delegate didSaveSelector:didSaveSelector contextInfo:contextInfo];
-}
+}*/
 
 - (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation originalContentsURL:(NSURL *)absoluteOriginalContentsURL error:(NSError **)outError {
 	NSString *textContents = [self textContents];
@@ -359,7 +388,8 @@ static NSMutableArray *documentUserDefautlsArchive = nil;
 						NSArray *patchResults = [dmp patchApply:patches text:[self textContents]];
 						NSString *patchedDocumentText = [patchResults objectAtIndex:0];
 						[self setTextContents:patchedDocumentText];
-						
+						lastKnownTextContentsOnDisk = savedTextContents;
+
 						NSUInteger index = 0;
 						NSMutableArray *failedDiffs = [NSMutableArray array];
 						for (NSNumber *each in [patchResults objectAtIndex:1]) {

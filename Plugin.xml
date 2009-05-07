@@ -36,9 +36,8 @@
 		
 		<menu id="com.blocks.BUserInterface.menus.main.syncedDocumentsService">
 			<menuitem title="%Sync" id="beginSync" action="beginSync:" target="SyncedDocumentsControllerDelegate sharedInstance" keyEquivalent="s" keyEquivalentModifierMask="NSControlKeyMask|NSCommandKeyMask" />
-			<menuitem title="%New Document" id="newSyncedDocument" action="newSyncedDocument:" target="SyncedDocumentsControllerDelegate sharedInstance" />
-			<menuitem title="%Delete Document" id="deleteSyncedDocument" action="deleteSyncedDocument:" target="SyncedDocumentsControllerDelegate sharedInstance" />
-			<menuitem title="%Show Documents" id="openSyncedDocumentsWebsite" action="openSyncedDocumentsWebsite:" target="SyncedDocumentsControllerDelegate sharedInstance" />
+			<menuitem title="%Show Synced Folder" id="openSyncedDocumentsFolder" action="openSyncedDocumentsFolder:" target="SyncedDocumentsControllerDelegate sharedInstance" />
+			<menuitem title="%Show Synced Website" id="openSyncedDocumentsWebsite" action="openSyncedDocumentsWebsite:" target="SyncedDocumentsControllerDelegate sharedInstance" />
 			<menuitem title="%Sign In..." id="toggleSyncedDocumentsAuthentication" action="toggleSyncedDocumentsAuthentication:" target="SyncedDocumentsControllerDelegate sharedInstance" />
 		</menu>
 	</extension>	
