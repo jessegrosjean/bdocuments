@@ -346,7 +346,7 @@
 		NSString *serviceLabel = [[SyncedDocumentsController sharedInstance] serviceLabel];
 		NSString *messageText = [NSString stringWithFormat:BLocalizedString(@"%@ Conflicts", nil), serviceLabel];
 		NSString *informativeTextText = [NSString stringWithFormat:BLocalizedString(@"Some of your edits conflict with recent changes made on %@. Please go to the website to resolve these conflicts.", nil), serviceLabel];
-		NSAlert *alert = [NSAlert alertWithMessageText:messageText defaultButton:BLocalizedString(@"Resolve", nil) alternateButton:BLocalizedString(@"Close", nil) otherButton:nil informativeTextWithFormat:informativeTextText];
+		NSAlert *alert = [NSAlert alertWithMessageText:messageText defaultButton:BLocalizedString(@"Resolve", nil) alternateButton:BLocalizedString(@"Later", nil) otherButton:nil informativeTextWithFormat:informativeTextText];
 		if ([alert runModal] == NSOKButton) {
 			[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[[[SyncedDocumentsController sharedInstance] serviceRootURLString] stringByAppendingString:@"/documents/#conflicts"]]];
 		}
