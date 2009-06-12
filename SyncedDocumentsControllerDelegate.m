@@ -213,7 +213,7 @@
 	if (result == NSOKButton) {
 		[documentsController setServiceUsername:authenticationWindowController.username];
 		[documentsController setServicePassword:authenticationWindowController.password];
-		[documentsController beginSync:nil];
+		[documentsController performSelector:@selector(beginSync:) withObject:nil afterDelay:0];
 	}
 }
 
