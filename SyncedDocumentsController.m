@@ -273,8 +273,8 @@
 		[self queueClient:authTokenClient];
 		[self endActiveClient:aClient];
 	} else {
-		[[self syncDelegate] documentsControllerSyncNewCredentials:self];
 		[self cancelSync:nil];
+		[[self syncDelegate] documentsControllerSyncNewCredentials:self];
 	}
 }
 
