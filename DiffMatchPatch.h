@@ -6,6 +6,10 @@
 //  Copyright 2008 Hog Bay Software. All rights reserved.
 //
 
+
+#import <Blocks/Blocks.h>
+
+
 enum {
     BDiffDelete = 1,
     BDiffInsert = 2,

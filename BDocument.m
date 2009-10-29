@@ -372,9 +372,9 @@ void BDocumentSubscriptionProc(FNMessage message, OptionBits flags, void *refcon
 		NSFileManager *fileManager = [NSFileManager defaultManager];
 		
 		if ([fileManager fileExistsAtPath:[[self fileURL] path]]) {
-			if ([self respondsToSelector:@selector(_resetMoveAndRenameSensing)]) {
-				[self performSelector:@selector(_resetMoveAndRenameSensing)];
-			}
+			//if ([self respondsToSelector:@selector(_resetMoveAndRenameSensing)]) {
+			//	[self performSelector:@selector(_resetMoveAndRenameSensing)];
+			//}
 			
 			NSDate *actualFileModificationDate = [[fileManager fileAttributesAtPath:[[self fileURL] path] traverseLink:YES] fileModificationDate];
 			
@@ -433,6 +433,7 @@ void BDocumentSubscriptionProc(FNMessage message, OptionBits flags, void *refcon
 }
 
 @end
+
 
 @implementation NSDocument (BDocumentMethodReplacements)
 

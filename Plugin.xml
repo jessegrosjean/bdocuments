@@ -26,19 +26,8 @@
 	</extension>
 	
 	<extension point="com.blocks.BUserInterface.menus" processOrder="2">		
-		<menu id="com.blocks.BUserInterface.menus.main">
-			<menuitem title="%Sync" id="syncedDocumentsService" submenu="com.blocks.BUserInterface.menus.main.syncedDocumentsService" location="after:window" />
-		</menu>
-		
 		<menu id="com.blocks.BUserInterface.menus.main.file">
 			<menuitem title="%Show Unsaved Changes..." id="showUnsavedChanges" location="group:closeGroup" action="showUnsavedChanges:" />
-		</menu>
-		
-		<menu id="com.blocks.BUserInterface.menus.main.syncedDocumentsService">
-			<menuitem title="%Sync" id="beginSync" action="beginSync:" target="SyncedDocumentsControllerDelegate sharedInstance" keyEquivalent="s" keyEquivalentModifierMask="NSControlKeyMask|NSCommandKeyMask" />
-			<menuitem title="%Show Synced Folder" id="openSyncedDocumentsFolder" action="openSyncedDocumentsFolder:" target="SyncedDocumentsControllerDelegate sharedInstance" />
-			<menuitem title="%Show Synced Website" id="openSyncedDocumentsWebsite" action="openSyncedDocumentsWebsite:" target="SyncedDocumentsControllerDelegate sharedInstance" />
-			<menuitem title="%Sign In..." id="toggleSyncedDocumentsAuthentication" action="toggleSyncedDocumentsAuthentication:" target="SyncedDocumentsControllerDelegate sharedInstance" />
 		</menu>
 	</extension>	
 </plugin>
